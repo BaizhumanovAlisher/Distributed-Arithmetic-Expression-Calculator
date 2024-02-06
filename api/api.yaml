@@ -1,0 +1,181 @@
+openapi: 3.0.0
+info:
+  title: Distributed Arithmetic Expression Calculator
+  version: 1.0.0
+servers:
+  - url: http://localhost:8099
+paths:
+  /expression:
+    post:
+      parameters:
+        - in: header
+          name: X-Idempotency-Token
+          schema:
+            type: string
+      summary: Submit an arithmetic expression
+      operationId: submitExpression
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Expression'
+        required: true
+      responses:
+        200:
+          description: Expression accepted and processing started
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Expression'
+        400:
+          description: Invalid expression
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+
+                $ref: '#/components/schemas/Expression'
+    get:
+      summary: Get expressions
+      responses:
+        200:
+          description: Got expression
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Expression'
+    delete:
+      summary: Remove all expressions
+      responses:
+        200:
+          description: All expressions were removed
+  /expression/{id}:
+    get:
+      summary: Get expression
+      operationId: getExpression
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Got expression
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Expression'
+        404:
+          description: Expression not found
+  /operation:
+    get:
+      summary: List operations
+      operationId: listOperations
+      responses:
+        200:
+          description: List of operations
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Operation'
+
+    put:
+      summary: Update operation execution time
+      operationId: updateOperationTime
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Operation'
+        required: true
+      responses:
+        200:
+          description: Operation execution time updated
+        400:
+          description: Invalid input
+        404:
+          description: Operation not found
+
+  /computational-capability:
+    get:
+      summary: List computational capabilities
+      operationId: listComputationalCapabilities
+      responses:
+        200:
+          description: List of computational capabilities
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ComputationalCapability'
+components:
+  schemas:
+    Expression:
+      type: object
+      properties:
+        id:
+          type: integer
+        expression:
+          type: string
+        answer:
+          type: string
+        status:
+          type: string
+          enum: [completed, in process, invalid]
+        createdAt:
+          type: string
+          format: date-time
+        completedAt:
+          type: string
+          format: date-time
+      required:
+        - expression
+    Operation:
+      type: object
+      properties:
+        addition:
+          type: integer
+        subtraction:
+          type: integer
+        multiplication:
+          type: integer
+        division:
+          type: integer
+    ComputationalCapability:
+      type: object
+      properties:
+        resourceName:
+          type: string
+        operation:
+          $ref: '#/components/schemas/LeastExpression'
+      required:
+        - resourceName
+        - operation
+    LeastExpression:
+      type: object
+      properties:
+        id:
+          type: integer
+        number1:
+          type: number
+        number2:
+          type: number
+        operation:
+          type: string
+          enum:
+            - [ "+", "-", "*", "/" ]
+        id_expression:
+          type: integer
