@@ -47,11 +47,6 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Expression'
-    delete:
-      summary: Remove all expressions
-      responses:
-        200:
-          description: All expressions were removed
   /expression/{id}:
     get:
       summary: Get expression
@@ -108,7 +103,7 @@ paths:
         404:
           description: Operation not found
 
-  /computational-capability:
+  /mini-calculator:
     get:
       summary: List computational capabilities
       operationId: listComputationalCapabilities
@@ -120,7 +115,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/ComputationalCapability'
+                  $ref: '#/components/schemas/MiniCalculator'
 components:
   schemas:
     Expression:
@@ -154,15 +149,15 @@ components:
           type: integer
         division:
           type: integer
-    ComputationalCapability:
+    MiniCalculator:
       type: object
       properties:
-        resourceName:
-          type: string
+        resourceId:
+          type: integer
         operation:
           $ref: '#/components/schemas/LeastExpression'
       required:
-        - resourceName
+        - resourceId
         - operation
     LeastExpression:
       type: object
