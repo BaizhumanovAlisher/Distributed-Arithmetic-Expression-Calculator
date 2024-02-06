@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arithmetic Expression Processor</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin:   0; padding:   0; }
+        #content { max-width:   800px; margin:   0 auto; padding:   2rem; }
+        nav { background-color: #f8f9fa; padding:   1rem; text-align: center; }
+        nav ul { list-style: none; padding:   0; }
+        nav ul li { display: inline; margin-right:   1rem; }
+        nav ul li a { color: #007bff; text-decoration: none; }
+        .section { display: none; }
+        .active { display: block; }
+    </style>
+</head>
+<body>
+<nav>
+    <ul>
+        <li><a href="#" onclick="changeSection('inputForm')">Input Expression</a></li>
+        <li><a href="#" onclick="changeSection('expressionsList')">Expressions List</a></li>
+        <li><a href="#" onclick="changeSection('operationsList')">Operations List</a></li>
+        <li><a href="#" onclick="changeSection('computationalResources')">Computational Resources</a></li>
+    </ul>
+</nav>
+
+<div id="content">
+    <div id="inputForm" class="section active">
+        <h2>Input Arithmetic Expression</h2>
+        <form id="expressionForm">
+            <label for="expression">Expression:</label>
+            <input type="text" id="expression" name="expression">
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+
+    <div id="expressionsList" class="section">
+        <h2>Expressions List</h2>
+
+        <button id="getDataButtonExpressList">Get Data</button>
+        <ul id="expressionsList">
+            <!-- Computational capabilities will be populated here -->
+        </ul>
+    </div>
+
+    <div id="operationsList" class="section">
+        <h2>Operations List</h2>
+
+        <button id="getDataButtonOperationList">Get Data</button>
+
+        <table id="operationsTable">
+            <thead>
+            <tr>
+                <th>Operation</th>
+                <th>Execution Time</th>
+                <th>Update</th>
+            </tr>
+            </thead>
+            <tbody id="operationsTableBody">
+            <!-- Operations will be populated here -->
+            </tbody>
+        </table>
+    </div>
+
+    <div id="computationalResources" class="section">
+        <h2>Computational Resources</h2>
+        <button id="getDataButtonMiniCalculator">Get Data</button>
+        <ul id="computationsList">
+            <!-- Computational capabilities will be populated here -->
+        </ul>
+    </div>
+</div>
+
+<script>
+    function changeSection(sectionId) {
+        var sections = document.getElementsByClassName('section');
+        for (var i =   0; i < sections.length; i++) {
+            sections[i].classList.remove('active');
+        }
+        document.getElementById(sectionId).classList.add('active');
+    }
+
+    document.getElementById('expressionForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        const expressionValue = document.getElementById('expression').value;
+
+        const expressionData = {
+            expression: expressionValue
+        };
+
+        const idempotencyToken = generateUniqueToken();
+
+        fetch('/expression', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Idempotency-Token': idempotencyToken
+            },
+            body: JSON.stringify(expressionData)
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log(data);
+            })
+            .catch(error => {
+                // Handle any errors
+                console.error('There was a problem with the fetch operation: ', error);
+            });
+    });
+
+    // Helper function to generate a unique idempotency token
+    function generateUniqueToken() {
+        // Implement your token generation logic here
+        return Math.random().toString(36).substring(2) + Date.now().toString(36);
+    }
+
+    function populateExpressionsList() {
+        fetch('/expression')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json(); // Parse the response as JSON
+            })
+            .then(data => {
+                // Clear the current list
+                const listItemsContainer = document.getElementById('expressionsListItems');
+                listItemsContainer.innerHTML = '';
+
+                // Populate the list with the received data
+                data.forEach(expression => {
+                    const listItem = document.createElement('li');
+                    listItem.textContent = `${expression.expression} | Status: ${expression.status} | Created At: ${new Date(expression.createdAt).toLocaleString()} | Completed At: ${expression.completedAt ? new Date(expression.completedAt).toLocaleString() : 'N/A'}`;
+                    listItemsContainer.appendChild(listItem);
+                });
+            })
+            .catch(error => {
+                console.error('There was a problem with the fetch operation: ', error);
+            });
+    }
+
+    function populateOperationsList() {
+        fetch('/operation')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json(); // Parse the response as JSON
+            })
+            .then(data => {
+                // Clear the current table
+                const tableBody = document.getElementById('operationsTableBody');
+                tableBody.innerHTML = '';
+
+                // Populate the table with the received data
+                Object.keys(data).forEach(operationName => {
+                    const row = document.createElement('tr');
+                    const cellOperationName = document.createElement('td');
+                    const cellExecutionTime = document.createElement('td');
+                    const cellUpdateButton = document.createElement('td');
+
+                    cellOperationName.textContent = operationName;
+                    cellExecutionTime.textContent = data[operationName];
+                    const updateButton = document.createElement('button');
+                    updateButton.textContent = 'Update';
+                    updateButton.addEventListener('click', function() {
+                        // Get the new execution time from the input field
+                        const newExecutionTime = newExecutionTimeInput.value;
+
+                        // Send a PUT request to the server to update the execution time
+                        fetch(`/operation/${operationName}`, {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                [operationName]: parseInt(newExecutionTime,  10)
+                            })
+                        })
+                            .then(response => {
+                                if (!response.ok) {
+                                    throw new Error(`HTTP error! Status: ${response.status}`);
+                                }
+                                return response.json();
+                            })
+                            .then(updatedData => {
+                                // Handle the response data
+                                console.log(updatedData);
+                                // Optionally, update the UI to reflect the changes
+                            })
+                            .catch(error => {
+                                console.error('There was a problem with the fetch operation: ', error);
+                            });
+                    });
+                    cellUpdateButton.appendChild(updateButton);
+
+                    row.appendChild(cellOperationName);
+                    row.appendChild(cellExecutionTime);
+                    row.appendChild(cellUpdateButton);
+                    tableBody.appendChild(row);
+                });
+            })
+            .catch(error => {
+                console.error('There was a problem with the fetch operation: ', error);
+            });
+    }
+
+    function fetchComputationalCapabilities() {
+        try {
+            const response = fetch('/mini-calculator');
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            const capabilities = response.json();
+            displayComputationalCapabilities(capabilities);
+        } catch (error) {
+            console.error('There was a problem with the fetch operation: ', error);
+        }
+    }
+
+    function displayComputationalCapabilities(capabilities) {
+        const computationsList = document.getElementById('computationsList');
+        computationsList.innerHTML = ''; // Clear the list
+
+        capabilities.forEach(capability => {
+            const capabilityElement = document.createElement('li');
+            capabilityElement.textContent = `Resource ID: ${capability.resourceId}, Operation: ${capability.operation.operation}`;
+            computationsList.appendChild(capabilityElement);
+        });
+    }
+
+    document.getElementById('getDataButtonMiniCalculator').addEventListener('click', function() {
+        fetchComputationalCapabilities();
+    });
+
+    document.getElementById('getDataButtonExpressList').addEventListener('click', function() {
+        populateExpressionsList();
+    });
+
+    document.getElementById('getDataButtonOperationList').addEventListener('click', function() {
+        populateOperationsList();
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // Call the functions to populate the lists
+        populateExpressionsList();
+        populateOperationsList();
+        fetchComputationalCapabilities()
+    });
+</script>
+</body>
+</html>

@@ -149,6 +149,7 @@ components:
           type: integer
         division:
           type: integer
+
     MiniCalculator:
       type: object
       properties:
