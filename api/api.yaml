@@ -174,8 +174,7 @@ components:
           type: number
         operation:
           type: string
-          enum:
-            - [ "+", "-", "*", "/" ]
+          enum: ["addition", "subtraction", "multiplication", "division"]
         idExpression:
           type: integer
       required:
