@@ -137,34 +137,37 @@ components:
           type: string
           format: date-time
       required:
+        - id
         - expression
+        - answer
+        - status
+        - createdAt
+        - completedAt
     Operation:
       type: object
       properties:
-        addition:
+        operationKind:
+          type: string
+          enum: ["addition", "subtraction", "multiplication", "division"]
+        durationInSecond:
           type: integer
-        subtraction:
-          type: integer
-        multiplication:
-          type: integer
-        division:
-          type: integer
+      required:
+        - operationKind
+        - durationInSecond
 
     MiniCalculator:
       type: object
       properties:
         resourceId:
           type: integer
-        operation:
+        leastExpression:
           $ref: '#/components/schemas/LeastExpression'
       required:
         - resourceId
-        - operation
+        - leastExpression
     LeastExpression:
       type: object
       properties:
-        id:
-          type: integer
         number1:
           type: number
         number2:
@@ -173,5 +176,10 @@ components:
           type: string
           enum:
             - [ "+", "-", "*", "/" ]
-        id_expression:
+        idExpression:
           type: integer
+      required:
+        - number1
+        - number2
+        - operation
+        - idExpression
