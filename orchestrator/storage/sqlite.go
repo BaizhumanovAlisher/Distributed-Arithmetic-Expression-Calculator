@@ -140,6 +140,16 @@ func (s *Sqlite) UpdateOperation(operation *model.Operation) error {
 }
 
 func (s *Sqlite) SeedOperation() error {
+	operationsInDatabase, err := s.ReadAllOperations()
+
+	if err != nil {
+		return err
+	}
+
+	if len(operationsInDatabase) == 4 {
+		return nil
+	}
+
 	operations := []*model.Operation{
 		{OperationKind: model.Addition, DurationInSecond: 0},
 		{OperationKind: model.Subtraction, DurationInSecond: 0},
@@ -174,6 +184,11 @@ CREATE TABLE IF NOT EXISTS operations (
     duration_in_sec INT
 );
 `
-	_, err := s.db.Exec(q)
+	err := s.SeedOperation()
+	if err != nil {
+		return err
+	}
+
+	_, err = s.db.Exec(q)
 	return err
 }
