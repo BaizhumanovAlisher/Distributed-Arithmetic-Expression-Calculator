@@ -20,11 +20,11 @@ type HTTPServer struct {
 }
 
 type Storage struct {
-	Path                            string `yaml:"path" env-required:"true"`
-	DurationInSecondAddition        int    `yaml:"addition" env-default:"0"`
-	DurationInSecondSubtraction     int    `yaml:"subtraction" env-default:"0"`
-	DurationInSecondAMultiplication int    `yaml:"multiplication" env-default:"0"`
-	DurationInSecondDivision        int    `yaml:"division" env-default:"0"`
+	Path                           string `yaml:"path" env-required:"true"`
+	DurationInSecondAddition       int    `yaml:"addition" env-default:"0"`
+	DurationInSecondSubtraction    int    `yaml:"subtraction" env-default:"0"`
+	DurationInSecondMultiplication int    `yaml:"multiplication" env-default:"0"`
+	DurationInSecondDivision       int    `yaml:"division" env-default:"0"`
 }
 
 func MustLoad() *Config {
@@ -40,5 +40,25 @@ func MustLoad() *Config {
 		log.Fatalf("cannot read config: %s", err)
 	}
 
+	checkDuration(&cfg)
+
 	return &cfg
+}
+
+func checkDuration(cfg *Config) {
+	if cfg.DurationInSecondAddition < 0 {
+		log.Fatalf("duration of addition operation is lower than 0")
+	}
+
+	if cfg.DurationInSecondSubtraction < 0 {
+		log.Fatalf("duration of subtraction operation is lower than 0")
+	}
+
+	if cfg.DurationInSecondMultiplication < 0 {
+		log.Fatalf("duration of multiplication operation is lower than 0")
+	}
+
+	if cfg.DurationInSecondDivision < 0 {
+		log.Fatalf("duration of division operation is lower than 0")
+	}
 }
