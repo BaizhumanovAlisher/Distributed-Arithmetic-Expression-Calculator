@@ -1,0 +1,13 @@
+# config/config.yaml
+
+env: "local" # Окружение - local, dev или prod
+http_server: # конфигурация нашего http-сервера
+  address: "localhost:8099"
+  timeout: 5s
+  idle_timeout: 60s
+storage:
+  path: "storage.db"
+  addition: 0
+  subtraction: 0
+  multiplication: 0
+  division: 0
