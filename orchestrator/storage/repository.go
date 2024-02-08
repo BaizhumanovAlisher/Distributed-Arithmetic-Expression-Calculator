@@ -1,6 +1,9 @@
 package storage
 
-import "orchestrator/model"
+import (
+	"orchestrator/config"
+	"orchestrator/model"
+)
 
 type Repository interface {
 	CreateExpression(*model.Expression) error
@@ -10,7 +13,7 @@ type Repository interface {
 	CreateOperation(*model.Operation) error
 	ReadAllOperations() ([]*model.Operation, error)
 	UpdateOperation(*model.Operation) error
-	SeedOperation() error
+	SeedOperation(config *config.Config) error
 
-	Init() error
+	Init(config *config.Config) error
 }

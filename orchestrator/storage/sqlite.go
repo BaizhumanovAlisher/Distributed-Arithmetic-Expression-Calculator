@@ -4,25 +4,35 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"orchestrator/config"
 	"orchestrator/model"
+
+	_ "github.com/mattn/go-sqlite3"
 )
 
 type Sqlite struct {
 	db *sql.DB
 }
 
-func NewSqlite(path string) (*Sqlite, error) {
-	db, err := sql.Open("sqlite3", path)
+func NewSQLite(cfg *config.Config) (*Sqlite, error) {
+	db, err := sql.Open("sqlite3", cfg.Address)
 
 	if err != nil {
-		return nil, fmt.Errorf("can not open database: %w", err)
+		return nil, err
 	}
 
 	if err := db.Ping(); err != nil {
-		return nil, fmt.Errorf("can not open database: %w", err)
+		return nil, err
 	}
 
-	return &Sqlite{db: db}, nil
+	sqlite := &Sqlite{db: db}
+	err = sqlite.Init(cfg)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return sqlite, nil
 }
 
 func (s *Sqlite) CreateExpression(expression *model.Expression) error {
@@ -86,7 +96,7 @@ func (s *Sqlite) ReadExpression(id int) (*model.Expression, error) {
 }
 
 func (s *Sqlite) CreateOperation(operation *model.Operation) error {
-	stmt, err := s.db.Prepare(`INSERT INTO operations (operation_kind, duration_in_second) VALUES (?, ?)`)
+	stmt, err := s.db.Prepare(`INSERT INTO operations (operation_kind, duration_in_sec) VALUES (?, ?)`)
 	if err != nil {
 		return fmt.Errorf("failed to prepare statement: %w", err)
 	}
@@ -101,7 +111,7 @@ func (s *Sqlite) CreateOperation(operation *model.Operation) error {
 }
 
 func (s *Sqlite) ReadAllOperations() ([]*model.Operation, error) {
-	rows, err := s.db.Query(`SELECT operation_kind, duration_in_second FROM operations`)
+	rows, err := s.db.Query(`SELECT operation_kind, duration_in_sec FROM operations`)
 	if err != nil {
 		return nil, fmt.Errorf("failed to query all operations: %w", err)
 	}
@@ -139,7 +149,7 @@ func (s *Sqlite) UpdateOperation(operation *model.Operation) error {
 	return nil
 }
 
-func (s *Sqlite) SeedOperation() error {
+func (s *Sqlite) SeedOperation(cfg *config.Config) error {
 	operationsInDatabase, err := s.ReadAllOperations()
 
 	if err != nil {
@@ -151,10 +161,10 @@ func (s *Sqlite) SeedOperation() error {
 	}
 
 	operations := []*model.Operation{
-		{OperationKind: model.Addition, DurationInSecond: 0},
-		{OperationKind: model.Subtraction, DurationInSecond: 0},
-		{OperationKind: model.Multiplication, DurationInSecond: 0},
-		{OperationKind: model.Division, DurationInSecond: 0},
+		{OperationKind: model.Addition, DurationInSecond: cfg.DurationInSecondAddition},
+		{OperationKind: model.Subtraction, DurationInSecond: cfg.DurationInSecondSubtraction},
+		{OperationKind: model.Multiplication, DurationInSecond: cfg.DurationInSecondMultiplication},
+		{OperationKind: model.Division, DurationInSecond: cfg.DurationInSecondDivision},
 	}
 
 	for _, operation := range operations {
@@ -167,7 +177,7 @@ func (s *Sqlite) SeedOperation() error {
 	return nil
 }
 
-func (s *Sqlite) Init() error {
+func (s *Sqlite) Init(cfg *config.Config) error {
 	q := `
 CREATE TABLE IF NOT EXISTS expressions (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -184,11 +194,14 @@ CREATE TABLE IF NOT EXISTS operations (
     duration_in_sec INT
 );
 `
-	err := s.SeedOperation()
-	if err != nil {
+
+	if _, err := s.db.Exec(q); err != nil {
 		return err
 	}
 
-	_, err = s.db.Exec(q)
+	err := s.SeedOperation(cfg)
+	if err != nil {
+		return err
+	}
 	return err
 }
