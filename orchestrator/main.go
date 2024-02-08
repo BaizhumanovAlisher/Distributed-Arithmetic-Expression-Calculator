@@ -7,7 +7,6 @@ import (
 	"orchestrator/config"
 	"orchestrator/storage"
 	"os"
-	"time"
 )
 
 func main() {
@@ -15,7 +14,7 @@ func main() {
 
 	logger := setupLogger()
 
-	repo, err := storage.NewSQLite(cfg)
+	repo, err := storage.Postgresql(cfg)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -30,8 +29,6 @@ func main() {
 	for i := 0; i < len(operations); i++ {
 		fmt.Println(operations[i])
 	}
-
-	time.Sleep(time.Second * 15)
 }
 
 func setupLogger() *slog.Logger {

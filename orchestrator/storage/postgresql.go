@@ -7,15 +7,16 @@ import (
 	"orchestrator/config"
 	"orchestrator/model"
 
-	_ "github.com/mattn/go-sqlite3"
+	_ "github.com/lib/pq"
 )
 
 type Sqlite struct {
 	db *sql.DB
 }
 
-func NewSQLite(cfg *config.Config) (*Sqlite, error) {
-	db, err := sql.Open("sqlite3", cfg.Address)
+func Postgresql(cfg *config.Config) (*Sqlite, error) {
+	conn := fmt.Sprintf("user=%s dbname=%s password='%s' host=%s port=%s sslmode=%s", cfg.User, cfg.DBName, cfg.Password, cfg.Host, cfg.Port, cfg.SSLMode)
+	db, err := sql.Open("postgres", conn)
 
 	if err != nil {
 		return nil, err
@@ -36,7 +37,7 @@ func NewSQLite(cfg *config.Config) (*Sqlite, error) {
 }
 
 func (s *Sqlite) CreateExpression(expression *model.Expression) error {
-	stmt, err := s.db.Prepare(`INSERT INTO expressions (expression, answer, status, created_at, completed_at) VALUES (?, ?, ?, ?, ?)`)
+	stmt, err := s.db.Prepare(`INSERT INTO expressions (expression, answer, status, created_at, completed_at) VALUES ($1, $2, $3, $4, $5)`)
 	if err != nil {
 		return fmt.Errorf("failed to prepare statement: %w", err)
 	}
@@ -81,7 +82,7 @@ func (s *Sqlite) ReadAllExpressions() ([]*model.Expression, error) {
 }
 
 func (s *Sqlite) ReadExpression(id int) (*model.Expression, error) {
-	row := s.db.QueryRow(`SELECT id, expression, answer, status, created_at, completed_at FROM expressions WHERE id = ?`, id)
+	row := s.db.QueryRow(`SELECT id, expression, answer, status, created_at, completed_at FROM expressions WHERE id = $1`, id)
 
 	expr := new(model.Expression)
 	err := row.Scan(&expr.Id, &expr.Expression, &expr.Answer, &expr.Status, &expr.CreatedAt, &expr.CompletedAt)
@@ -96,7 +97,7 @@ func (s *Sqlite) ReadExpression(id int) (*model.Expression, error) {
 }
 
 func (s *Sqlite) CreateOperation(operation *model.Operation) error {
-	stmt, err := s.db.Prepare(`INSERT INTO operations (operation_kind, duration_in_sec) VALUES (?, ?)`)
+	stmt, err := s.db.Prepare(`INSERT INTO operations (operation_kind, duration_in_sec) VALUES ($1, $2)`)
 	if err != nil {
 		return fmt.Errorf("failed to prepare statement: %w", err)
 	}
@@ -135,7 +136,7 @@ func (s *Sqlite) ReadAllOperations() ([]*model.Operation, error) {
 }
 
 func (s *Sqlite) UpdateOperation(operation *model.Operation) error {
-	stmt, err := s.db.Prepare(`UPDATE operations SET duration_in_sec = ? WHERE operation_kind = ?`)
+	stmt, err := s.db.Prepare(`UPDATE operations SET duration_in_sec = ? WHERE operation_kind = $1`)
 	if err != nil {
 		return fmt.Errorf("failed to prepare statement: %w", err)
 	}
@@ -156,7 +157,7 @@ func (s *Sqlite) SeedOperation(cfg *config.Config) error {
 		return err
 	}
 
-	if len(operationsInDatabase) == 4 {
+	if len(operationsInDatabase) == cfg.CountOperation {
 		return nil
 	}
 
@@ -180,16 +181,16 @@ func (s *Sqlite) SeedOperation(cfg *config.Config) error {
 func (s *Sqlite) Init(cfg *config.Config) error {
 	q := `
 CREATE TABLE IF NOT EXISTS expressions (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    id SERIAL PRIMARY KEY,
     expression TEXT,
     answer VARCHAR,
     status VARCHAR,
-    created_at DATETIME,
-    completed_at DATETIME
+    created_at DATE,
+    completed_at DATE
 );
 
 CREATE TABLE IF NOT EXISTS operations (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    id SERIAL PRIMARY KEY,
     operation_kind VARCHAR UNIQUE,
     duration_in_sec INT
 );

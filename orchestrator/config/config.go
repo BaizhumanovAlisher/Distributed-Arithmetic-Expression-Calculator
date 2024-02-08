@@ -11,6 +11,7 @@ type Config struct {
 	Env        string `yaml:"env" env-default:"local"`
 	HTTPServer `yaml:"http_server"`
 	Storage    `yaml:"storage"`
+	Operation  `yaml:"operation"`
 }
 
 type HTTPServer struct {
@@ -20,11 +21,20 @@ type HTTPServer struct {
 }
 
 type Storage struct {
-	Path                           string `yaml:"path" env-required:"true"`
-	DurationInSecondAddition       int    `yaml:"addition" env-default:"0"`
-	DurationInSecondSubtraction    int    `yaml:"subtraction" env-default:"0"`
-	DurationInSecondMultiplication int    `yaml:"multiplication" env-default:"0"`
-	DurationInSecondDivision       int    `yaml:"division" env-default:"0"`
+	User     string `yaml:"user"`
+	DBName   string `yaml:"dbname"`
+	Password string `yaml:"password"`
+	Host     string `yaml:"host"`
+	Port     string `yaml:"post"`
+	SSLMode  string `yaml:"sslmode"`
+}
+
+type Operation struct {
+	DurationInSecondAddition       int `yaml:"addition" env-default:"0"`
+	DurationInSecondSubtraction    int `yaml:"subtraction" env-default:"0"`
+	DurationInSecondMultiplication int `yaml:"multiplication" env-default:"0"`
+	DurationInSecondDivision       int `yaml:"division" env-default:"0"`
+	CountOperation                 int `yaml:"count_operation"`
 }
 
 func MustLoad() *Config {
