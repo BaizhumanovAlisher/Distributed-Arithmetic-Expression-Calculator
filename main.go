@@ -1,24 +1,32 @@
 package main
 
 import (
+	"distributed_calculator/config"
+	"distributed_calculator/storage"
 	"fmt"
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 	"log"
 	"log/slog"
-	"orchestrator/config"
-	"orchestrator/storage"
 	"os"
+
+	mwLogger "distributed_calculator/http_server/logger"
 )
 
 func main() {
 	cfg := config.MustLoad()
-
 	logger := setupLogger()
 
 	repo, err := storage.Postgresql(cfg)
 	if err != nil {
 		log.Fatal(err)
 	}
-	//todo: init router
+
+	router := chi.NewRouter()
+	router.Use(middleware.Logger)
+	router.Use(mwLogger.New(logger))
+	router.Use(middleware.Recoverer)
+	router.Use(middleware.URLFormat)
 	//todo: run server
 
 	operations, err := repo.ReadAllOperations()

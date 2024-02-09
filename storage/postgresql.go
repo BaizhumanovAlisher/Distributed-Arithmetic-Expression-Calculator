@@ -2,10 +2,10 @@ package storage
 
 import (
 	"database/sql"
+	"distributed_calculator/config"
+	"distributed_calculator/model"
 	"errors"
 	"fmt"
-	"orchestrator/config"
-	"orchestrator/model"
 
 	_ "github.com/lib/pq"
 )

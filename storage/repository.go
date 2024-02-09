@@ -1,8 +1,8 @@
 package storage
 
 import (
-	"orchestrator/config"
-	"orchestrator/model"
+	"distributed_calculator/config"
+	"distributed_calculator/model"
 )
 
 type Repository interface {
