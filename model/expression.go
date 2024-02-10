@@ -3,12 +3,12 @@ package model
 import "time"
 
 type Expression struct {
-	Id          int       `json:"id"`
-	Expression  string    `json:"expression"`
-	Answer      string    `json:"answer"`
-	Status      Status    `json:"status"`
-	CreatedAt   time.Time `json:"createdAt"`
-	CompletedAt time.Time `json:"completedAt"`
+	Id          int        `json:"id"`
+	Expression  string     `json:"expression"`
+	Answer      string     `json:"answer"`
+	Status      Status     `json:"status"`
+	CreatedAt   time.Time  `json:"createdAt"`
+	CompletedAt *time.Time `json:"completedAt,omitempty"`
 }
 
 type InputExpression struct {

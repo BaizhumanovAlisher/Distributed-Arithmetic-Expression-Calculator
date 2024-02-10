@@ -2,13 +2,14 @@ package main
 
 import (
 	"distributed_calculator/config"
+	"distributed_calculator/http_server/handlers"
 	mwLogger "distributed_calculator/http_server/logger"
 	"distributed_calculator/storage"
-	"fmt"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"log"
 	"log/slog"
+	"net/http"
 	"os"
 )
 
@@ -28,13 +29,20 @@ func main() {
 	router.Use(middleware.URLFormat)
 	//todo: run server
 
-	operations, err := repo.ReadAllOperations()
-	if err != nil {
-		logger.Debug("%s", err)
+	router.Post("/expression", handlers.HandlerNewExpression(logger, repo.CreateExpression))
+
+	logger.Info("start server", slog.String("address", cfg.Address))
+
+	srv := &http.Server{
+		Addr:         cfg.Address,
+		Handler:      router,
+		ReadTimeout:  cfg.HTTPServer.Timeout,
+		WriteTimeout: cfg.HTTPServer.Timeout,
+		IdleTimeout:  cfg.HTTPServer.IdleTimeout,
 	}
 
-	for i := 0; i < len(operations); i++ {
-		fmt.Println(operations[i])
+	if err := srv.ListenAndServe(); err != nil {
+		logger.Error("failed to start")
 	}
 }
 

@@ -37,22 +37,16 @@ func Postgresql(cfg *config.Config) (*Sqlite, error) {
 }
 
 func (s *Sqlite) CreateExpression(expression *model.Expression) error {
-	stmt, err := s.db.Prepare(`INSERT INTO expressions (expression, answer, status, created_at, completed_at) VALUES ($1, $2, $3, $4, $5)`)
+	stmt, err := s.db.Prepare(`INSERT INTO expressions (expression, answer, status, created_at, completed_at) VALUES ($1, $2, $3, $4, $5) RETURNING id`)
 	if err != nil {
 		return fmt.Errorf("failed to prepare statement: %w", err)
 	}
 	defer stmt.Close()
 
-	result, err := stmt.Exec(expression.Expression, expression.Answer, expression.Status, expression.CreatedAt, expression.CompletedAt)
+	err = stmt.QueryRow(expression.Expression, expression.Answer, expression.Status, expression.CreatedAt, expression.CompletedAt).Scan(&expression.Id)
 	if err != nil {
 		return fmt.Errorf("failed to execute statement: %w", err)
 	}
-
-	lastID, err := result.LastInsertId()
-	if err != nil {
-		return fmt.Errorf("failed to get last insert ID: %w", err)
-	}
-	expression.Id = int(lastID)
 
 	return nil
 }
@@ -136,7 +130,7 @@ func (s *Sqlite) ReadAllOperations() ([]*model.Operation, error) {
 }
 
 func (s *Sqlite) UpdateOperation(operation *model.Operation) error {
-	stmt, err := s.db.Prepare(`UPDATE operations SET duration_in_sec = ? WHERE operation_kind = $1`)
+	stmt, err := s.db.Prepare(`UPDATE operations SET duration_in_sec = $1 WHERE operation_kind = $2`)
 	if err != nil {
 		return fmt.Errorf("failed to prepare statement: %w", err)
 	}
@@ -185,8 +179,8 @@ CREATE TABLE IF NOT EXISTS expressions (
     expression TEXT,
     answer VARCHAR,
     status VARCHAR,
-    created_at DATE,
-    completed_at DATE
+    created_at timestamp,
+    completed_at timestamp NULL 
 );
 
 CREATE TABLE IF NOT EXISTS operations (

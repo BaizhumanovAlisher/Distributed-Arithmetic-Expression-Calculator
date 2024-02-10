@@ -8,13 +8,7 @@ import (
 	"net/http"
 )
 
-type ExpressionSaveAndView interface {
-	CreateExpression(*model.Expression) error
-	ReadAllExpressions() ([]*model.Expression, error)
-	ReadExpression(id int) (*model.Expression, error)
-}
-
-func New(log *slog.Logger, expressionSaver ExpressionSaveAndView) http.HandlerFunc {
+func HandlerNewExpression(log *slog.Logger, expressionSaver func(expression *model.Expression) error) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var inputExpression model.InputExpression
 
@@ -32,7 +26,7 @@ func New(log *slog.Logger, expressionSaver ExpressionSaveAndView) http.HandlerFu
 
 		if !isCorrectValidated {
 			expression := model.NewExpressionInvalid(inputExpression.Expression)
-			err := expressionSaver.CreateExpression(expression)
+			err := expressionSaver(expression)
 
 			if err != nil {
 				log.Error("%s", err)
@@ -41,6 +35,8 @@ func New(log *slog.Logger, expressionSaver ExpressionSaveAndView) http.HandlerFu
 			}
 
 			render.Status(r, http.StatusBadRequest)
+			render.JSON(w, r, expression)
+			return
 		}
 
 		//todo: add parser and start to solve
