@@ -22,18 +22,23 @@ func main() {
 		log.Fatal(err)
 	}
 
+	redis, err := storage.Redis(cfg)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	router := chi.NewRouter()
 	router.Use(middleware.Logger)
 	router.Use(mwLogger.New(logger))
 	router.Use(middleware.Recoverer)
 	router.Use(middleware.URLFormat)
 
-	setURLPatterns(router, logger, repo)
+	setURLPatterns(router, logger, repo, redis)
 
-	logger.Info("start server", slog.String("address", cfg.Address))
+	logger.Info("start server", slog.String("address", cfg.HTTPServer.Address))
 
 	srv := &http.Server{
-		Addr:         cfg.Address,
+		Addr:         cfg.HTTPServer.Address,
 		Handler:      router,
 		ReadTimeout:  cfg.HTTPServer.Timeout,
 		WriteTimeout: cfg.HTTPServer.Timeout,
@@ -45,8 +50,8 @@ func main() {
 	}
 }
 
-func setURLPatterns(router *chi.Mux, logger *slog.Logger, repo *storage.Sqlite) {
-	router.Post("/expression", handlers.HandlerNewExpression(logger, repo.CreateExpression))
+func setURLPatterns(router *chi.Mux, logger *slog.Logger, repo *storage.PostgresqlDB, redis *storage.RedisDB) {
+	router.Post("/expression", handlers.HandlerNewExpression(logger, repo.CreateExpression, redis.StoreIdempotencyToken, redis.RetrieveIdempotencyToken))
 	router.Get("/expression", handlers.HandlerGetAllExpression(logger, repo.ReadAllExpressions))
 	router.Get("/expression/{id}", handlers.HandlerGetExpression(logger, repo.ReadExpression))
 	router.Get("/operation", handlers.HandlerGetAllOperations(logger, repo.ReadAllOperations))

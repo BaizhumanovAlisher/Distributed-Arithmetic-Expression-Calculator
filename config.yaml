@@ -20,3 +20,9 @@ operation:
   subtraction: 0
   multiplication: 0
   division: 0
+
+quick_access_storage:
+  addr: "localhost:6379"
+  ttl: 60s
+  password: ""
+  db: 0

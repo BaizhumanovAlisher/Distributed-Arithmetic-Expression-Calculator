@@ -8,10 +8,11 @@ import (
 )
 
 type Config struct {
-	Env        string `yaml:"env" env-default:"local"`
-	HTTPServer `yaml:"http_server"`
-	Storage    `yaml:"storage"`
-	Operation  `yaml:"operation"`
+	Env                string `yaml:"env" env-default:"local"`
+	HTTPServer         `yaml:"http_server"`
+	Storage            `yaml:"storage"`
+	Operation          `yaml:"operation"`
+	QuickAccessStorage ` yaml:"quick_access_storage"`
 }
 
 type HTTPServer struct {
@@ -35,6 +36,13 @@ type Operation struct {
 	DurationInSecondMultiplication int `yaml:"multiplication" env-default:"0"`
 	DurationInSecondDivision       int `yaml:"division" env-default:"0"`
 	CountOperation                 int `yaml:"count_operation"`
+}
+
+type QuickAccessStorage struct {
+	Address  string        `yaml:"addr"`
+	TTL      time.Duration `yaml:"ttl"`
+	Password string        `yaml:""`
+	DB       int           `yaml:"db"`
 }
 
 func MustLoad() *Config {

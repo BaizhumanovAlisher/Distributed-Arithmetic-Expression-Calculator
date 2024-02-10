@@ -17,3 +17,9 @@ type Repository interface {
 
 	Init(config *config.Config) error
 }
+
+type RepositoryQuickAccess interface {
+	Init(config *config.Config) error
+	StoreIdempotencyToken(string, string, *model.ResponseData) error
+	RetrieveIdempotencyToken(string, string) (*model.ResponseData, error)
+}

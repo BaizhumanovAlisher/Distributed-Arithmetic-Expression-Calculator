@@ -10,12 +10,12 @@ import (
 	_ "github.com/lib/pq"
 )
 
-type Sqlite struct {
+type PostgresqlDB struct {
 	db *sql.DB
 }
 
-func Postgresql(cfg *config.Config) (*Sqlite, error) {
-	conn := fmt.Sprintf("user=%s dbname=%s password='%s' host=%s port=%s sslmode=%s", cfg.User, cfg.DBName, cfg.Password, cfg.Host, cfg.Port, cfg.SSLMode)
+func Postgresql(cfg *config.Config) (*PostgresqlDB, error) {
+	conn := fmt.Sprintf("user=%s dbname=%s password='%s' host=%s port=%s sslmode=%s", cfg.User, cfg.DBName, cfg.Storage.Password, cfg.Host, cfg.Port, cfg.SSLMode)
 	db, err := sql.Open("postgres", conn)
 
 	if err != nil {
@@ -26,17 +26,17 @@ func Postgresql(cfg *config.Config) (*Sqlite, error) {
 		return nil, err
 	}
 
-	sqlite := &Sqlite{db: db}
-	err = sqlite.Init(cfg)
+	postgresql := &PostgresqlDB{db: db}
+	err = postgresql.Init(cfg)
 
 	if err != nil {
 		return nil, err
 	}
 
-	return sqlite, nil
+	return postgresql, nil
 }
 
-func (s *Sqlite) CreateExpression(expression *model.Expression) error {
+func (s *PostgresqlDB) CreateExpression(expression *model.Expression) error {
 	stmt, err := s.db.Prepare(`INSERT INTO expressions (expression, answer, status, created_at, completed_at) VALUES ($1, $2, $3, $4, $5) RETURNING id`)
 	if err != nil {
 		return fmt.Errorf("failed to prepare statement: %w", err)
@@ -51,7 +51,7 @@ func (s *Sqlite) CreateExpression(expression *model.Expression) error {
 	return nil
 }
 
-func (s *Sqlite) ReadAllExpressions() ([]*model.Expression, error) {
+func (s *PostgresqlDB) ReadAllExpressions() ([]*model.Expression, error) {
 	rows, err := s.db.Query(`SELECT id, expression, answer, status, created_at, completed_at FROM expressions`)
 	if err != nil {
 		return nil, fmt.Errorf("failed to query all expressions: %w", err)
@@ -75,7 +75,7 @@ func (s *Sqlite) ReadAllExpressions() ([]*model.Expression, error) {
 	return expressions, nil
 }
 
-func (s *Sqlite) ReadExpression(id int) (*model.Expression, error) {
+func (s *PostgresqlDB) ReadExpression(id int) (*model.Expression, error) {
 	row := s.db.QueryRow(`SELECT id, expression, answer, status, created_at, completed_at FROM expressions WHERE id = $1`, id)
 
 	expr := new(model.Expression)
@@ -90,7 +90,7 @@ func (s *Sqlite) ReadExpression(id int) (*model.Expression, error) {
 	return expr, nil
 }
 
-func (s *Sqlite) CreateOperation(operation *model.Operation) error {
+func (s *PostgresqlDB) CreateOperation(operation *model.Operation) error {
 	stmt, err := s.db.Prepare(`INSERT INTO operations (operation_kind, duration_in_sec) VALUES ($1, $2)`)
 	if err != nil {
 		return fmt.Errorf("failed to prepare statement: %w", err)
@@ -105,7 +105,7 @@ func (s *Sqlite) CreateOperation(operation *model.Operation) error {
 	return nil
 }
 
-func (s *Sqlite) ReadAllOperations() ([]*model.Operation, error) {
+func (s *PostgresqlDB) ReadAllOperations() ([]*model.Operation, error) {
 	rows, err := s.db.Query(`SELECT operation_kind, duration_in_sec FROM operations`)
 	if err != nil {
 		return nil, fmt.Errorf("failed to query all operations: %w", err)
@@ -129,7 +129,7 @@ func (s *Sqlite) ReadAllOperations() ([]*model.Operation, error) {
 	return operations, nil
 }
 
-func (s *Sqlite) UpdateOperation(operation *model.Operation) error {
+func (s *PostgresqlDB) UpdateOperation(operation *model.Operation) error {
 	stmt, err := s.db.Prepare(`UPDATE operations SET duration_in_sec = $1 WHERE operation_kind = $2`)
 	if err != nil {
 		return fmt.Errorf("failed to prepare statement: %w", err)
@@ -144,7 +144,7 @@ func (s *Sqlite) UpdateOperation(operation *model.Operation) error {
 	return nil
 }
 
-func (s *Sqlite) SeedOperation(cfg *config.Config) error {
+func (s *PostgresqlDB) SeedOperation(cfg *config.Config) error {
 	operationsInDatabase, err := s.ReadAllOperations()
 
 	if err != nil {
@@ -172,7 +172,7 @@ func (s *Sqlite) SeedOperation(cfg *config.Config) error {
 	return nil
 }
 
-func (s *Sqlite) Init(cfg *config.Config) error {
+func (s *PostgresqlDB) Init(cfg *config.Config) error {
 	q := `
 CREATE TABLE IF NOT EXISTS expressions (
     id SERIAL PRIMARY KEY,
