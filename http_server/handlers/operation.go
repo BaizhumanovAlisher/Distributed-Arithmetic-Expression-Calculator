@@ -35,14 +35,12 @@ func HandlerPutOperations(log *slog.Logger, operationUpdate func(operation *mode
 
 		var operation model.Operation
 
-		//todo: add token idempotent X-Idempotency-Token
-
 		err := render.DecodeJSON(r.Body, &operation)
 
 		if err != nil {
 			log.Error("incorrect JSON file: %s", err)
 			render.Status(r, http.StatusBadRequest)
-			render.JSON(w, r, map[string]string{"description": "incorrect JSON file"})
+			render.JSON(w, r, model.NewAPIError("incorrect JSON file"))
 			return
 		}
 

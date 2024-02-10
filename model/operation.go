@@ -17,3 +17,10 @@ const (
 	Multiplication               = "multiplication"
 	Division                     = "division"
 )
+
+func IsAllowedOperation(operationType OperationType) bool {
+	return operationType == Addition ||
+		operationType == Subtraction ||
+		operationType == Multiplication ||
+		operationType == Division
+}
