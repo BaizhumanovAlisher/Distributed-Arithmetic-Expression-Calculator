@@ -8,12 +8,12 @@ import (
 	"unicode"
 )
 
-func Validate(expression string) (bool, error) {
+func ValidateExpression(expression string) error {
 	slog.Info("start validating expression: %s", expression)
 	if len(expression) == 0 {
 		err := errors.New("empty expression")
 		slog.Info(err.Error())
-		return false, err
+		return err
 	}
 
 	var wg sync.WaitGroup
@@ -35,11 +35,11 @@ func Validate(expression string) (bool, error) {
 
 	if len(errorCh) == 0 {
 		slog.Info("successful validation expression: %s", expression)
-		return true, nil
+		return nil
 	} else {
 		err := <-errorCh
 		slog.Info("unsuccessful validation: %s", err)
-		return false, err
+		return err
 	}
 }
 

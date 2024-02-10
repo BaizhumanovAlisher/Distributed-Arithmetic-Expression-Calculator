@@ -9,7 +9,7 @@ Project from Yandex Lyceum Course - Programming in Go
 
 Recommendation: 
 
-Do not use GUI.
+Do not use GUI, (in the future), but you can
 
 Use API in [file](api/api.yaml) 
 

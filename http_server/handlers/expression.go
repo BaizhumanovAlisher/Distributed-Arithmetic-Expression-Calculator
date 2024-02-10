@@ -18,10 +18,10 @@ func HandlerNewExpression(log *slog.Logger, expressionSaver func(expression *mod
 
 		//todo: add token idempotent X-Idempotency-Token
 
-		errValidating := render.DecodeJSON(r.Body, &inputExpression)
+		err := render.DecodeJSON(r.Body, &inputExpression)
 
-		if errValidating != nil {
-			log.Error("incorrect JSON file: %s", errValidating)
+		if err != nil {
+			log.Error("incorrect JSON file: %s", err)
 			render.Status(r, http.StatusBadRequest)
 			render.JSON(w, r, map[string]string{"description": "incorrect JSON file"})
 			return
@@ -29,11 +29,11 @@ func HandlerNewExpression(log *slog.Logger, expressionSaver func(expression *mod
 
 		log.Info("request body decoded")
 
-		isCorrectValidated, errValidating := validators.Validate(inputExpression.Expression)
+		errValidating := validators.ValidateExpression(inputExpression.Expression)
 
 		var expression *model.Expression
 
-		if !isCorrectValidated {
+		if errValidating != nil {
 			expression = model.NewExpressionInvalid(inputExpression.Expression)
 		} else {
 			expression = model.NewExpressionInProcess(inputExpression.Expression)
@@ -54,7 +54,7 @@ func HandlerNewExpression(log *slog.Logger, expressionSaver func(expression *mod
 			log.Info("added expression to db: %+v", expression)
 		}
 
-		if !isCorrectValidated {
+		if errValidating != nil {
 			apiError := model.NewAPIError(errValidating.Error())
 			apiError.Id = &expression.Id
 

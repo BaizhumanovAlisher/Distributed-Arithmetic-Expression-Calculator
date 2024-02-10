@@ -49,6 +49,8 @@ func setURLPatterns(router *chi.Mux, logger *slog.Logger, repo *storage.Sqlite) 
 	router.Post("/expression", handlers.HandlerNewExpression(logger, repo.CreateExpression))
 	router.Get("/expression", handlers.HandlerGetAllExpression(logger, repo.ReadAllExpressions))
 	router.Get("/expression/{id}", handlers.HandlerGetExpression(logger, repo.ReadExpression))
+	router.Get("/operation", handlers.HandlerGetAllOperations(logger, repo.ReadAllOperations))
+	router.Put("/operation", handlers.HandlerPutOperations(logger, repo.UpdateOperation))
 }
 
 func setupLogger() *slog.Logger {
