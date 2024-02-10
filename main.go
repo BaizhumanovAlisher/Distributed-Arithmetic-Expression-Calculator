@@ -27,9 +27,8 @@ func main() {
 	router.Use(mwLogger.New(logger))
 	router.Use(middleware.Recoverer)
 	router.Use(middleware.URLFormat)
-	//todo: run server
 
-	router.Post("/expression", handlers.HandlerNewExpression(logger, repo.CreateExpression))
+	setURLPatterns(router, logger, repo)
 
 	logger.Info("start server", slog.String("address", cfg.Address))
 
@@ -44,6 +43,11 @@ func main() {
 	if err := srv.ListenAndServe(); err != nil {
 		logger.Error("failed to start")
 	}
+}
+
+func setURLPatterns(router *chi.Mux, logger *slog.Logger, repo *storage.Sqlite) {
+	router.Post("/expression", handlers.HandlerNewExpression(logger, repo.CreateExpression))
+	router.Get("/expression", handlers.HandlerGetAllExpression(logger, repo.ReadAllExpressions))
 }
 
 func setupLogger() *slog.Logger {

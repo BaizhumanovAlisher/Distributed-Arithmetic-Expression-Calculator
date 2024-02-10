@@ -48,3 +48,21 @@ func HandlerNewExpression(log *slog.Logger, expressionSaver func(expression *mod
 		log.Info("expression added", slog.Int("id", expression.Id))
 	}
 }
+
+func HandlerGetAllExpression(log *slog.Logger, expressionReader func() ([]*model.Expression, error)) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		log.Info("start get all expression")
+
+		expressions, err := expressionReader()
+
+		if err != nil {
+			log.Error("error to get all expressions: %s", err)
+			render.Status(r, http.StatusInternalServerError)
+			return
+		}
+
+		log.Info("successful to get all expressions")
+		render.JSON(w, r, expressions)
+		render.Status(r, http.StatusOK)
+	}
+}
