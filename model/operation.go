@@ -1,8 +1,8 @@
 package model
 
 type Operation struct {
-	OperationKind    OperationType `json:"operationKind"`
-	DurationInSecond int           `json:"durationInSecond"`
+	OperationKind    OperationType `json:"operationKind" validate:"required"`
+	DurationInSecond int           `json:"durationInSecond" validate:"duration_in_sec"`
 }
 
 func NewOperation() *Operation {

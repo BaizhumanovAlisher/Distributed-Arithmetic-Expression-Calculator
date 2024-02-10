@@ -18,7 +18,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Expression'
+              $ref: '#/components/schemas/InputExpression'
         required: true
       responses:
         200:
@@ -143,6 +143,13 @@ components:
         - status
         - createdAt
         - completedAt
+    InputExpression:
+      type: object
+      properties:
+        expression:
+          type: string
+      required:
+        - expression
     Operation:
       type: object
       properties:

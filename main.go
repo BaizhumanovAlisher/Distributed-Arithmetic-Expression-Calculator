@@ -2,6 +2,7 @@ package main
 
 import (
 	"distributed_calculator/config"
+	mwLogger "distributed_calculator/http_server/logger"
 	"distributed_calculator/storage"
 	"fmt"
 	"github.com/go-chi/chi/v5"
@@ -9,8 +10,6 @@ import (
 	"log"
 	"log/slog"
 	"os"
-
-	mwLogger "distributed_calculator/http_server/logger"
 )
 
 func main() {

@@ -11,8 +11,27 @@ type Expression struct {
 	CompletedAt time.Time `json:"completedAt"`
 }
 
-func NewExpression() *Expression {
-	return &Expression{}
+type InputExpression struct {
+	Expression string `json:"expression" validate:"required,expression"`
+}
+
+func NewExpressionInProcess(expression string) *Expression {
+	exp := NewExpression(expression)
+	exp.Status = InProcess
+	return exp
+}
+
+func NewExpressionInvalid(expression string) *Expression {
+	exp := NewExpression(expression)
+	exp.Status = Invalid
+	return exp
+}
+
+func NewExpression(expression string) *Expression {
+	return &Expression{
+		Expression: expression,
+		CreatedAt:  time.Now(),
+	}
 }
 
 type Status string
