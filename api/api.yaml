@@ -29,12 +29,15 @@ paths:
                 $ref: '#/components/schemas/Expression'
         400:
           description: Invalid expression
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         500:
           description: Internal server error
           content:
             application/json:
               schema:
-
                 $ref: '#/components/schemas/Expression'
     get:
       summary: Get expressions
@@ -47,6 +50,12 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Expression'
+        404:
+          description: No expressions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /expression/{id}:
     get:
       summary: Get expression
@@ -66,6 +75,16 @@ paths:
                 $ref: '#/components/schemas/Expression'
         404:
           description: Expression not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        400:
+          description: Invalid id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /operation:
     get:
       summary: List operations
@@ -188,3 +207,12 @@ components:
         - number2
         - operation
         - idExpression
+    Error:
+      type: object
+      properties:
+        description:
+          type: string
+        id:
+          type: number
+      required:
+        - description

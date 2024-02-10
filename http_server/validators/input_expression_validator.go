@@ -4,16 +4,16 @@ import (
 	"context"
 	"errors"
 	"log/slog"
-	"strings"
 	"sync"
 	"unicode"
 )
 
-func Validate(expression string) bool {
+func Validate(expression string) (bool, error) {
 	slog.Info("start validating expression: %s", expression)
 	if len(expression) == 0 {
-		slog.Info("empty expression")
-		return false
+		err := errors.New("empty expression")
+		slog.Info(err.Error())
+		return false, err
 	}
 
 	var wg sync.WaitGroup
@@ -35,19 +35,11 @@ func Validate(expression string) bool {
 
 	if len(errorCh) == 0 {
 		slog.Info("successful validation expression: %s", expression)
-		return true
+		return true, nil
 	} else {
-		var descriptionErrors strings.Builder
-
-		descriptionErrors.WriteString((<-errorCh).Error())
-
-		for err := range errorCh {
-			descriptionErrors.WriteString(",")
-			descriptionErrors.WriteString(err.Error())
-		}
-
-		slog.Info("unsuccessful validation: %s - [%s]", expression, descriptionErrors.String())
-		return false
+		err := <-errorCh
+		slog.Info("unsuccessful validation: %s", err)
+		return false, err
 	}
 }
 
