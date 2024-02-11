@@ -22,14 +22,15 @@ func ValidateExpression(expression string) error {
 	ctx := context.Background()
 	exp := []rune(expression)
 
-	wg.Add(6)
+	wg.Add(7)
 
-	concurrentErrorDetection(startWithNumber, exp, &wg, errorCh, ctx)
-	concurrentErrorDetection(notContainExtraCharacters, exp, &wg, errorCh, ctx)
-	concurrentErrorDetection(digitStartWithZero, exp, &wg, errorCh, ctx)
-	concurrentErrorDetection(wholeExpressionIsDigit, exp, &wg, errorCh, ctx)
-	concurrentErrorDetection(divideByZero, exp, &wg, errorCh, ctx)
-	concurrentErrorDetection(bracketsAreCorrect, exp, &wg, errorCh, ctx)
+	concurrentErrorDetection(startWithNumber, exp, &wg, errorCh, &ctx)
+	concurrentErrorDetection(notContainExtraCharacters, exp, &wg, errorCh, &ctx)
+	concurrentErrorDetection(digitStartWithZero, exp, &wg, errorCh, &ctx)
+	concurrentErrorDetection(wholeExpressionIsDigit, exp, &wg, errorCh, &ctx)
+	concurrentErrorDetection(divideByZero, exp, &wg, errorCh, &ctx)
+	concurrentErrorDetection(bracketsAreCorrect, exp, &wg, errorCh, &ctx)
+	concurrentErrorDetection(checkCheckTwoSymbols, exp, &wg, errorCh, &ctx)
 
 	wg.Wait()
 
@@ -45,11 +46,11 @@ func ValidateExpression(expression string) error {
 
 type CheckFunc func([]rune) error
 
-func concurrentErrorDetection(checkExpressionToError CheckFunc, exp []rune, wg *sync.WaitGroup, errorCh chan error, ctx context.Context) {
+func concurrentErrorDetection(checkExpressionToError CheckFunc, exp []rune, wg *sync.WaitGroup, errorCh chan error, ctx *context.Context) {
 	defer wg.Done()
 
 	select {
-	case <-ctx.Done():
+	case <-(*ctx).Done():
 		return
 	default:
 		err := checkExpressionToError(exp)
@@ -57,7 +58,7 @@ func concurrentErrorDetection(checkExpressionToError CheckFunc, exp []rune, wg *
 		if err != nil {
 			errorCh <- err
 
-			_, cancel := context.WithCancel(ctx)
+			_, cancel := context.WithCancel(*ctx)
 			cancel()
 			return
 		}
@@ -95,6 +96,16 @@ func isAllowedChar(c rune) bool {
 	}
 
 	return false
+}
+
+func checkCheckTwoSymbols(exp []rune) error {
+	for i := 0; i < len(exp)-1; i++ {
+		if isAllowedChar(exp[i]) && isAllowedChar(exp[i]+1) {
+			return errors.New("it is forbidden to use allowed chars nearby")
+		}
+	}
+
+	return nil
 }
 
 func digitStartWithZero(exp []rune) error {

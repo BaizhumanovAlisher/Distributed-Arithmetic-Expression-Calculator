@@ -3,13 +3,13 @@
 Project from Yandex Lyceum Course - Programming in Go
 
 ## Tech specification:
-- [Russian](technical%20specification-RU.md)
+- [Russian](docs/technical%20specification-RU.md)
 
 ## Front-end -- SPA
 
 Recommendation: 
 
-Do not use GUI, (in the future), but you can
+Do not use GUI, (in the future), but you are able
 
 Use API in [file](api/api.yaml) 
 
@@ -21,6 +21,7 @@ Use API in [file](api/api.yaml)
 4) expression should contain operations
 5) it is forbidden to divide by zero
 6) brackets should be correct
+7) it is forbidden to use allowed chars nearby
 
 # Token idempotency
 - Header: `X-Idempotency-Token`
