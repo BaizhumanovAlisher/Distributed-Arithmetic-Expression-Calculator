@@ -103,6 +103,8 @@ func checkCashedRespond(w http.ResponseWriter, log *slog.Logger, idempotencyToke
 			log.Info("send cashed respond with status code: %d", rd.StatusCode)
 			w.Write(rd.Body)
 			w.WriteHeader(rd.StatusCode)
+			w.Header().Set("Content-Type", "application/json")
+
 			return true
 		}
 	}

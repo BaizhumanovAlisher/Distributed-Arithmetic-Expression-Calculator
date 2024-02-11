@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  postgres:
+    container_name: daec_postgresql
+    image: postgres
+    ports:
+      - "8100:5432"
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: distributed_calculator
+
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  pgadmin:
+    container_name: container_pgadmin
+    image: dpage/pgadmin4
+    depends_on:
+      - postgres
+    ports:
+      - "5050:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: root
+    restart: unless-stopped
+
+  redis:
+    container_name: daec_redis
+    image: redis:latest
+    ports:
+      - '8101:6379'
+
+  orchestrator:
+    restart: unless-stopped
+    container_name: daec_orchestrator
+    image: orchestrator:latest
+    build:
+      context: ./orchestrator
+      dockerfile: Dockerfile
+    ports:
+      - '8099:8099'
+    depends_on:
+      - postgres
+      - redis
+    environment:
+      DATABASE_URL: postgres://postgres:password@postgres:8100/distributed_calculator?sslmode=disabled
+      REDIS_URL: redis://redis:8101
+
+volumes:
+  pgdata:

@@ -28,6 +28,7 @@ type Storage struct {
 	Host     string `yaml:"host"`
 	Port     string `yaml:"post"`
 	SSLMode  string `yaml:"sslmode"`
+	URL      string `yaml:"url"`
 }
 
 type Operation struct {
@@ -46,7 +47,7 @@ type QuickAccessStorage struct {
 }
 
 func MustLoad() *Config {
-	configPath := "config.yaml"
+	configPath := "/app/config.yaml"
 
 	if _, err := os.Stat(configPath); os.IsNotExist(err) {
 		log.Fatalf("config file does not exist: %s", configPath)
