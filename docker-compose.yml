@@ -15,17 +15,15 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
 
-  pgadmin:
-    container_name: container_pgadmin
-    image: dpage/pgadmin4
-    depends_on:
-      - postgres
+  rabbitmq:
+    container_name: daec_rabbitmq
+    image: rabbitmq:3-management-alpine
     ports:
-      - "5050:80"
-    environment:
-      PGADMIN_DEFAULT_EMAIL: admin@admin.com
-      PGADMIN_DEFAULT_PASSWORD: root
-    restart: unless-stopped
+      - "5673:5672"
+      - "15673:15672"
+    restart: always
+    volumes:
+      - rabbitmqdata:/var/lib/rabbitmq
 
   redis:
     container_name: daec_redis
@@ -45,9 +43,12 @@ services:
     depends_on:
       - postgres
       - redis
+      - rabbitmq
     environment:
-      DATABASE_URL: postgres://postgres:password@postgres:8100/distributed_calculator?sslmode=disabled
-      REDIS_URL: redis://redis:8101
+      DATABASE_URL: postgres://postgres:password@postgres:5432/distributed_calculator?sslmode=disable
+      REDIS_URL: redis:6379
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672/
 
 volumes:
   pgdata:
+  rabbitmqdata:

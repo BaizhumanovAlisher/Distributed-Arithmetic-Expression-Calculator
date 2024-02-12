@@ -1,9 +1,45 @@
 # Distributed-Arithmetic-Expression-Calculator
+D-A-E-C
 
 Project from Yandex Lyceum Course - Programming in Go
 
+Start point: http://localhost:8099/
+## Run project: 
+0) install [docker engine](https://docs.docker.com/engine/install/) and [docker compose](https://docs.docker.com/compose/install/)
+1) `cd <"path/to/project">`
+2) `docker compose -f docker-compose.yml -p distributedarithmeticexpressioncalculator up -d
+   `
+
+## You can get error like: 
+
+`Error response from daemon: Ports are not available: exposing port TCP 0.0.0.0:5673 -> 0.0.0.0:0: listen tcp 0.0.0.0:5673: bind: address already in use`
+
+In this case you should change to free port in [docker-compose](docker-compose.yml)
+
+Change only exposed ports
+
+Example:
+- From:
+```yaml
+  postgres:
+    container_name: daec_postgresql
+    image: postgres
+    ports:
+      - "5432:5432"
+```
+- To:
+```yaml
+  postgres:
+    container_name: daec_postgresql
+    image: postgres
+    ports:
+      - "8100:5432"
+```
+
 ## Tech specification:
-- [Russian](docs/technical%20specification-RU.md)
+- [specifications](docs/technical%20specification-RU.md)
+- [criteria](docs/evaluation%20criteria.md)
+
 
 ## Front-end -- SPA
 
@@ -29,4 +65,4 @@ Use API in [file](api/api.yaml)
 - It consists of token from user, separator and expression: "<"user token idempotency">__<"expression">". Example: `dkskdhen392h__2+3*4`
 - It is lived 60s. It is described in [config.yaml](orchestrator/config.yaml)
 - If header is null, token will not be used
-- No cache in `500` http code
+- No caching in `500` http code
