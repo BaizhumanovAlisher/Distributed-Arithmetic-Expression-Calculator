@@ -41,13 +41,11 @@ Example:
 - [criteria](docs/evaluation%20criteria.md)
 
 
-## Front-end -- SPA
+## No Front-end
 
-Recommendation: 
+Use OpenAPI in [file](api/api.yaml)
 
-Do not use GUI, (in the future), but you are able
-
-Use API in [file](api/api.yaml) 
+Later will be Postman file
 
 # Rules for expression
 
@@ -64,5 +62,5 @@ Use API in [file](api/api.yaml)
 - It is used in `/expression` POST HTTP method
 - It consists of token from user, separator and expression: "<"user token idempotency">__<"expression">". Example: `dkskdhen392h__2+3*4`
 - It is lived 60s. It is described in [config.yaml](orchestrator/config.yaml)
-- If header is null, token will not be used
+- **If header is null, token will not be used**
 - No caching in `500` http code
