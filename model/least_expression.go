@@ -6,4 +6,6 @@ type LeastExpression struct {
 	Operation        OperationType `json:"operation"`
 	IdExpression     int           `json:"idExpression"`
 	DurationInSecond int           `json:"durationInSecond"`
+	Result           float64
+	ResultIsReady    chan bool
 }
