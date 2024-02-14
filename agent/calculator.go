@@ -8,29 +8,32 @@ import (
 type Calculator struct {
 	miniCalc *model.MiniCalculator
 	taskChan chan *model.LeastExpression
-	done     chan bool
+	closed   chan bool
 }
 
-func NewCalculator(id int) *Calculator {
+func NewCalculator(id int, queue chan *model.LeastExpression) *Calculator {
 	return &Calculator{
 		miniCalc: model.NewMiniCalculator(id),
-		taskChan: make(chan *model.LeastExpression),
-		done:     make(chan bool),
+		taskChan: queue,
+		closed:   make(chan bool),
 	}
 }
 
 func (c *Calculator) Start() {
 	defer func() {
 		if r := recover(); r != nil {
-			// Restart the worker if it panics
 			c.Start()
 		}
 	}()
 
 	for task := range c.taskChan {
-		c.miniCalc.LeastExpression = task // Store the current task
+		if c.miniCalc.LeastExpression != nil {
+			c.miniCalc.LeastExpression = task // Store the current task
+		}
 
 		c.SolveExpression(task)
+
+		c.miniCalc.LeastExpression = nil // Reset the current task
 	}
 }
 
@@ -38,10 +41,9 @@ func (c *Calculator) GetCurrentMiniCalculator() *model.MiniCalculator {
 	return c.miniCalc
 }
 
-// Close closes the worker's task channel and waits for all tasks to complete.
 func (c *Calculator) Close() {
 	close(c.taskChan)
-	<-c.done
+	<-c.closed
 }
 
 func (c *Calculator) SolveExpression(le *model.LeastExpression) {
