@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"distributed_calculator/config"
 	"distributed_calculator/model"
+	"distributed_calculator/model/expression"
 	"errors"
 	"fmt"
 
@@ -12,6 +13,33 @@ import (
 
 type PostgresqlDB struct {
 	db *sql.DB
+}
+
+func (s *PostgresqlDB) UpdateExpression(e *expression.Expression) error {
+	stmt, err := s.db.Prepare(`
+UPDATE expressions SET 
+answer = $1,
+status = $2,
+completed_at = $3
+WHERE id = $4`)
+
+	if err != nil {
+		return fmt.Errorf("failed to prepare statement: %w", err)
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(
+		e.Answer,
+		e.Status,
+		e.CompletedAt,
+		e.Id,
+	)
+
+	if err != nil {
+		return fmt.Errorf("failed to execute statement: %w", err)
+	}
+
+	return nil
 }
 
 func Postgresql(cfg *config.Config) (*PostgresqlDB, error) {
@@ -36,7 +64,7 @@ func Postgresql(cfg *config.Config) (*PostgresqlDB, error) {
 	return postgresql, nil
 }
 
-func (s *PostgresqlDB) CreateExpression(expression *model.Expression) error {
+func (s *PostgresqlDB) CreateExpression(expression *expression.Expression) error {
 	stmt, err := s.db.Prepare(`INSERT INTO expressions (expression, answer, status, created_at, completed_at) VALUES ($1, $2, $3, $4, $5) RETURNING id`)
 	if err != nil {
 		return fmt.Errorf("failed to prepare statement: %w", err)
@@ -51,16 +79,16 @@ func (s *PostgresqlDB) CreateExpression(expression *model.Expression) error {
 	return nil
 }
 
-func (s *PostgresqlDB) ReadAllExpressions() ([]*model.Expression, error) {
+func (s *PostgresqlDB) ReadAllExpressions() ([]*expression.Expression, error) {
 	rows, err := s.db.Query(`SELECT id, expression, answer, status, created_at, completed_at FROM expressions`)
 	if err != nil {
 		return nil, fmt.Errorf("failed to query all expressions: %w", err)
 	}
 	defer rows.Close()
 
-	var expressions []*model.Expression
+	var expressions []*expression.Expression
 	for rows.Next() {
-		expr := new(model.Expression)
+		expr := new(expression.Expression)
 		err := rows.Scan(&expr.Id, &expr.Expression, &expr.Answer, &expr.Status, &expr.CreatedAt, &expr.CompletedAt)
 		if err != nil {
 			return nil, fmt.Errorf("failed to scan row into expression: %w", err)
@@ -75,14 +103,31 @@ func (s *PostgresqlDB) ReadAllExpressions() ([]*model.Expression, error) {
 	return expressions, nil
 }
 
-func (s *PostgresqlDB) ReadExpression(id int) (*model.Expression, error) {
+func (s *PostgresqlDB) ReadOperation(operationType model.OperationType) (*model.OperationWithDuration, error) {
+	row := s.db.QueryRow(`SELECT duration_in_sec FROM operations WHERE operation_kind = $1`, operationType)
+
+	operationWithDuration := new(model.OperationWithDuration)
+	err := row.Scan(&operationWithDuration.DurationInSecond)
+	operationWithDuration.OperationKind = operationType
+
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, sql.ErrNoRows
+		}
+		return nil, fmt.Errorf("failed to scan row into expression: %w", err)
+	}
+
+	return operationWithDuration, nil
+}
+
+func (s *PostgresqlDB) ReadExpression(id int) (*expression.Expression, error) {
 	row := s.db.QueryRow(`SELECT id, expression, answer, status, created_at, completed_at FROM expressions WHERE id = $1`, id)
 
-	expr := new(model.Expression)
+	expr := new(expression.Expression)
 	err := row.Scan(&expr.Id, &expr.Expression, &expr.Answer, &expr.Status, &expr.CreatedAt, &expr.CompletedAt)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return nil, fmt.Errorf("no expression found with id %d: %w", id, err)
+			return nil, sql.ErrNoRows
 		}
 		return nil, fmt.Errorf("failed to scan row into expression: %w", err)
 	}
@@ -90,7 +135,7 @@ func (s *PostgresqlDB) ReadExpression(id int) (*model.Expression, error) {
 	return expr, nil
 }
 
-func (s *PostgresqlDB) CreateOperation(operation *model.Operation) error {
+func (s *PostgresqlDB) CreateOperation(operation *model.OperationWithDuration) error {
 	stmt, err := s.db.Prepare(`INSERT INTO operations (operation_kind, duration_in_sec) VALUES ($1, $2)`)
 	if err != nil {
 		return fmt.Errorf("failed to prepare statement: %w", err)
@@ -105,16 +150,16 @@ func (s *PostgresqlDB) CreateOperation(operation *model.Operation) error {
 	return nil
 }
 
-func (s *PostgresqlDB) ReadAllOperations() ([]*model.Operation, error) {
+func (s *PostgresqlDB) ReadAllOperations() ([]*model.OperationWithDuration, error) {
 	rows, err := s.db.Query(`SELECT operation_kind, duration_in_sec FROM operations`)
 	if err != nil {
 		return nil, fmt.Errorf("failed to query all operations: %w", err)
 	}
 	defer rows.Close()
 
-	var operations []*model.Operation
+	var operations []*model.OperationWithDuration
 	for rows.Next() {
-		op := new(model.Operation)
+		op := new(model.OperationWithDuration)
 		err := rows.Scan(&op.OperationKind, &op.DurationInSecond)
 		if err != nil {
 			return nil, fmt.Errorf("failed to scan row into operation: %w", err)
@@ -129,7 +174,7 @@ func (s *PostgresqlDB) ReadAllOperations() ([]*model.Operation, error) {
 	return operations, nil
 }
 
-func (s *PostgresqlDB) UpdateOperation(operation *model.Operation) error {
+func (s *PostgresqlDB) UpdateOperation(operation *model.OperationWithDuration) error {
 	stmt, err := s.db.Prepare(`UPDATE operations SET duration_in_sec = $1 WHERE operation_kind = $2`)
 	if err != nil {
 		return fmt.Errorf("failed to prepare statement: %w", err)
@@ -155,7 +200,7 @@ func (s *PostgresqlDB) SeedOperation(cfg *config.Config) error {
 		return nil
 	}
 
-	operations := []*model.Operation{
+	operations := []*model.OperationWithDuration{
 		{OperationKind: model.Addition, DurationInSecond: cfg.DurationInSecondAddition},
 		{OperationKind: model.Subtraction, DurationInSecond: cfg.DurationInSecondSubtraction},
 		{OperationKind: model.Multiplication, DurationInSecond: cfg.DurationInSecondMultiplication},

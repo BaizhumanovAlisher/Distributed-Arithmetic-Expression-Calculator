@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"distributed_calculator/http_server/validators"
 	"distributed_calculator/model"
+	"distributed_calculator/model/expression"
 	"encoding/json"
 	"errors"
 	"github.com/go-chi/chi/v5"
@@ -13,9 +14,9 @@ import (
 	"strconv"
 )
 
-func HandlerNewExpression(log *slog.Logger, expressionSaver func(expression *model.Expression) error, setResponseData func(idempotencyToken string, expression string, responseData *model.ResponseData) error, getResponseData func(idempotencyToken string, expression string) (*model.ResponseData, error)) http.HandlerFunc {
+func HandlerNewExpression(log *slog.Logger, expressionSaver func(expression *expression.Expression) error, setResponseData func(idempotencyToken string, expression string, responseData *model.ResponseData) error, getResponseData func(idempotencyToken string, expression string) (*model.ResponseData, error)) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var inputExpression model.InputExpression
+		var inputExpression expression.InputExpression
 
 		err := render.DecodeJSON(r.Body, &inputExpression)
 
@@ -39,33 +40,33 @@ func HandlerNewExpression(log *slog.Logger, expressionSaver func(expression *mod
 		}
 
 		errValidating := validators.ValidateExpression(inputExpression.Expression)
-		var expression *model.Expression
+		var exp *expression.Expression
 
 		if errValidating != nil {
-			expression = model.NewExpressionInvalid(inputExpression.Expression)
+			exp = expression.NewExpressionInvalid(inputExpression.Expression)
 		} else {
-			expression = model.NewExpressionInProcess(inputExpression.Expression)
+			exp = expression.NewExpressionInProcess(inputExpression.Expression)
 		}
 
-		errDb := expressionSaver(expression)
+		errDb := expressionSaver(exp)
 
 		if errDb != nil {
 			log.Error("%s", errDb)
 
 			apiErr := model.NewAPIError("problem with database")
-			apiErr.Id = &expression.Id
+			apiErr.Id = &exp.Id
 
 			render.Status(r, http.StatusInternalServerError)
 			render.JSON(w, r, apiErr)
 
 			return
 		} else {
-			log.Info("added expression to db: %+v", expression)
+			log.Info("added expression to db: %+v", exp)
 		}
 
 		if errValidating != nil {
 			apiError := model.NewAPIError(errValidating.Error())
-			apiError.Id = &expression.Id
+			apiError.Id = &exp.Id
 
 			render.Status(r, http.StatusBadRequest)
 			render.JSON(w, r, apiError)
@@ -79,16 +80,16 @@ func HandlerNewExpression(log *slog.Logger, expressionSaver func(expression *mod
 		//todo: add parser and start to solve
 
 		render.Status(r, http.StatusOK)
-		render.JSON(w, r, expression)
+		render.JSON(w, r, exp)
 
-		bytes, _ := json.Marshal(expression)
+		bytes, _ := json.Marshal(exp)
 		cacheRespond(log, idempotencyToken, inputExpression.Expression, http.StatusInternalServerError, bytes, setResponseData)
 
-		log.Info("expression added", slog.Int("id", expression.Id))
+		log.Info("expression added", slog.Int("id", exp.Id))
 	}
 }
 
-func checkCashedRespond(w http.ResponseWriter, log *slog.Logger, idempotencyToken string, getResponseData func(idempotencyToken string, expression string) (*model.ResponseData, error), inputExpression model.InputExpression) bool {
+func checkCashedRespond(w http.ResponseWriter, log *slog.Logger, idempotencyToken string, getResponseData func(idempotencyToken string, expression string) (*model.ResponseData, error), inputExpression expression.InputExpression) bool {
 	log.Info("X-Idempotency-Token: %s", idempotencyToken)
 
 	if idempotencyToken != "" {
@@ -123,7 +124,7 @@ func cacheRespond(log *slog.Logger, idempotencyToken string, expression string, 
 	}
 }
 
-func HandlerGetAllExpression(log *slog.Logger, expressionReader func() ([]*model.Expression, error)) http.HandlerFunc {
+func HandlerGetAllExpression(log *slog.Logger, expressionReader func() ([]*expression.Expression, error)) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		log.Info("start get all expression")
 
@@ -142,7 +143,7 @@ func HandlerGetAllExpression(log *slog.Logger, expressionReader func() ([]*model
 	}
 }
 
-func HandlerGetExpression(log *slog.Logger, expressionReader func(int) (*model.Expression, error)) http.HandlerFunc {
+func HandlerGetExpression(log *slog.Logger, expressionReader func(int) (*expression.Expression, error)) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		log.Info("start get expression")
 		idStr := chi.URLParam(r, "id")
@@ -156,7 +157,7 @@ func HandlerGetExpression(log *slog.Logger, expressionReader func(int) (*model.E
 			return
 		}
 
-		expression, err := expressionReader(id)
+		exp, err := expressionReader(id)
 
 		if errors.Is(err, sql.ErrNoRows) {
 			log.Error("error to get expression: %s", err)
@@ -167,6 +168,6 @@ func HandlerGetExpression(log *slog.Logger, expressionReader func(int) (*model.E
 
 		log.Info("successful to get expressions")
 		render.Status(r, http.StatusOK)
-		render.JSON(w, r, expression)
+		render.JSON(w, r, exp)
 	}
 }

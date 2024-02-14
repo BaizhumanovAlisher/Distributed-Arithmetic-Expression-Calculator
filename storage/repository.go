@@ -3,16 +3,19 @@ package storage
 import (
 	"distributed_calculator/config"
 	"distributed_calculator/model"
+	"distributed_calculator/model/expression"
 )
 
 type Repository interface {
-	CreateExpression(*model.Expression) error
-	ReadAllExpressions() ([]*model.Expression, error)
-	ReadExpression(int) (*model.Expression, error)
+	CreateExpression(*expression.Expression) error
+	UpdateExpression(*expression.Expression) error
+	ReadAllExpressions() ([]*expression.Expression, error)
+	ReadExpression(int) (*expression.Expression, error)
 
-	CreateOperation(*model.Operation) error
-	ReadAllOperations() ([]*model.Operation, error)
-	UpdateOperation(*model.Operation) error
+	CreateOperation(*model.OperationWithDuration) error
+	ReadAllOperations() ([]*model.OperationWithDuration, error)
+	ReadOperation(operationType model.OperationType) (*model.OperationWithDuration, error)
+	UpdateOperation(*model.OperationWithDuration) error
 	SeedOperation(config *config.Config) error
 
 	Init(config *config.Config) error

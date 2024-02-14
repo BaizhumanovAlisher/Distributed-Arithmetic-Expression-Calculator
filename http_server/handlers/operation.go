@@ -10,7 +10,7 @@ import (
 	"net/http"
 )
 
-func HandlerGetAllOperations(log *slog.Logger, operationReader func() ([]*model.Operation, error)) http.HandlerFunc {
+func HandlerGetAllOperations(log *slog.Logger, operationReader func() ([]*model.OperationWithDuration, error)) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		log.Info("start get all operations")
 
@@ -29,11 +29,11 @@ func HandlerGetAllOperations(log *slog.Logger, operationReader func() ([]*model.
 	}
 }
 
-func HandlerPutOperations(log *slog.Logger, operationUpdate func(operation *model.Operation) error) http.HandlerFunc {
+func HandlerPutOperations(log *slog.Logger, operationUpdate func(operation *model.OperationWithDuration) error) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		log.Info("start put operations")
 
-		var operation model.Operation
+		var operation model.OperationWithDuration
 
 		err := render.DecodeJSON(r.Body, &operation)
 

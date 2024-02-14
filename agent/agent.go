@@ -2,6 +2,7 @@ package agent
 
 import (
 	"distributed_calculator/model"
+	"distributed_calculator/model/expression"
 	"errors"
 	"sync"
 )
@@ -9,11 +10,11 @@ import (
 type Agent struct {
 	mtx         sync.Mutex
 	Calculators []*Calculator
-	Queue       chan *model.LeastExpression
+	Queue       chan *expression.LeastExpression
 }
 
 func NewAgent(countCalculators int) *Agent {
-	queue := make(chan *model.LeastExpression)
+	queue := make(chan *expression.LeastExpression)
 	miniCalcs := make([]*Calculator, countCalculators)
 
 	for i := 0; i < countCalculators; i++ {
@@ -26,7 +27,7 @@ func NewAgent(countCalculators int) *Agent {
 	}
 }
 
-func (a *Agent) AddTask(exp *model.LeastExpression) {
+func (a *Agent) AddTask(exp *expression.LeastExpression) {
 	a.Queue <- exp
 }
 

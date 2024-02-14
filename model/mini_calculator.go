@@ -1,8 +1,10 @@
 package model
 
+import "distributed_calculator/model/expression"
+
 type MiniCalculator struct {
-	ResourceId      int              `json:"resourceId"`
-	LeastExpression *LeastExpression `json:"leastExpression"`
+	ResourceId      int                         `json:"resourceId"`
+	LeastExpression *expression.LeastExpression `json:"leastExpression"`
 }
 
 func NewMiniCalculator(resourceId int) *MiniCalculator {

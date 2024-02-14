@@ -2,16 +2,17 @@ package agent
 
 import (
 	"distributed_calculator/model"
+	"distributed_calculator/model/expression"
 	"time"
 )
 
 type Calculator struct {
 	miniCalc *model.MiniCalculator
-	taskChan chan *model.LeastExpression
+	taskChan chan *expression.LeastExpression
 	closed   chan bool
 }
 
-func NewCalculator(id int, queue chan *model.LeastExpression) *Calculator {
+func NewCalculator(id int, queue chan *expression.LeastExpression) *Calculator {
 	return &Calculator{
 		miniCalc: model.NewMiniCalculator(id),
 		taskChan: queue,
@@ -46,7 +47,7 @@ func (c *Calculator) Close() {
 	<-c.closed
 }
 
-func (c *Calculator) SolveExpression(le *model.LeastExpression) {
+func (c *Calculator) SolveExpression(le *expression.LeastExpression) {
 	time.Sleep(time.Duration(int64(le.DurationInSecond) * int64(time.Second)))
 
 	switch le.Operation {

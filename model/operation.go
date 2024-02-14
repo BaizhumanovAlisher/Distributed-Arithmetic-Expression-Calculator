@@ -1,12 +1,8 @@
 package model
 
-type Operation struct {
+type OperationWithDuration struct {
 	OperationKind    OperationType `json:"operationKind" validate:"required"`
 	DurationInSecond int           `json:"durationInSecond" validate:"duration_in_sec"`
-}
-
-func NewOperation() *Operation {
-	return &Operation{}
 }
 
 type OperationType string
