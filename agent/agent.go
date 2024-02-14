@@ -41,29 +41,31 @@ func (a *Agent) GetStatusAllCalculators() []*model.MiniCalculator {
 	return miniCalculators
 }
 
-// AddCalculator can add and remove calculators
-func (a *Agent) AddCalculator(count int) error {
+// SetNewCountCalculator can add and remove calculators
+func (a *Agent) SetNewCountCalculator(count int) error {
 	a.mtx.Lock()
 
-	if len(a.Calculators)+count < 1 {
+	if count < 1 {
 		return errors.New("count of calculator must be greater than 0")
 	}
 
-	if count == 0 {
+	previousCount := len(a.Calculators)
+
+	if count == previousCount {
 		return nil
 	}
 
-	if count > 0 {
-		for i := 0; i < count; i++ {
+	if count-previousCount > 0 {
+		for i := previousCount; i < count; i++ {
 			a.Calculators = append(a.Calculators, NewCalculator(len(a.Calculators), a.Queue))
 		}
 	} else {
-		for i := len(a.Calculators) - 1; i > len(a.Calculators)-1+count; i-- {
+		for i := len(a.Calculators) - 1; i >= count; i-- {
 			a.Calculators[i].Close()
 			<-a.Calculators[i].closed
 		}
 
-		a.Calculators = a.Calculators[:len(a.Calculators)-count]
+		a.Calculators = a.Calculators[:count]
 	}
 
 	a.mtx.Unlock()

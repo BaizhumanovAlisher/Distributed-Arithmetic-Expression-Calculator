@@ -7,8 +7,7 @@ Start point: http://localhost:8099/
 ## Run project: 
 0) install [docker engine](https://docs.docker.com/engine/install/) and [docker compose](https://docs.docker.com/compose/install/)
 1) `cd <"path/to/project">`
-2) `docker compose -f docker-compose.yml -p distributedarithmeticexpressioncalculator up -d
-   `
+2) `docker compose -f docker-compose.yml -p distributedarithmeticexpressioncalculator up -d`
 
 ## You can get error like: 
 
