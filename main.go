@@ -5,6 +5,7 @@ import (
 	"distributed_calculator/http_server/handlers"
 	mwLogger "distributed_calculator/http_server/logger"
 	"distributed_calculator/storage"
+	"distributed_calculator/storage/postgreql"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"log"
@@ -17,7 +18,7 @@ func main() {
 	cfg := config.MustLoad()
 	logger := setupLogger()
 
-	repo, err := storage.Postgresql(cfg)
+	repo, err := postgreql.Postgresql(cfg)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -50,7 +51,7 @@ func main() {
 	}
 }
 
-func setURLPatterns(router *chi.Mux, logger *slog.Logger, repo *storage.PostgresqlDB, redis *storage.RedisDB) {
+func setURLPatterns(router *chi.Mux, logger *slog.Logger, repo *postgreql.PostgresqlDB, redis *storage.RedisDB) {
 	router.Post("/expression", handlers.HandlerNewExpression(logger, repo.CreateExpression, redis.StoreIdempotencyToken, redis.RetrieveIdempotencyToken))
 	router.Get("/expression", handlers.HandlerGetAllExpression(logger, repo.ReadAllExpressions))
 	router.Get("/expression/{id}", handlers.HandlerGetExpression(logger, repo.ReadExpression))

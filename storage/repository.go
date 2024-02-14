@@ -10,6 +10,7 @@ type Repository interface {
 	CreateExpression(*expression.Expression) error
 	UpdateExpression(*expression.Expression) error
 	ReadAllExpressions() ([]*expression.Expression, error)
+	ReadAllExpressionsWithStatus(expression.Status) ([]*expression.Expression, error)
 	ReadExpression(int) (*expression.Expression, error)
 
 	CreateOperation(*model.OperationWithDuration) error
