@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"database/sql"
+	"distributed_calculator/expression_manager"
 	"distributed_calculator/http_server/validators"
 	"distributed_calculator/model"
 	"distributed_calculator/model/expression"
@@ -14,7 +15,12 @@ import (
 	"strconv"
 )
 
-func HandlerNewExpression(log *slog.Logger, expressionSaver func(expression *expression.Expression) error, setResponseData func(idempotencyToken string, expression string, responseData *model.ResponseData) error, getResponseData func(idempotencyToken string, expression string) (*model.ResponseData, error)) http.HandlerFunc {
+func HandlerNewExpression(log *slog.Logger,
+	expressionSaver func(expression *expression.Expression) error,
+	setResponseData func(idempotencyToken string, expression string, responseData *model.ResponseData) error,
+	getResponseData func(idempotencyToken string, expression string) (*model.ResponseData, error),
+	manager *expression_manager.ExpressionManager) http.HandlerFunc {
+
 	return func(w http.ResponseWriter, r *http.Request) {
 		var inputExpression expression.InputExpression
 
@@ -43,41 +49,16 @@ func HandlerNewExpression(log *slog.Logger, expressionSaver func(expression *exp
 		var exp *expression.Expression
 
 		if errValidating != nil {
-			exp = expression.NewExpressionInvalid(inputExpression.Expression)
-		} else {
-			exp = expression.NewExpressionInProcess(inputExpression.Expression)
-		}
-
-		errDb := expressionSaver(exp)
-
-		if errDb != nil {
-			log.Error("%s", errDb)
-
-			apiErr := model.NewAPIError("problem with database")
-			apiErr.Id = &exp.Id
-
-			render.Status(r, http.StatusInternalServerError)
-			render.JSON(w, r, apiErr)
-
-			return
-		} else {
-			log.Info("added expression to db: %+v", exp)
-		}
-
-		if errValidating != nil {
-			apiError := model.NewAPIError(errValidating.Error())
-			apiError.Id = &exp.Id
-
-			render.Status(r, http.StatusBadRequest)
-			render.JSON(w, r, apiError)
-
-			bytes, _ := json.Marshal(apiError)
-			cacheRespond(log, idempotencyToken, inputExpression.Expression, http.StatusInternalServerError, bytes, setResponseData)
-
+			saveInvalidExpressionAndWriteRespond(w, r, exp, inputExpression, expressionSaver, log, errValidating, idempotencyToken, setResponseData)
 			return
 		}
 
-		//todo: add parser and start to solve
+		err = manager.ParseExpressionAndSolve(exp)
+
+		if err != nil {
+			saveInvalidExpressionAndWriteRespond(w, r, exp, inputExpression, expressionSaver, log, err, idempotencyToken, setResponseData)
+			return
+		}
 
 		render.Status(r, http.StatusOK)
 		render.JSON(w, r, exp)
@@ -87,6 +68,36 @@ func HandlerNewExpression(log *slog.Logger, expressionSaver func(expression *exp
 
 		log.Info("expression added", slog.Int("id", exp.Id))
 	}
+}
+
+func saveInvalidExpressionAndWriteRespond(w http.ResponseWriter, r *http.Request, exp *expression.Expression, inputExpression expression.InputExpression, expressionSaver func(expression *expression.Expression) error, log *slog.Logger, errValidating error, idempotencyToken string, setResponseData func(idempotencyToken string, expression string, responseData *model.ResponseData) error) {
+	exp = expression.NewExpressionInvalid(inputExpression.Expression)
+
+	errDb := expressionSaver(exp)
+
+	if errDb != nil {
+		log.Error("%s", errDb)
+
+		apiErr := model.NewAPIError("problem with database")
+		apiErr.Id = &exp.Id
+
+		render.Status(r, http.StatusInternalServerError)
+		render.JSON(w, r, apiErr)
+		return
+	} else {
+		log.Info("added expression to db: %+v", exp)
+	}
+
+	apiError := model.NewAPIError(errValidating.Error())
+	apiError.Id = &exp.Id
+
+	render.Status(r, http.StatusBadRequest)
+	render.JSON(w, r, apiError)
+
+	bytes, _ := json.Marshal(apiError)
+	cacheRespond(log, idempotencyToken, inputExpression.Expression, http.StatusInternalServerError, bytes, setResponseData)
+
+	return
 }
 
 func checkCashedRespond(w http.ResponseWriter, log *slog.Logger, idempotencyToken string, getResponseData func(idempotencyToken string, expression string) (*model.ResponseData, error), inputExpression expression.InputExpression) bool {

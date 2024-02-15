@@ -69,7 +69,7 @@ func (s *PostgresqlDB) SeedOperation(cfg *config.Config) error {
 		return err
 	}
 
-	if len(operationsInDatabase) == cfg.CountOperation {
+	if len(operationsInDatabase) == cfg.Operation.CountOperation {
 		return nil
 	}
 

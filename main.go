@@ -1,7 +1,9 @@
 package main
 
 import (
+	"distributed_calculator/agent"
 	"distributed_calculator/config"
+	"distributed_calculator/expression_manager"
 	"distributed_calculator/http_server/handlers"
 	mwLogger "distributed_calculator/http_server/logger"
 	"distributed_calculator/storage"
@@ -28,13 +30,21 @@ func main() {
 		log.Fatal(err)
 	}
 
+	newAgent := agent.NewAgent(cfg.Agent.CountOperation)
+	expressionManager, err := expression_manager.NewExpressionManager(
+		newAgent, repo.ReadOperation, repo.UpdateExpression, repo.ReadAllExpressionsWithStatus)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	router := chi.NewRouter()
 	router.Use(middleware.Logger)
 	router.Use(mwLogger.New(logger))
 	router.Use(middleware.Recoverer)
 	router.Use(middleware.URLFormat)
 
-	setURLPatterns(router, logger, repo, redis)
+	setURLPatterns(router, logger, repo, redis, expressionManager)
 
 	logger.Info("start server", slog.String("address", cfg.HTTPServer.Address))
 
@@ -51,8 +61,10 @@ func main() {
 	}
 }
 
-func setURLPatterns(router *chi.Mux, logger *slog.Logger, repo *postgreql.PostgresqlDB, redis *storage.RedisDB) {
-	router.Post("/expression", handlers.HandlerNewExpression(logger, repo.CreateExpression, redis.StoreIdempotencyToken, redis.RetrieveIdempotencyToken))
+func setURLPatterns(router *chi.Mux, logger *slog.Logger, repo *postgreql.PostgresqlDB, redis *storage.RedisDB, manager *expression_manager.ExpressionManager) {
+	router.Post("/expression", handlers.HandlerNewExpression(
+		logger, repo.CreateExpression, redis.StoreIdempotencyToken, redis.RetrieveIdempotencyToken, manager))
+
 	router.Get("/expression", handlers.HandlerGetAllExpression(logger, repo.ReadAllExpressions))
 	router.Get("/expression/{id}", handlers.HandlerGetExpression(logger, repo.ReadExpression))
 	router.Get("/operation", handlers.HandlerGetAllOperations(logger, repo.ReadAllOperations))

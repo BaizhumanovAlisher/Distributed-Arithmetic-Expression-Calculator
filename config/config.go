@@ -13,6 +13,7 @@ type Config struct {
 	Storage            `yaml:"storage"`
 	Operation          `yaml:"operation"`
 	QuickAccessStorage ` yaml:"quick_access_storage"`
+	Agent              `yaml:"agent"`
 }
 
 type HTTPServer struct {
@@ -44,6 +45,10 @@ type QuickAccessStorage struct {
 	TTL      time.Duration `yaml:"ttl"`
 	Password string        `yaml:""`
 	DB       int           `yaml:"db"`
+}
+
+type Agent struct {
+	CountOperation int `yaml:"count_calculator"`
 }
 
 func MustLoad() *Config {

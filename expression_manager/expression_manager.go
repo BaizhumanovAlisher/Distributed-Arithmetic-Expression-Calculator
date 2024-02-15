@@ -17,6 +17,29 @@ type ExpressionManager struct {
 	agent *agent.Agent
 	ReadOperationWithDuration
 	UpdateExpression
+	ReadAllExpressionsWithStatus
+}
+
+func NewExpressionManager(
+	agent *agent.Agent,
+	readOperationWithDuration ReadOperationWithDuration,
+	updateExpression UpdateExpression,
+	readAllExpressionsWithStatus ReadAllExpressionsWithStatus) (*ExpressionManager, error) {
+
+	expressionManager := &ExpressionManager{
+		agent:                        agent,
+		ReadOperationWithDuration:    readOperationWithDuration,
+		UpdateExpression:             updateExpression,
+		ReadAllExpressionsWithStatus: readAllExpressionsWithStatus,
+	}
+
+	err := expressionManager.Init()
+
+	if err != nil {
+		return nil, err
+	}
+
+	return expressionManager, err
 }
 
 func (em *ExpressionManager) ParseExpressionAndSolve(exp *expression.Expression) error {
@@ -91,8 +114,8 @@ func setResultsToExpression(exp *expression.Expression, result float64) {
 	exp.CompletedAt = &timeCompleted
 }
 
-func (em *ExpressionManager) Init(ReadAllExpressionsWithStatus func(expression.Status) ([]*expression.Expression, error)) error {
-	expressions, err := ReadAllExpressionsWithStatus(expression.InProcess)
+func (em *ExpressionManager) Init() error {
+	expressions, err := em.ReadAllExpressionsWithStatus(expression.InProcess)
 	if err != nil {
 		return err
 	}
