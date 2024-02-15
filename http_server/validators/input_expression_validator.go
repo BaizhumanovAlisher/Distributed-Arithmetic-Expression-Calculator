@@ -87,7 +87,6 @@ func notContainExtraCharacters(exp []rune) error {
 // AllowedCharacters - the array is sorted
 var AllowedCharacters = []rune{'(', ')', '*', '+', '-', '.', '/'}
 
-// todo: do binary search
 func isAllowedChar(c rune) bool {
 	for _, char := range AllowedCharacters {
 		if c == char {

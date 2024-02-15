@@ -44,7 +44,7 @@ func main() {
 	router.Use(middleware.Recoverer)
 	router.Use(middleware.URLFormat)
 
-	setURLPatterns(router, logger, repo, redis, expressionManager)
+	setURLPatterns(router, logger, repo, redis, expressionManager, newAgent)
 
 	logger.Info("start server", slog.String("address", cfg.HTTPServer.Address))
 
@@ -61,7 +61,8 @@ func main() {
 	}
 }
 
-func setURLPatterns(router *chi.Mux, logger *slog.Logger, repo *postgreql.PostgresqlDB, redis *storage.RedisDB, manager *expression_manager.ExpressionManager) {
+func setURLPatterns(router *chi.Mux, logger *slog.Logger, repo *postgreql.PostgresqlDB, redis *storage.RedisDB, manager *expression_manager.ExpressionManager, newAgent *agent.Agent) {
+
 	router.Post("/expression", handlers.HandlerNewExpression(
 		logger, repo.CreateExpression, redis.StoreIdempotencyToken, redis.RetrieveIdempotencyToken, manager))
 
@@ -69,6 +70,7 @@ func setURLPatterns(router *chi.Mux, logger *slog.Logger, repo *postgreql.Postgr
 	router.Get("/expression/{id}", handlers.HandlerGetExpression(logger, repo.ReadExpression))
 	router.Get("/operation", handlers.HandlerGetAllOperations(logger, repo.ReadAllOperations))
 	router.Put("/operation", handlers.HandlerPutOperations(logger, repo.UpdateOperation))
+	router.Get("/mini-calculator", handlers.HandlerGetAllMiniCalculator(logger, newAgent.GetAllMiniCalculators))
 }
 
 func setupLogger() *slog.Logger {

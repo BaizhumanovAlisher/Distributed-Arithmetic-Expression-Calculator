@@ -71,3 +71,13 @@ func (a *Agent) SetNewCountCalculator(count int) error {
 	a.mtx.Unlock()
 	return nil
 }
+
+func (a *Agent) GetAllMiniCalculators() []*model.MiniCalculator {
+	miniCalculators := make([]*model.MiniCalculator, len(a.Calculators))
+
+	for i, calc := range a.Calculators {
+		miniCalculators[i] = calc.GetCurrentMiniCalculator()
+	}
+
+	return miniCalculators
+}
