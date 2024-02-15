@@ -3,6 +3,7 @@ package agent
 import (
 	"distributed_calculator/model"
 	"distributed_calculator/model/expression"
+	"math"
 	"time"
 )
 
@@ -50,6 +51,7 @@ func (c *Calculator) Close() {
 func (c *Calculator) SolveExpression(le *expression.LeastExpression) {
 	time.Sleep(time.Duration(int64(le.DurationInSecond) * int64(time.Second)))
 
+	le.ResultIsCorrect = make(chan bool, 1)
 	switch le.Operation {
 	case model.Addition:
 		le.Result = le.Number1 + le.Number2
@@ -58,9 +60,19 @@ func (c *Calculator) SolveExpression(le *expression.LeastExpression) {
 	case model.Multiplication:
 		le.Result = le.Number1 * le.Number2
 	case model.Division:
+		if almostEqual(le.Number2, 0.0) {
+			le.ResultIsCorrect <- false
+			return
+		}
+
 		le.Result = le.Number1 / le.Number2
 	}
 
-	le.ResultIsReady = make(chan bool, 1)
-	le.ResultIsReady <- true
+	le.ResultIsCorrect <- true
+}
+
+const float64EqualityThreshold = 1e-9
+
+func almostEqual(a, b float64) bool {
+	return math.Abs(a-b) <= float64EqualityThreshold
 }

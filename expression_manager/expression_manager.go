@@ -62,20 +62,35 @@ func (em *ExpressionManager) SolveExpression(exp *expression.Expression, expPost
 		em.agent.AddTask(leastExp)
 
 		//Wait until operation will be completed
-		<-leastExp.ResultIsReady
-		close(leastExp.ResultIsReady)
+		resultIsOk := <-leastExp.ResultIsCorrect
+		close(leastExp.ResultIsCorrect)
+
+		if !resultIsOk {
+			setInvalidStatus(exp)
+			em.UpdateExpression(exp)
+			return
+		}
 
 		// Push the result back onto the stack
 		stack = append(stack, leastExp.Result)
 	}
 
-	setResultsToExpression(exp, stack)
+	setResultsToExpression(exp, stack[0])
 	em.UpdateExpression(exp)
 }
 
-func setResultsToExpression(exp *expression.Expression, stack []float64) {
-	exp.Answer = strconv.FormatFloat(stack[0], 'g', 5, 64)
+func setInvalidStatus(exp *expression.Expression) {
+	exp.Status = expression.Invalid
+}
+
+func setResultsToExpression(exp *expression.Expression, result float64) {
+	exp.Answer = strconv.FormatFloat(result, 'g', 5, 64)
 	exp.Status = expression.Completed
 	timeCompleted := time.Now()
 	exp.CompletedAt = &timeCompleted
+}
+
+func (em *ExpressionManager) Init() error {
+	//todo: write INIT()
+	return nil
 }

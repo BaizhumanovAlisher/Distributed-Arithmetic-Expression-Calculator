@@ -9,7 +9,7 @@ type LeastExpression struct {
 	IdExpression     int                 `json:"idExpression"`
 	DurationInSecond int                 `json:"durationInSecond"`
 	Result           float64
-	ResultIsReady    chan bool
+	ResultIsCorrect  chan bool
 }
 
 func NewLeastExpression(number1 float64, number2 float64, operation model.OperationType, idExpression int, durationInSecond int) *LeastExpression {
