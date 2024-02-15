@@ -53,13 +53,15 @@ func HandlerNewExpression(log *slog.Logger,
 			saveInvalidExpressionAndWriteRespond(w, r, exp, expressionSaver, log, errValidating, idempotencyToken, setResponseData)
 			return
 		}
-
+		exp.Status = expression.InProcess
 		err = manager.ParseExpressionAndSolve(exp)
 
 		if err != nil {
 			saveInvalidExpressionAndWriteRespond(w, r, exp, expressionSaver, log, err, idempotencyToken, setResponseData)
 			return
 		}
+
+		expressionSaver(exp)
 
 		render.Status(r, http.StatusOK)
 		render.JSON(w, r, exp)

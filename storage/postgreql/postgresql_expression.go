@@ -14,7 +14,7 @@ type PostgresqlDB struct {
 }
 
 func (s *PostgresqlDB) ReadAllExpressionsWithStatus(status expression.Status) ([]*expression.Expression, error) {
-	rows, err := s.db.Query(`SELECT id, expression, answer, status, created_at, completed_at FROM expressions WHERE expression = $1`, status)
+	rows, err := s.db.Query(`SELECT id, expression, answer, status, created_at, completed_at FROM expressions WHERE status = $1`, status)
 
 	if errors.Is(err, sql.ErrNoRows) {
 		return nil, nil

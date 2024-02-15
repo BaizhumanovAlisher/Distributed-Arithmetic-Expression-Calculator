@@ -14,11 +14,15 @@ type Calculator struct {
 }
 
 func NewCalculator(id int, queue chan *expression.LeastExpression) *Calculator {
-	return &Calculator{
+	c := &Calculator{
 		miniCalc: expression.NewMiniCalculator(id),
 		taskChan: queue,
 		closed:   make(chan bool),
 	}
+
+	go c.Start()
+
+	return c
 }
 
 func (c *Calculator) Start() {
@@ -49,7 +53,7 @@ func (c *Calculator) Close() {
 }
 
 func (c *Calculator) SolveExpression(le *expression.LeastExpression) {
-	time.Sleep(time.Duration(int64(le.DurationInSecond) * int64(time.Second)))
+	time.Sleep(time.Duration(le.DurationInSecond) * time.Second)
 
 	le.ResultIsCorrect = make(chan bool, 1)
 	switch le.Operation {

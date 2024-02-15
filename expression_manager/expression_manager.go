@@ -72,19 +72,23 @@ func (em *ExpressionManager) SolveExpression(exp *expression.Expression, expPost
 		if token.Number != nil {
 			// Push number onto the stack
 			stack = append(stack, *token.Number)
+			continue
 		}
 
 		// Pop two numbers from the stack
+		if len(stack) < 2 {
+			continue
+		}
 		num2 := stack[len(stack)-1]
 		stack = stack[:len(stack)-1]
 		num1 := stack[len(stack)-1]
 		stack = stack[:len(stack)-1]
 
-		operationWihtDuration, err := em.ReadOperationWithDuration(token.Operation)
+		operationWithDuration, err := em.ReadOperationWithDuration(token.Operation)
 		var durationInSec int
 
 		if err == nil {
-			durationInSec = operationWihtDuration.DurationInSecond
+			durationInSec = operationWithDuration.DurationInSecond
 		}
 
 		leastExp := expression.NewLeastExpression(num1, num2, token.Operation, exp.Id, durationInSec)
