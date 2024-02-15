@@ -8,14 +8,14 @@ import (
 )
 
 type Calculator struct {
-	miniCalc *model.MiniCalculator
+	miniCalc *expression.MiniCalculator
 	taskChan chan *expression.LeastExpression
 	closed   chan bool
 }
 
 func NewCalculator(id int, queue chan *expression.LeastExpression) *Calculator {
 	return &Calculator{
-		miniCalc: model.NewMiniCalculator(id),
+		miniCalc: expression.NewMiniCalculator(id),
 		taskChan: queue,
 		closed:   make(chan bool),
 	}
@@ -39,7 +39,7 @@ func (c *Calculator) Start() {
 	}
 }
 
-func (c *Calculator) GetCurrentMiniCalculator() *model.MiniCalculator {
+func (c *Calculator) GetCurrentMiniCalculator() *expression.MiniCalculator {
 	return c.miniCalc
 }
 

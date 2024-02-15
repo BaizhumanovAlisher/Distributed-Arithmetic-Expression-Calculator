@@ -1,7 +1,6 @@
 package agent
 
 import (
-	"distributed_calculator/model"
 	"distributed_calculator/model/expression"
 	"errors"
 	"sync"
@@ -31,8 +30,8 @@ func (a *Agent) AddTask(exp *expression.LeastExpression) {
 	a.Queue <- exp
 }
 
-func (a *Agent) GetStatusAllCalculators() []*model.MiniCalculator {
-	miniCalculators := make([]*model.MiniCalculator, len(a.Calculators))
+func (a *Agent) GetStatusAllCalculators() []*expression.MiniCalculator {
+	miniCalculators := make([]*expression.MiniCalculator, len(a.Calculators))
 
 	for i, calc := range a.Calculators {
 		miniCalculators[i] = calc.GetCurrentMiniCalculator()
@@ -72,8 +71,8 @@ func (a *Agent) SetNewCountCalculator(count int) error {
 	return nil
 }
 
-func (a *Agent) GetAllMiniCalculators() []*model.MiniCalculator {
-	miniCalculators := make([]*model.MiniCalculator, len(a.Calculators))
+func (a *Agent) GetAllMiniCalculators() []*expression.MiniCalculator {
+	miniCalculators := make([]*expression.MiniCalculator, len(a.Calculators))
 
 	for i, calc := range a.Calculators {
 		miniCalculators[i] = calc.GetCurrentMiniCalculator()

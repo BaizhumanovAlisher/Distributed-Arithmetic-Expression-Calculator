@@ -11,7 +11,8 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
       POSTGRES_DB: distributed_calculator
-
+    networks:
+      - app_network
     volumes:
       - pgdata:/var/lib/postgresql/data
 
@@ -20,6 +21,8 @@ services:
     image: redis:latest
     ports:
       - '8101:6379'
+    networks:
+      - app_network
 
   orchestrator:
     restart: unless-stopped
@@ -27,14 +30,15 @@ services:
     image: orchestrator:latest
     build:
       dockerfile: Dockerfile
-    ports:
-      - '8099:8099'
     depends_on:
       - postgres
       - redis
-    environment:
-      DATABASE_URL: postgres://postgres:password@postgres:5432/distributed_calculator?sslmode=disable
-      REDIS_URL: redis:6379
+    network_mode: host
+
 
 volumes:
   pgdata:
+
+networks:
+  app_network:
+    driver: bridge

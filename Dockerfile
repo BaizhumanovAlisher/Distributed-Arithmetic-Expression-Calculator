@@ -16,6 +16,8 @@ COPY . .
 # Copy the config.yaml file
 COPY config.yaml /app/config.yaml
 
+EXPOSE 8099
+
 # Build the application
 RUN CGO_ENABLED=0 go build -o /app/myapp
 
