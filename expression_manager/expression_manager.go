@@ -11,6 +11,7 @@ import (
 
 type ReadOperationWithDuration func(operationType model.OperationType) (*model.OperationWithDuration, error)
 type UpdateExpression func(*expression.Expression) error
+type ReadAllExpressionsWithStatus func(expression.Status) ([]*expression.Expression, error)
 
 type ExpressionManager struct {
 	agent *agent.Agent
@@ -90,7 +91,18 @@ func setResultsToExpression(exp *expression.Expression, result float64) {
 	exp.CompletedAt = &timeCompleted
 }
 
-func (em *ExpressionManager) Init() error {
-	//todo: write INIT()
+func (em *ExpressionManager) Init(ReadAllExpressionsWithStatus func(expression.Status) ([]*expression.Expression, error)) error {
+	expressions, err := ReadAllExpressionsWithStatus(expression.InProcess)
+	if err != nil {
+		return err
+	}
+
+	for _, exp := range expressions {
+		if err := em.ParseExpressionAndSolve(exp); err != nil {
+			setInvalidStatus(exp)
+			_ = em.UpdateExpression(exp)
+		}
+	}
+
 	return nil
 }

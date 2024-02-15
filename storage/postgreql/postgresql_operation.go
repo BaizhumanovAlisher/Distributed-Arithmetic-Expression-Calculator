@@ -1,8 +1,10 @@
 package postgreql
 
 import (
+	"database/sql"
 	"distributed_calculator/config"
 	"distributed_calculator/model"
+	"errors"
 	"fmt"
 )
 
@@ -86,4 +88,21 @@ func (s *PostgresqlDB) SeedOperation(cfg *config.Config) error {
 	}
 
 	return nil
+}
+
+func (s *PostgresqlDB) ReadOperation(operationType model.OperationType) (*model.OperationWithDuration, error) {
+	row := s.db.QueryRow(`SELECT duration_in_sec FROM operations WHERE operation_kind = $1`, operationType)
+
+	operationWithDuration := new(model.OperationWithDuration)
+	err := row.Scan(&operationWithDuration.DurationInSecond)
+	operationWithDuration.OperationKind = operationType
+
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, sql.ErrNoRows
+		}
+		return nil, fmt.Errorf("failed to scan row into expression: %w", err)
+	}
+
+	return operationWithDuration, nil
 }

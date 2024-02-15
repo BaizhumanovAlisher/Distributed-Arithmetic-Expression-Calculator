@@ -2,7 +2,6 @@ package postgreql
 
 import (
 	"database/sql"
-	"distributed_calculator/model"
 	"distributed_calculator/model/expression"
 	"errors"
 	"fmt"
@@ -15,8 +14,32 @@ type PostgresqlDB struct {
 }
 
 func (s *PostgresqlDB) ReadAllExpressionsWithStatus(status expression.Status) ([]*expression.Expression, error) {
-	//TODO implement me
-	panic("implement me")
+	rows, err := s.db.Query(`SELECT id, expression, answer, status, created_at, completed_at FROM expressions WHERE expression = $1`, status)
+
+	if errors.Is(err, sql.ErrNoRows) {
+		return nil, nil
+	}
+
+	if err != nil {
+		return nil, fmt.Errorf("failed to query all expressions: %w", err)
+	}
+	defer rows.Close()
+
+	var expressions []*expression.Expression
+	for rows.Next() {
+		expr := new(expression.Expression)
+		err := rows.Scan(&expr.Id, &expr.Expression, &expr.Answer, &expr.Status, &expr.CreatedAt, &expr.CompletedAt)
+		if err != nil {
+			return nil, fmt.Errorf("failed to scan row into expression: %w", err)
+		}
+		expressions = append(expressions, expr)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("error during iteration over rows: %w", err)
+	}
+
+	return expressions, nil
 }
 
 func (s *PostgresqlDB) UpdateExpression(e *expression.Expression) error {
@@ -83,23 +106,6 @@ func (s *PostgresqlDB) ReadAllExpressions() ([]*expression.Expression, error) {
 	}
 
 	return expressions, nil
-}
-
-func (s *PostgresqlDB) ReadOperation(operationType model.OperationType) (*model.OperationWithDuration, error) {
-	row := s.db.QueryRow(`SELECT duration_in_sec FROM operations WHERE operation_kind = $1`, operationType)
-
-	operationWithDuration := new(model.OperationWithDuration)
-	err := row.Scan(&operationWithDuration.DurationInSecond)
-	operationWithDuration.OperationKind = operationType
-
-	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return nil, sql.ErrNoRows
-		}
-		return nil, fmt.Errorf("failed to scan row into expression: %w", err)
-	}
-
-	return operationWithDuration, nil
 }
 
 func (s *PostgresqlDB) ReadExpression(id int) (*expression.Expression, error) {
