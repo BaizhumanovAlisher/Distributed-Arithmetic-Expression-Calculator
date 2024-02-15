@@ -22,6 +22,6 @@ operation:
 
 quick_access_storage:
   addr: "redis:6379"
-  ttl: 60s
+  ttl: 360s
   password: ""
   db: 0

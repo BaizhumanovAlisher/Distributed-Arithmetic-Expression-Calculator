@@ -60,6 +60,6 @@ Later will be Postman file
 - Header: `X-Idempotency-Token`
 - It is used in `/expression` POST HTTP method
 - It consists of token from user, separator and expression: "<"user token idempotency">__<"expression">". Example: `dkskdhen392h__2+3*4`
-- It is lived 60s. It is described in [config.yaml](config.yaml)
+- It is lived 360s. It is described in [config.yaml](config.yaml)
 - **If header is null, token will not be used**
 - No caching in `500` http code
