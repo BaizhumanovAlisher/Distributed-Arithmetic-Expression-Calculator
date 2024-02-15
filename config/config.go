@@ -52,7 +52,7 @@ type Agent struct {
 }
 
 func MustLoad() *Config {
-	configPath := "/app/config.yaml"
+	configPath := "config.yaml"
 
 	if _, err := os.Stat(configPath); os.IsNotExist(err) {
 		log.Fatalf("config file does not exist: %s", configPath)

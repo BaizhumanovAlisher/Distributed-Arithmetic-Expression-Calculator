@@ -5,6 +5,7 @@ import (
 	"distributed_calculator/model"
 	"distributed_calculator/model/expression"
 	"distributed_calculator/parser"
+	"errors"
 	"strconv"
 	"time"
 )
@@ -43,6 +44,10 @@ func NewExpressionManager(
 }
 
 func (em *ExpressionManager) ParseExpressionAndSolve(exp *expression.Expression) error {
+	if exp == nil {
+		return errors.New("no expression")
+	}
+
 	expInfix, err := parser.TokenizeExpression(exp.Expression)
 
 	if err != nil {

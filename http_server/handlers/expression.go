@@ -47,16 +47,17 @@ func HandlerNewExpression(log *slog.Logger,
 
 		errValidating := validators.ValidateExpression(inputExpression.Expression)
 		var exp *expression.Expression
+		exp = expression.NewExpression(inputExpression.Expression)
 
 		if errValidating != nil {
-			saveInvalidExpressionAndWriteRespond(w, r, exp, inputExpression, expressionSaver, log, errValidating, idempotencyToken, setResponseData)
+			saveInvalidExpressionAndWriteRespond(w, r, exp, expressionSaver, log, errValidating, idempotencyToken, setResponseData)
 			return
 		}
 
 		err = manager.ParseExpressionAndSolve(exp)
 
 		if err != nil {
-			saveInvalidExpressionAndWriteRespond(w, r, exp, inputExpression, expressionSaver, log, err, idempotencyToken, setResponseData)
+			saveInvalidExpressionAndWriteRespond(w, r, exp, expressionSaver, log, err, idempotencyToken, setResponseData)
 			return
 		}
 
@@ -70,8 +71,8 @@ func HandlerNewExpression(log *slog.Logger,
 	}
 }
 
-func saveInvalidExpressionAndWriteRespond(w http.ResponseWriter, r *http.Request, exp *expression.Expression, inputExpression expression.InputExpression, expressionSaver func(expression *expression.Expression) error, log *slog.Logger, errValidating error, idempotencyToken string, setResponseData func(idempotencyToken string, expression string, responseData *model.ResponseData) error) {
-	exp = expression.NewExpressionInvalid(inputExpression.Expression)
+func saveInvalidExpressionAndWriteRespond(w http.ResponseWriter, r *http.Request, exp *expression.Expression, expressionSaver func(expression *expression.Expression) error, log *slog.Logger, errValidating error, idempotencyToken string, setResponseData func(idempotencyToken string, expression string, responseData *model.ResponseData) error) {
+	exp.Status = expression.Invalid
 
 	errDb := expressionSaver(exp)
 
@@ -95,7 +96,7 @@ func saveInvalidExpressionAndWriteRespond(w http.ResponseWriter, r *http.Request
 	render.JSON(w, r, apiError)
 
 	bytes, _ := json.Marshal(apiError)
-	cacheRespond(log, idempotencyToken, inputExpression.Expression, http.StatusInternalServerError, bytes, setResponseData)
+	cacheRespond(log, idempotencyToken, exp.Expression, http.StatusInternalServerError, bytes, setResponseData)
 
 	return
 }
