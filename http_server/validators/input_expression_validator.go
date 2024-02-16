@@ -3,16 +3,13 @@ package validators
 import (
 	"context"
 	"errors"
-	"log/slog"
 	"sync"
 	"unicode"
 )
 
 func ValidateExpression(expression string) error {
-	slog.Info("start validating expression: %s", expression)
 	if len(expression) == 0 {
 		err := errors.New("empty expression")
-		slog.Info(err.Error())
 		return err
 	}
 
@@ -22,24 +19,21 @@ func ValidateExpression(expression string) error {
 	ctx := context.Background()
 	exp := []rune(expression)
 
-	wg.Add(7)
+	wg.Add(5)
 
 	concurrentErrorDetection(startWithNumber, exp, &wg, errorCh, &ctx)
 	concurrentErrorDetection(notContainExtraCharacters, exp, &wg, errorCh, &ctx)
 	concurrentErrorDetection(digitStartWithZero, exp, &wg, errorCh, &ctx)
+
 	concurrentErrorDetection(wholeExpressionIsDigit, exp, &wg, errorCh, &ctx)
-	concurrentErrorDetection(divideByZero, exp, &wg, errorCh, &ctx)
 	concurrentErrorDetection(bracketsAreCorrect, exp, &wg, errorCh, &ctx)
-	concurrentErrorDetection(checkCheckTwoSymbols, exp, &wg, errorCh, &ctx)
 
 	wg.Wait()
 
 	if len(errorCh) == 0 {
-		slog.Info("successful validation expression: %s", expression)
 		return nil
 	} else {
 		err := <-errorCh
-		slog.Info("unsuccessful validation: %s", err)
 		return err
 	}
 }
@@ -97,16 +91,6 @@ func isAllowedChar(c rune) bool {
 	return false
 }
 
-func checkCheckTwoSymbols(exp []rune) error {
-	for i := 0; i < len(exp)-1; i++ {
-		if isAllowedChar(exp[i]) && isAllowedChar(exp[i]+1) {
-			return errors.New("it is forbidden to use allowed chars nearby")
-		}
-	}
-
-	return nil
-}
-
 func digitStartWithZero(exp []rune) error {
 	if exp[0] == '0' && unicode.IsDigit(exp[1]) {
 		return errors.New("digit should not start with zero")
@@ -131,18 +115,6 @@ func wholeExpressionIsDigit(exp []rune) error {
 	}
 
 	return errors.New("expression should contain operations")
-}
-
-func divideByZero(exp []rune) error {
-	for i := 0; i < len(exp)-1; i++ {
-		if !unicode.IsDigit(exp[i]) {
-			if exp[i] == '/' && exp[i+1] == '0' {
-				return errors.New("it is forbidden to divide by zero")
-			}
-		}
-	}
-
-	return nil
 }
 
 func bracketsAreCorrect(exp []rune) error {

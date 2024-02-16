@@ -6,8 +6,8 @@ import (
 )
 
 func ValidateOperation(operation model.OperationWithDuration) error {
-	if operation.DurationInSecond < 0 || operation.DurationInSecond > 30 {
-		return errors.New("operation duration should be more than 0 and less 30")
+	if operation.DurationInSecond < 0 {
+		return errors.New("operation duration should be more than 0")
 	}
 
 	if !model.IsAllowedOperation(operation.OperationKind) {
