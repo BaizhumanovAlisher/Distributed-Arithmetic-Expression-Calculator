@@ -15,7 +15,7 @@ Start point: http://localhost:8099/
 
 In this case you should change to free port in [docker-compose](docker-compose.yml)
 
-Change only exposed ports
+Change only exposed ports and in config file
 
 Example:
 - From:
