@@ -1,9 +1,9 @@
 package main
 
 import (
-	"distributed_calculator/agent"
 	"distributed_calculator/config"
 	"distributed_calculator/expression_manager"
+	"distributed_calculator/expression_manager/agent"
 	"distributed_calculator/http_server/handlers"
 	mwLogger "distributed_calculator/http_server/logger"
 	"distributed_calculator/storage"

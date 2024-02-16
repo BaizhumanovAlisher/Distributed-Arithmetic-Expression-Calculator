@@ -1,10 +1,10 @@
 package expression_manager
 
 import (
-	"distributed_calculator/agent"
+	"distributed_calculator/expression_manager/agent"
+	parser2 "distributed_calculator/expression_manager/parser"
 	"distributed_calculator/model"
 	"distributed_calculator/model/expression"
-	"distributed_calculator/parser"
 	"errors"
 	"strconv"
 	"time"
@@ -48,13 +48,13 @@ func (em *ExpressionManager) ParseExpressionAndSolve(exp *expression.Expression)
 		return errors.New("no expression")
 	}
 
-	expInfix, err := parser.TokenizeExpression(exp.Expression)
+	expInfix, err := parser2.TokenizeExpression(exp.Expression)
 
 	if err != nil {
 		return err
 	}
 
-	expPostfix, err := parser.InfixToPostfix(expInfix)
+	expPostfix, err := parser2.InfixToPostfix(expInfix)
 
 	if err != nil {
 		return err
@@ -65,7 +65,7 @@ func (em *ExpressionManager) ParseExpressionAndSolve(exp *expression.Expression)
 	return nil
 }
 
-func (em *ExpressionManager) SolveExpression(exp *expression.Expression, expPostfix []*parser.Token) {
+func (em *ExpressionManager) SolveExpression(exp *expression.Expression, expPostfix []*parser2.Token) {
 	stack := make([]float64, 0)
 
 	for _, token := range expPostfix {
