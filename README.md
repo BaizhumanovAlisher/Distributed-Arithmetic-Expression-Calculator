@@ -6,7 +6,7 @@ Project from Yandex Lyceum Course - Programming in Go
 Start point: http://localhost:8099/
 ## Run project: 
 0) install [docker engine](https://docs.docker.com/engine/install/) and [docker compose](https://docs.docker.com/compose/install/)
-1) `cd <"path/to/project">`
+1) `cd <"path/to/project/root/directory">`
 2) `docker compose -f docker-compose.yml -p distributedarithmeticexpressioncalculator up -d`
 
 # Example:
@@ -67,14 +67,13 @@ Example:
 
 ## Tech specification:
 - [specifications](docs/technical%20specification-RU.md)
-- [criteria](docs/evaluation%20criteria.md)
-
+- [criteria](docs/evaluation%20criteria.md) !!PLEASE ATTEND!!
 
 ## No Front-end
 
 Use OpenAPI in [file](api/api.yaml)
 
-You can use postman. [Postman file](docs/postman.md). [Postman download](https://www.postman.com/downloads/)
+You can use postman. [Postman file](docs/postman.json). [Postman download](https://www.postman.com/downloads/)
 
 # Rules for expression
 
