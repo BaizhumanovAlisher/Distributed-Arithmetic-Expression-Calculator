@@ -48,13 +48,8 @@ Later will be Postman file
 
 # Rules for expression
 
-1) expression should start with number
-2) expression should not contain extra symbols
-3) digit should not start with zero
-4) expression should contain operations
-5) it is forbidden to divide by zero
-6) brackets should be correct
-7) it is forbidden to use allowed chars nearby
+1) expression should not contain extra symbols
+2) brackets should be correct
 
 # Token idempotency
 - Header: `X-Idempotency-Token`
