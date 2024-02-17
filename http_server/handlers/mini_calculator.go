@@ -14,6 +14,7 @@ func HandlerGetAllMiniCalculator(log *slog.Logger, miniCalculatorReader func() [
 		miniCalculators := miniCalculatorReader()
 
 		log.Info("successful to get all operations")
+
 		render.Status(r, http.StatusOK)
 		render.JSON(w, r, miniCalculators)
 	}

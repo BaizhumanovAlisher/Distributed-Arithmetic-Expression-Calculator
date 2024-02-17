@@ -6,6 +6,7 @@ import (
 	"distributed_calculator/model"
 	"distributed_calculator/model/expression"
 	"errors"
+	"log"
 	"strconv"
 	"time"
 )
@@ -100,7 +101,10 @@ func (em *ExpressionManager) SolveExpression(exp *expression.Expression, expPost
 
 		if !resultIsOk {
 			setInvalidStatus(exp)
-			em.UpdateExpression(exp)
+			err := em.UpdateExpression(exp)
+			if err != nil {
+				log.Println(err)
+			}
 			return
 		}
 
@@ -109,7 +113,10 @@ func (em *ExpressionManager) SolveExpression(exp *expression.Expression, expPost
 	}
 
 	setResultsToExpression(exp, stack[0])
-	em.UpdateExpression(exp)
+	err := em.UpdateExpression(exp)
+	if err != nil {
+		log.Println(err)
+	}
 }
 
 func setInvalidStatus(exp *expression.Expression) {

@@ -3,59 +3,81 @@ package agent
 import (
 	"distributed_calculator/model"
 	"distributed_calculator/model/expression"
+	"log"
 	"math"
+	"sync"
 	"time"
 )
 
 type Calculator struct {
+	mtx      sync.Mutex
 	miniCalc *expression.MiniCalculator
 	taskChan chan *expression.LeastExpression
-	closed   chan bool
+	isBusy   bool
 }
 
-func NewCalculator(id int, queue chan *expression.LeastExpression) *Calculator {
+func NewCalculator(i int) *Calculator {
 	c := &Calculator{
-		miniCalc: expression.NewMiniCalculator(id),
-		taskChan: queue,
-		closed:   make(chan bool),
+		miniCalc: expression.NewMiniCalculator(i),
+		taskChan: make(chan *expression.LeastExpression),
+		isBusy:   false,
 	}
 
-	go c.Start()
+	c.Start()
 
 	return c
 }
 
+func (c *Calculator) AddTask(task *expression.LeastExpression) bool {
+	c.mtx.Lock()
+	defer c.mtx.Unlock()
+
+	if c.isBusy {
+		return false
+	}
+
+	c.taskChan <- task
+	return true
+}
+
 func (c *Calculator) Start() {
-	defer func() {
-		if r := recover(); r != nil {
-			c.Start()
+	go func() {
+		defer func() {
+			if r := recover(); r != nil {
+				log.Println(r)
+				c.Start()
+			}
+		}()
+
+		for {
+			select {
+			case task := <-c.taskChan:
+				c.mtx.Lock()
+				c.miniCalc.LeastExpression = task
+				c.isBusy = true
+				c.mtx.Unlock()
+
+				c.SolveExpression(task)
+
+				c.mtx.Lock()
+				c.miniCalc.LeastExpression = nil
+				c.isBusy = false
+				c.mtx.Unlock()
+			}
 		}
 	}()
-
-	for task := range c.taskChan {
-		if c.miniCalc.LeastExpression != nil {
-			c.miniCalc.LeastExpression = task // Store the current task
-		}
-
-		c.SolveExpression(task)
-
-		c.miniCalc.LeastExpression = nil // Reset the current task
-	}
 }
 
 func (c *Calculator) GetCurrentMiniCalculator() *expression.MiniCalculator {
-	return c.miniCalc
-}
-
-func (c *Calculator) Close() {
-	close(c.taskChan)
-	<-c.closed
+	c.mtx.Lock()
+	copyMiniCalc := *c.miniCalc
+	c.mtx.Unlock()
+	return &copyMiniCalc
 }
 
 func (c *Calculator) SolveExpression(le *expression.LeastExpression) {
 	time.Sleep(time.Duration(le.DurationInSecond) * time.Second)
 
-	le.ResultIsCorrect = make(chan bool, 1)
 	switch le.Operation {
 	case model.Addition:
 		le.Result = le.Number1 + le.Number2

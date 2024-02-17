@@ -6,9 +6,9 @@ import (
 )
 
 type Agent struct {
-	mtx         sync.Mutex
-	Calculators []*Calculator
-	Queue       chan *expression.LeastExpression
+	mtxToAddTask sync.Mutex
+	Calculators  []*Calculator
+	Queue        chan *expression.LeastExpression
 }
 
 func NewAgent(countCalculators int) *Agent {
@@ -16,60 +16,24 @@ func NewAgent(countCalculators int) *Agent {
 	miniCalcs := make([]*Calculator, countCalculators)
 
 	for i := 0; i < countCalculators; i++ {
-		miniCalcs[i] = NewCalculator(i, queue)
+		miniCalcs[i] = NewCalculator(i)
 	}
 
-	return &Agent{
+	a := &Agent{
 		Calculators: miniCalcs,
 		Queue:       queue,
 	}
+
+	go a.distributeTasks()
+
+	return a
 }
 
 func (a *Agent) AddTask(exp *expression.LeastExpression) {
+	a.mtxToAddTask.Lock()
 	a.Queue <- exp
+	a.mtxToAddTask.Unlock()
 }
-
-func (a *Agent) GetStatusAllCalculators() []*expression.MiniCalculator {
-	miniCalculators := make([]*expression.MiniCalculator, len(a.Calculators))
-
-	for i, calc := range a.Calculators {
-		miniCalculators[i] = calc.GetCurrentMiniCalculator()
-	}
-
-	return miniCalculators
-}
-
-//todo
-// SetNewCountCalculator can add and remove calculators
-//func (a *Agent) SetNewCountCalculator(count int) error {
-//	a.mtx.Lock()
-//
-//	if count < 1 {
-//		return errors.New("count of calculator must be greater than 0")
-//	}
-//
-//	previousCount := len(a.Calculators)
-//
-//	if count == previousCount {
-//		return nil
-//	}
-//
-//	if count-previousCount > 0 {
-//		for i := previousCount; i < count; i++ {
-//			a.Calculators = append(a.Calculators, NewCalculator(len(a.Calculators), a.Queue))
-//		}
-//	} else {
-//		for i := len(a.Calculators) - 1; i >= count; i-- {
-//			a.Calculators[i].Close()
-//			<-a.Calculators[i].closed
-//		}
-//
-//		a.Calculators = a.Calculators[:count]
-//	}
-//
-//	a.mtx.Unlock()
-//	return nil
-//}
 
 func (a *Agent) GetAllMiniCalculators() []*expression.MiniCalculator {
 	miniCalculators := make([]*expression.MiniCalculator, len(a.Calculators))
@@ -79,4 +43,24 @@ func (a *Agent) GetAllMiniCalculators() []*expression.MiniCalculator {
 	}
 
 	return miniCalculators
+}
+
+func (a *Agent) distributeTasks() {
+	i := 0
+	countOfCalculators := len(a.Calculators)
+	for task := range a.Queue {
+		// Try to send the task to each worker in turn
+		for {
+			// Use a select statement with a default case to avoid blocking
+			if a.Calculators[i].AddTask(task) {
+				break
+			}
+
+			i++
+
+			if i < 0 || i >= countOfCalculators {
+				i = 0
+			}
+		}
+	}
 }
