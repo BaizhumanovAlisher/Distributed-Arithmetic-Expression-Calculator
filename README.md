@@ -88,3 +88,6 @@ You can use postman. [Postman file](docs/postman.md). [Postman download](https:/
 - It is lived 360s. It is described in [config.yaml](config.yaml)
 - **If header is null, token will not be used**
 - No caching in `500` http code
+
+# Scheme
+![image](docs/distributed%20arifmetic%20expression%20calculator.drawio.png)
