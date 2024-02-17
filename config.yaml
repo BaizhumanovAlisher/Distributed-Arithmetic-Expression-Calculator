@@ -2,6 +2,7 @@ env: "local"
 
 http_server:
   address: "localhost:8099"
+  timeout: 5s
   idle_timeout: 60s
 storage:
   user: "postgres"
@@ -26,4 +27,4 @@ quick_access_storage:
   db: 0
 
 agent:
-  count_calculator: 5
+  count_calculator: 3
