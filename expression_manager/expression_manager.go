@@ -5,7 +5,6 @@ import (
 	parser2 "distributed_calculator/expression_manager/parser"
 	"distributed_calculator/model"
 	"distributed_calculator/model/expression"
-	"errors"
 	"log"
 	"strconv"
 	"time"
@@ -44,26 +43,26 @@ func NewExpressionManager(
 	return expressionManager, err
 }
 
-func (em *ExpressionManager) ParseExpressionAndSolve(exp *expression.Expression) error {
+func (em *ExpressionManager) ParseExpressionAndSolve(exp *expression.Expression) {
 	if exp == nil {
-		return errors.New("no expression")
+		log.Println("exp is nil")
 	}
 
 	expInfix, err := parser2.TokenizeExpression(exp.Expression)
 
 	if err != nil {
-		return err
+		setInvalidStatus(exp)
+		em.UpdateExpression(exp)
 	}
 
 	expPostfix, err := parser2.InfixToPostfix(expInfix)
 
 	if err != nil {
-		return err
+		setInvalidStatus(exp)
+		em.UpdateExpression(exp)
 	}
 
-	go em.SolveExpression(exp, expPostfix)
-
-	return nil
+	em.SolveExpression(exp, expPostfix)
 }
 
 func (em *ExpressionManager) SolveExpression(exp *expression.Expression, expPostfix []*parser2.Token) {
@@ -137,10 +136,7 @@ func (em *ExpressionManager) Init() error {
 	}
 
 	for _, exp := range expressions {
-		if err := em.ParseExpressionAndSolve(exp); err != nil {
-			setInvalidStatus(exp)
-			_ = em.UpdateExpression(exp)
-		}
+		go em.ParseExpressionAndSolve(exp)
 	}
 
 	return nil

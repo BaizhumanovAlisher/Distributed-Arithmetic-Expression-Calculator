@@ -54,12 +54,7 @@ func HandlerNewExpression(log *slog.Logger,
 			return
 		}
 		exp.Status = expression.InProcess
-		err = manager.ParseExpressionAndSolve(exp)
-
-		if err != nil {
-			saveInvalidExpressionAndWriteRespond(w, r, exp, expressionSaver, log, err, idempotencyToken, setResponseData)
-			return
-		}
+		go manager.ParseExpressionAndSolve(exp)
 
 		expressionSaver(exp)
 
