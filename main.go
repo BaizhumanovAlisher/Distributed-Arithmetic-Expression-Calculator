@@ -49,9 +49,11 @@ func main() {
 	logger.Info("start server", slog.String("address", cfg.HTTPServer.Address))
 
 	srv := &http.Server{
-		Addr:        cfg.HTTPServer.Address,
-		Handler:     router,
-		IdleTimeout: cfg.HTTPServer.IdleTimeout,
+		Addr:         cfg.HTTPServer.Address,
+		Handler:      router,
+		IdleTimeout:  cfg.HTTPServer.IdleTimeout,
+		ReadTimeout:  cfg.HTTPServer.Timeout,
+		WriteTimeout: cfg.HTTPServer.Timeout,
 	}
 
 	if err := srv.ListenAndServe(); err != nil {
