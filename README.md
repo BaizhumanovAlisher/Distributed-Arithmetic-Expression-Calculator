@@ -9,6 +9,36 @@ Start point: http://localhost:8099/
 1) `cd <"path/to/project">`
 2) `docker compose -f docker-compose.yml -p distributedarithmeticexpressioncalculator up -d`
 
+# Example:
+POST `http://localhost:8099/expression`
+```json
+{
+    "expression": "((2*(3+4))/5)+(6-7)"
+}
+```
+
+```json
+{
+  "id": 32,
+  "expression": "((2*(3+4))/5)+(6-7)",
+  "answer": "",
+  "status": "in process",
+  "createdAt": "2024-02-17T19:13:20.214214974+06:00"
+}
+```
+
+GET `http://localhost:8099/expression/32`
+```json
+{
+    "id": 32,
+    "expression": "((2*(3+4))/5)+(6-7)",
+    "answer": "1.8",
+    "status": "completed",
+    "createdAt": "2024-02-17T19:13:20.214215Z",
+    "completedAt": "2024-02-17T19:13:45.234002Z"
+}
+```
+
 ## You can get error like: 
 
 `Error response from daemon: Ports are not available: exposing port TCP 0.0.0.0:5673 -> 0.0.0.0:0: listen tcp 0.0.0.0:5673: bind: address already in use`
@@ -44,7 +74,7 @@ Example:
 
 Use OpenAPI in [file](api/api.yaml)
 
-Later will be Postman file
+You can use postman. [Postman file](docs/postman.md). [Postman download](https://www.postman.com/downloads/)
 
 # Rules for expression
 
