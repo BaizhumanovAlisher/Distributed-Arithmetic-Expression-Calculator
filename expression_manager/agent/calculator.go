@@ -5,12 +5,10 @@ import (
 	"distributed_calculator/model/expression"
 	"log"
 	"math"
-	"sync"
 	"time"
 )
 
 type Calculator struct {
-	mtx      sync.Mutex
 	miniCalc *expression.MiniCalculator
 	taskChan chan *expression.LeastExpression
 	isBusy   bool
@@ -29,9 +27,6 @@ func NewCalculator(i int) *Calculator {
 }
 
 func (c *Calculator) AddTask(task *expression.LeastExpression) bool {
-	c.mtx.Lock()
-	defer c.mtx.Unlock()
-
 	if c.isBusy {
 		return false
 	}
@@ -52,27 +47,20 @@ func (c *Calculator) Start() {
 		for {
 			select {
 			case task := <-c.taskChan:
-				c.mtx.Lock()
 				c.miniCalc.LeastExpression = task
 				c.isBusy = true
-				c.mtx.Unlock()
 
 				c.SolveExpression(task)
 
-				c.mtx.Lock()
 				c.miniCalc.LeastExpression = nil
 				c.isBusy = false
-				c.mtx.Unlock()
 			}
 		}
 	}()
 }
 
 func (c *Calculator) GetCurrentMiniCalculator() *expression.MiniCalculator {
-	c.mtx.Lock()
-	copyMiniCalc := *c.miniCalc
-	c.mtx.Unlock()
-	return &copyMiniCalc
+	return c.miniCalc
 }
 
 func (c *Calculator) SolveExpression(le *expression.LeastExpression) {
