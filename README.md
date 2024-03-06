@@ -3,6 +3,22 @@ D-A-E-C
 
 Project from Yandex Lyceum Course - Programming in Go
 
+Score: 90/110
+![image](docs/scores.png)
+
+## Description
+
+The user wants to count arithmetic expressions. 
+He enters the line 2 + 2 * 2 and he wants to get 6 in response. 
+But our addition and multiplication operations (also division and subtraction) are performed for a "very, very" long time. 
+Therefore, the option in which the user makes an http request and receives the result as a response is impossible. Moreover, the calculation of each such operation in our "alternative reality" takes up "gigantic" computing power. 
+Accordingly, we must be able to perform each action separately and scale this system by adding computing power to our system in the form of new "machines". 
+Therefore, when sending an expression, the user receives an expression identifier in response and can periodically check with the server "has the expression been counted"? 
+If the expression is finally calculated, then it will get the result. Remember that some parts of an arithmetic expression can be calculated in parallel.
+
+Full description: [link](docs/technical%20specification-RU.md)
+
+
 Start point: http://localhost:8099/
 ## Run project: 
 0) install [docker engine](https://docs.docker.com/engine/install/) and [docker compose](https://docs.docker.com/compose/install/)
