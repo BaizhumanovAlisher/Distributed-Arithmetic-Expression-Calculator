@@ -9,12 +9,8 @@ Score: 90/110
 ## Description
 
 The user wants to count arithmetic expressions. 
-He enters the line 2 + 2 * 2 and he wants to get 6 in response. 
-But our addition and multiplication operations (also division and subtraction) are performed for a "very, very" long time. 
-Therefore, the option in which the user makes an http request and receives the result as a response is impossible. Moreover, the calculation of each such operation in our "alternative reality" takes up "gigantic" computing power. 
-Accordingly, we must be able to perform each action separately and scale this system by adding computing power to our system in the form of new "machines". 
-Therefore, when sending an expression, the user receives an expression identifier in response and can periodically check with the server "has the expression been counted"? 
-If the expression is finally calculated, then it will get the result. Remember that some parts of an arithmetic expression can be calculated in parallel.
+He enters the line `2 + 2 * 2` and he wants to get 6 in response.
+Therefore, the option in which the user makes a http request and receives the result as a response is impossible. Moreover, the calculation of each such operation in our "alternative reality" takes up "gigantic" computing power. 
 
 Full description: [link](docs/technical%20specification-RU.md)
 
@@ -22,7 +18,7 @@ Full description: [link](docs/technical%20specification-RU.md)
 Start point: http://localhost:8099/
 ## Run project: 
 0) install [docker engine](https://docs.docker.com/engine/install/) and [docker compose](https://docs.docker.com/compose/install/)
-1) `cd <"path/to/project/root/directory">`
+1) `cd <"path/to/project/directory">`
 2) `docker compose -f docker-compose.yml -p distributedarithmeticexpressioncalculator up -d`
 
 # Example:
@@ -106,5 +102,3 @@ You can use postman. [Postman file](docs/postman.json). [Postman download](https
 
 # Scheme
 ![image](docs/distributed%20arifmetic%20expression%20calculator.drawio.png)
-
-My Telegram Account: @Loading58327
