@@ -101,6 +101,7 @@ func (s *PostgresqlDB) ReadOperation(operationType model.OperationType) (*model.
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, sql.ErrNoRows
 		}
+
 		return nil, fmt.Errorf("failed to scan row into expression: %w", err)
 	}
 

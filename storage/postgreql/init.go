@@ -3,11 +3,22 @@ package postgreql
 import (
 	"database/sql"
 	"distributed_calculator/config"
+	"fmt"
 )
 
 func Postgresql(cfg *config.Config) (*PostgresqlDB, error) {
-	//conn := fmt.Sprintf("user=%s dbname=%s password='%s' host=%s port=%s sslmode=%s", cfg.User, cfg.DBName, cfg.Storage.Password, cfg.Host, cfg.Port, cfg.SSLMode)
-	db, err := sql.Open("postgres", cfg.Storage.URL)
+	storage := cfg.Storage
+
+	dbURL := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=%s",
+		storage.User,
+		storage.Password,
+		storage.Host,
+		storage.Port,
+		storage.DBName,
+		storage.SSLMode,
+	)
+
+	db, err := sql.Open("postgres", dbURL)
 
 	if err != nil {
 		return nil, err

@@ -11,7 +11,7 @@ storage:
   host: "localhost"
   post: "8100"
   sslmode: "disable"
-  url: "postgresql://postgres:password@localhost:8100/distributed_calculator?sslmode=disable"
+
 
 operation:
   count_operation: 4
@@ -22,7 +22,7 @@ operation:
 
 quick_access_storage:
   addr: "localhost:8101"
-  ttl: 360s
+  ttl: 600s
   password: ""
   db: 0
 

@@ -29,7 +29,6 @@ type Storage struct {
 	Host     string `yaml:"host"`
 	Port     string `yaml:"post"`
 	SSLMode  string `yaml:"sslmode"`
-	URL      string `yaml:"url"`
 }
 
 type Operation struct {
