@@ -84,7 +84,7 @@ func (s *PostgresqlDB) CreateExpression(expression *expression.Expression) error
 	return nil
 }
 
-func (s *PostgresqlDB) ReadAllExpressions() ([]*expression.Expression, error) {
+func (s *PostgresqlDB) ReadExpressions() ([]*expression.Expression, error) {
 	rows, err := s.db.Query(`SELECT id, expression, answer, status, created_at, completed_at FROM expressions`)
 	if err != nil {
 		return nil, fmt.Errorf("failed to query all expressions: %w", err)

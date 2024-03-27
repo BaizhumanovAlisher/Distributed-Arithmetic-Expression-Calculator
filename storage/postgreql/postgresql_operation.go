@@ -23,7 +23,7 @@ func (s *PostgresqlDB) CreateOperation(operation *model.OperationWithDuration) e
 	return nil
 }
 
-func (s *PostgresqlDB) ReadAllOperations() ([]*model.OperationWithDuration, error) {
+func (s *PostgresqlDB) ReadOperations() ([]*model.OperationWithDuration, error) {
 	rows, err := s.db.Query(`SELECT operation_kind, duration_in_sec FROM operations`)
 	if err != nil {
 		return nil, fmt.Errorf("failed to query all operations: %w", err)
@@ -63,7 +63,7 @@ func (s *PostgresqlDB) UpdateOperation(operation *model.OperationWithDuration) e
 }
 
 func (s *PostgresqlDB) SeedOperation(cfg *config.Config) error {
-	operationsInDatabase, err := s.ReadAllOperations()
+	operationsInDatabase, err := s.ReadOperations()
 
 	if err != nil {
 		return err

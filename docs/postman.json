@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "20c7fb45-2fa8-41cc-b919-d9931e9f9dcd",
+		"_postman_id": "b651dbf8-6ddb-4eae-b327-220cf425a249",
 		"name": "New Collection",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "22818632"
@@ -30,14 +30,14 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:8099/expression",
+							"raw": "http://localhost:8099/expressions",
 							"protocol": "http",
 							"host": [
 								"localhost"
 							],
 							"port": "8099",
 							"path": [
-								"expression"
+								"expressions"
 							]
 						}
 					},
@@ -64,14 +64,14 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:8099/expression",
+							"raw": "http://localhost:8099/expressions",
 							"protocol": "http",
 							"host": [
 								"localhost"
 							],
 							"port": "8099",
 							"path": [
-								"expression"
+								"expressions"
 							]
 						}
 					},
@@ -83,14 +83,14 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8099/expression/why",
+							"raw": "http://localhost:8099/expressions/why",
 							"protocol": "http",
 							"host": [
 								"localhost"
 							],
 							"port": "8099",
 							"path": [
-								"expression",
+								"expressions",
 								"why"
 							]
 						}
@@ -103,14 +103,14 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8099/expression/1",
+							"raw": "http://localhost:8099/expressions/1",
 							"protocol": "http",
 							"host": [
 								"localhost"
 							],
 							"port": "8099",
 							"path": [
-								"expression",
+								"expressions",
 								"1"
 							]
 						}
@@ -123,14 +123,14 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8099/expression",
+							"raw": "http://localhost:8099/expressions",
 							"protocol": "http",
 							"host": [
 								"localhost"
 							],
 							"port": "8099",
 							"path": [
-								"expression"
+								"expressions"
 							]
 						}
 					},
@@ -147,14 +147,14 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8099/operation",
+							"raw": "http://localhost:8099/operations",
 							"protocol": "http",
 							"host": [
 								"localhost"
 							],
 							"port": "8099",
 							"path": [
-								"operation"
+								"operations"
 							]
 						}
 					},
@@ -175,14 +175,14 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:8099/operation",
+							"raw": "http://localhost:8099/operations",
 							"protocol": "http",
 							"host": [
 								"localhost"
 							],
 							"port": "8099",
 							"path": [
-								"operation"
+								"operations"
 							]
 						}
 					},
@@ -203,14 +203,14 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:8099/operation",
+							"raw": "http://localhost:8099/operations",
 							"protocol": "http",
 							"host": [
 								"localhost"
 							],
 							"port": "8099",
 							"path": [
-								"operation"
+								"operations"
 							]
 						}
 					},
@@ -231,14 +231,14 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:8099/operation",
+							"raw": "http://localhost:8099/operations",
 							"protocol": "http",
 							"host": [
 								"localhost"
 							],
 							"port": "8099",
 							"path": [
-								"operation"
+								"operations"
 							]
 						}
 					},
@@ -259,14 +259,14 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:8099/operation",
+							"raw": "http://localhost:8099/operations",
 							"protocol": "http",
 							"host": [
 								"localhost"
 							],
 							"port": "8099",
 							"path": [
-								"operation"
+								"operations"
 							]
 						}
 					},
@@ -287,14 +287,14 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:8099/operation",
+							"raw": "http://localhost:8099/operations",
 							"protocol": "http",
 							"host": [
 								"localhost"
 							],
 							"port": "8099",
 							"path": [
-								"operation"
+								"operations"
 							]
 						}
 					},
@@ -311,14 +311,14 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8099/mini-calculator",
+							"raw": "http://localhost:8099/mini-calculators",
 							"protocol": "http",
 							"host": [
 								"localhost"
 							],
 							"port": "8099",
 							"path": [
-								"mini-calculator"
+								"mini-calculators"
 							]
 						}
 					},

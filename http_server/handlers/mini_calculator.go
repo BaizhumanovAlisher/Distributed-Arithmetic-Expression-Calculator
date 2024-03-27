@@ -7,7 +7,7 @@ import (
 	"net/http"
 )
 
-func HandlerGetAllMiniCalculator(log *slog.Logger, miniCalculatorReader func() []*expression.MiniCalculator) http.HandlerFunc {
+func GetAllMiniCalculator(log *slog.Logger, miniCalculatorReader func() []*expression.MiniCalculator) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		log.Info("start get all operations")
 

@@ -15,7 +15,7 @@ import (
 	"strconv"
 )
 
-func HandlerNewExpression(log *slog.Logger,
+func createExpression(log *slog.Logger,
 	expressionSaver func(expression *expression.Expression) error,
 	setResponseData func(idempotencyToken string, expression string, responseData *model.ResponseData) error,
 	getResponseData func(idempotencyToken string, expression string) (*model.ResponseData, error),
@@ -133,7 +133,7 @@ func cacheRespond(log *slog.Logger, idempotencyToken string, expression string, 
 	}
 }
 
-func HandlerGetAllExpression(log *slog.Logger, expressionReader func() ([]*expression.Expression, error)) http.HandlerFunc {
+func getExpressions(log *slog.Logger, expressionReader func() ([]*expression.Expression, error)) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		log.Info("start get all expression")
 
@@ -152,7 +152,7 @@ func HandlerGetAllExpression(log *slog.Logger, expressionReader func() ([]*expre
 	}
 }
 
-func HandlerGetExpression(log *slog.Logger, expressionReader func(int) (*expression.Expression, error)) http.HandlerFunc {
+func getExpression(log *slog.Logger, expressionReader func(int) (*expression.Expression, error)) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		log.Info("start get expression")
 		idStr := chi.URLParam(r, "id")

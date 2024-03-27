@@ -9,12 +9,12 @@ import (
 type Repository interface {
 	CreateExpression(*expression.Expression) error
 	UpdateExpression(*expression.Expression) error
-	ReadAllExpressions() ([]*expression.Expression, error)
+	ReadExpressions() ([]*expression.Expression, error)
 	ReadAllExpressionsWithStatus(expression.Status) ([]*expression.Expression, error)
 	ReadExpression(int) (*expression.Expression, error)
 
 	CreateOperation(*model.OperationWithDuration) error
-	ReadAllOperations() ([]*model.OperationWithDuration, error)
+	ReadOperations() ([]*model.OperationWithDuration, error)
 	ReadOperation(operationType model.OperationType) (*model.OperationWithDuration, error)
 	UpdateOperation(*model.OperationWithDuration) error
 	SeedOperation(config *config.Config) error

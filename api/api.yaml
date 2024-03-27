@@ -5,7 +5,7 @@ info:
 servers:
   - url: http://localhost:8099
 paths:
-  /expression:
+  /expressions:
     post:
       parameters:
         - in: header
@@ -56,7 +56,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  /expression/{id}:
+  /expressions/{id}:
     get:
       summary: Get expression
       operationId: getExpression
@@ -85,7 +85,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  /operation:
+  /operations:
     get:
       summary: List operations
       operationId: listOperations
@@ -122,7 +122,7 @@ paths:
         404:
           description: Operation not found
 
-  /mini-calculator:
+  /mini-calculators:
     get:
       summary: List computational capabilities
       operationId: listComputationalCapabilities
