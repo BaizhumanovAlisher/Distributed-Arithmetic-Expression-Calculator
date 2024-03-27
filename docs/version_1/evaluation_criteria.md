@@ -1,11 +1,11 @@
 Этот пункт дает 10 баллов. Без наличия такого файла - решение не проверяется.
 1. Необходимые требования:
    - Существует Readme документ, в котором описано, как запустить систему и как ей пользоваться.
-      - [README.md](../README.md)
+      - [README.md](../../README.md)
    - Это может быть docker-compose, makefile, подробная инструкция - на ваш вкус
-     - [docker-compose](../docker-compose.yml)
+     - [docker-compose](../../docker-compose.yml)
    - Если вы предоставляете только http-api, то в Readme описаны примеры запросов с помощью curl-a или любым другими понятными образом
-     - [postman](postman.json) or [openAPI](../api/api.yaml)
+     - [postman](../postman.json) or [openAPI](../../api/api.yaml)
    - примеры полны и понятно как их запустить
      - In postman.json file and Readme file in heading Example
 

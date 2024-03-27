@@ -4,7 +4,7 @@ D-A-E-C
 Project from Yandex Lyceum Course - Programming in Go
 
 Score: 90/110
-![image](docs/scores.png)
+![image](docs/version_1/scores.png)
 
 ## Description
 
