@@ -12,7 +12,7 @@ The user wants to count arithmetic expressions.
 He enters the line `2 + 2 * 2` and he wants to get 6 in response.
 Therefore, the option in which the user makes a http request and receives the result as a response is impossible. Moreover, the calculation of each such operation in our "alternative reality" takes up "gigantic" computing power. 
 
-Full description: [link](docs/technical%20specification-RU.md)
+Full description: [link](docs/version_1/tech_specification_RU_1.md)
 
 
 Start point: http://localhost:8099/
@@ -78,8 +78,8 @@ Example:
 ```
 
 ## Tech specification:
-- [specifications](docs/technical%20specification-RU.md)
-- [criteria](docs/evaluation%20criteria.md) !!PLEASE ATTEND!!
+- [specifications](docs/version_1/tech_specification_RU_1.md)
+- [criteria](docs/version_1/evaluation_criteria.md) !!PLEASE ATTEND!!
 
 ## No Front-end
 
@@ -101,4 +101,4 @@ You can use postman. [Postman file](docs/postman.json). [Postman download](https
 - No caching in `500` http code
 
 # Scheme
-![image](docs/distributed%20arifmetic%20expression%20calculator.drawio.png)
+![image](docs/version_1/distributed_calculator_1.drawio.png)

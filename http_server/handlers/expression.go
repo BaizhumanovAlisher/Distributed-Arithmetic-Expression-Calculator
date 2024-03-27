@@ -56,6 +56,7 @@ func createExpression(log *slog.Logger,
 		exp.Status = expression.InProcess
 		go manager.ParseExpressionAndSolve(exp)
 
+		//todo: check err
 		expressionSaver(exp)
 
 		render.Status(r, http.StatusOK)
