@@ -167,7 +167,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"operationKind\": \"adtion\",\n    \"durationInSecond\": 1\n}",
+							"raw": "{\n    \"operationKind\": \"action\",\n    \"durationInSecond\": 1\n}",
 							"options": {
 								"raw": {
 									"language": "json"

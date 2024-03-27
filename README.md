@@ -17,9 +17,9 @@ Full description: [link](docs/technical%20specification-RU.md)
 
 Start point: http://localhost:8099/
 ## Run project: 
-0) install [docker engine](https://docs.docker.com/engine/install/) and [docker compose](https://docs.docker.com/compose/install/)
-1) `cd <"path/to/project/directory">`
-2) `docker compose -f docker-compose.yml -p distributedarithmeticexpressioncalculator up -d`
+1) install [docker engine](https://docs.docker.com/engine/install/) and [docker compose](https://docs.docker.com/compose/install/)
+2) `cd <"path/to/project/directory">`
+3) `docker compose -f docker-compose.yml -p distributedarithmeticexpressioncalculator up -d`
 
 # Example:
 POST `http://localhost:8099/expression`

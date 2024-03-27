@@ -1,3 +1,6 @@
+# If you prefer the allow list template instead of the deny list, see community template:
+# https://github.com/github/gitignore/blob/main/community/Golang/Go.AllowList.gitignore
+#
 # Binaries for programs and plugins
 *.exe
 *.exe~
@@ -5,7 +8,7 @@
 *.so
 *.dylib
 
-# Test binary, build with `go test -c`
+# Test binary, built with `go test -c`
 *.test
 
 # Output of the go coverage tool, specifically when used with LiteIDE
@@ -13,56 +16,7 @@
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
-
-# Object files, stripped down version of the import path
-*.o
-*.obj
-
-# Log files
-*.log
-
-# Optional npm cache directory
-.npm
-
-# Optional eslint cache
-.eslintcache
-
-# Optional REPL history
-.node_repl_history
-
-# The .vscode folder contains launch configuration settings for Visual Studio Code
-.vscode/
-
-# Ignore OS X files
-.DS_Store
-
-# Ignore Node.js dependency folders
-node_modules/
-
-# Ignore build artifacts
-build/
-dist/
-out/
-
-# Ignore local environment files
-.env
-.env.*
-
-# Ignore IDE specific files
 .idea/
-*.swp
-*.swo
-*.swn
-*.bak
-*.orig
 
-# Ignore OS generated files
-.DS_Store
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db
-
-/orchestrator/localhost:8099
-/bin/
+# Go workspace file
+go.work

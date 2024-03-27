@@ -13,14 +13,14 @@ type Agent struct {
 
 func NewAgent(countCalculators int) *Agent {
 	queue := make(chan *expression.LeastExpression)
-	miniCalcs := make([]*Calculator, countCalculators)
+	miniCalculators := make([]*Calculator, countCalculators)
 
 	for i := 0; i < countCalculators; i++ {
-		miniCalcs[i] = NewCalculator(i)
+		miniCalculators[i] = NewCalculator(i)
 	}
 
 	a := &Agent{
-		Calculators: miniCalcs,
+		Calculators: miniCalculators,
 		Queue:       queue,
 	}
 
