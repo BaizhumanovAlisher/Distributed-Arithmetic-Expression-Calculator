@@ -18,6 +18,7 @@ type InputExpression struct {
 func NewExpression(expression string) *Expression {
 	return &Expression{
 		Expression: expression,
+		Status:     InProcess,
 		CreatedAt:  time.Now(),
 	}
 }

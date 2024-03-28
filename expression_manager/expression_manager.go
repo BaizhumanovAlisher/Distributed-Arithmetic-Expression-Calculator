@@ -138,3 +138,8 @@ func (em *ExpressionManager) Init(readAllExpressionsWithStatus func(expression.S
 
 	return nil
 }
+
+func (em *ExpressionManager) StartSolveConcurrently(exp *expression.Expression) {
+	newExpression := *exp
+	go em.ParseExpressionAndSolve(&newExpression)
+}

@@ -18,8 +18,9 @@ func Routes(logger *slog.Logger, repo *postgresql.PostgresqlDB, redis *storage.R
 	router.Use(mwLogger.New(logger))
 	router.Use(middleware.URLFormat)
 
-	router.Post("/expression", createExpression(
-		logger, repo.CreateExpression, redis.StoreIdempotencyToken, redis.RetrieveIdempotencyToken, manager))
+	router.Post("/expressions", idempotencyExpressionPost(
+		createExpression(logger, manager, repo.CreateExpression),
+		logger, redis))
 
 	router.Get("/expressions", getExpressions(logger, repo.ReadExpressions))
 	router.Get("/expressions/{id}", getExpression(logger, repo.ReadExpression))
