@@ -5,6 +5,7 @@ import (
 	parser2 "distributed_calculator/expression_manager/parser"
 	"distributed_calculator/model"
 	"distributed_calculator/model/expression"
+	"distributed_calculator/storage/postgresql"
 	"log"
 	"strconv"
 	"time"
@@ -19,19 +20,14 @@ type ExpressionManager struct {
 	UpdateExpression
 }
 
-func NewExpressionManager(
-	agent *agent.Agent,
-	readOperationWithDuration ReadOperationWithDuration,
-	updateExpression UpdateExpression,
-	readAllExpressionsWithStatus func(expression.Status) ([]*expression.Expression, error)) (*ExpressionManager, error) {
-
+func NewExpressionManager(agent *agent.Agent, repo *postgresql.PostgresqlDB) (*ExpressionManager, error) {
 	expressionManager := &ExpressionManager{
 		agent:                     agent,
-		ReadOperationWithDuration: readOperationWithDuration,
-		UpdateExpression:          updateExpression,
+		ReadOperationWithDuration: repo.ReadOperation,
+		UpdateExpression:          repo.UpdateExpression,
 	}
 
-	err := expressionManager.Init(readAllExpressionsWithStatus)
+	err := expressionManager.Init(repo.ReadAllExpressionsWithStatus)
 
 	if err != nil {
 		return nil, err

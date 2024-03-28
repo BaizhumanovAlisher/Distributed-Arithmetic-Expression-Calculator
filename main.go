@@ -28,8 +28,7 @@ func main() {
 	}
 
 	newAgent := agent.NewAgent(cfg.Agent.CountOperation)
-	expressionManager, err := expression_manager.NewExpressionManager(
-		newAgent, repo.ReadOperation, repo.UpdateExpression, repo.ReadAllExpressionsWithStatus)
+	expressionManager, err := expression_manager.NewExpressionManager(newAgent, repo)
 
 	if err != nil {
 		log.Fatal(err)
