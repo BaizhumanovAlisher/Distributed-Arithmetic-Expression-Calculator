@@ -6,7 +6,7 @@ import (
 	"distributed_calculator/expression_manager/agent"
 	"distributed_calculator/http_server/handlers"
 	"distributed_calculator/storage"
-	"distributed_calculator/storage/postgreql"
+	"distributed_calculator/storage/postgresql"
 	"log"
 	"log/slog"
 	"net/http"
@@ -15,9 +15,9 @@ import (
 
 func main() {
 	cfg := config.MustLoad()
-	logger := setupLogger()
+	logger := NewLogger()
 
-	repo, err := postgreql.Postgresql(cfg)
+	repo, err := postgresql.Postgresql(cfg)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -45,11 +45,11 @@ func main() {
 	}
 
 	if err := srv.ListenAndServe(); err != nil {
-		logger.Error("failed to start")
+		log.Fatal(err)
 	}
 }
 
-func setupLogger() *slog.Logger {
+func NewLogger() *slog.Logger {
 	return slog.New(
 		slog.NewTextHandler(
 			os.Stdout,

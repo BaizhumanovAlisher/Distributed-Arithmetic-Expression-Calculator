@@ -12,35 +12,32 @@ import (
 
 type ReadOperationWithDuration func(operationType model.OperationType) (*model.OperationWithDuration, error)
 type UpdateExpression func(*expression.Expression) error
-type ReadAllExpressionsWithStatus func(expression.Status) ([]*expression.Expression, error)
 
 type ExpressionManager struct {
 	agent *agent.Agent
 	ReadOperationWithDuration
 	UpdateExpression
-	ReadAllExpressionsWithStatus
 }
 
 func NewExpressionManager(
 	agent *agent.Agent,
 	readOperationWithDuration ReadOperationWithDuration,
 	updateExpression UpdateExpression,
-	readAllExpressionsWithStatus ReadAllExpressionsWithStatus) (*ExpressionManager, error) {
+	readAllExpressionsWithStatus func(expression.Status) ([]*expression.Expression, error)) (*ExpressionManager, error) {
 
 	expressionManager := &ExpressionManager{
-		agent:                        agent,
-		ReadOperationWithDuration:    readOperationWithDuration,
-		UpdateExpression:             updateExpression,
-		ReadAllExpressionsWithStatus: readAllExpressionsWithStatus,
+		agent:                     agent,
+		ReadOperationWithDuration: readOperationWithDuration,
+		UpdateExpression:          updateExpression,
 	}
 
-	err := expressionManager.Init()
+	err := expressionManager.Init(readAllExpressionsWithStatus)
 
 	if err != nil {
 		return nil, err
 	}
 
-	return expressionManager, err
+	return expressionManager, nil
 }
 
 func (em *ExpressionManager) ParseExpressionAndSolve(exp *expression.Expression) {
@@ -129,8 +126,8 @@ func setResultsToExpression(exp *expression.Expression, result float64) {
 	exp.CompletedAt = &timeCompleted
 }
 
-func (em *ExpressionManager) Init() error {
-	expressions, err := em.ReadAllExpressionsWithStatus(expression.InProcess)
+func (em *ExpressionManager) Init(readAllExpressionsWithStatus func(expression.Status) ([]*expression.Expression, error)) error {
+	expressions, err := readAllExpressionsWithStatus(expression.InProcess)
 	if err != nil {
 		return err
 	}

@@ -5,13 +5,13 @@ import (
 	"distributed_calculator/expression_manager/agent"
 	mwLogger "distributed_calculator/http_server/logger"
 	"distributed_calculator/storage"
-	"distributed_calculator/storage/postgreql"
+	"distributed_calculator/storage/postgresql"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"log/slog"
 )
 
-func Routes(logger *slog.Logger, repo *postgreql.PostgresqlDB, redis *storage.RedisDB, manager *expression_manager.ExpressionManager, newAgent *agent.Agent) *chi.Mux {
+func Routes(logger *slog.Logger, repo *postgresql.PostgresqlDB, redis *storage.RedisDB, manager *expression_manager.ExpressionManager, newAgent *agent.Agent) *chi.Mux {
 	router := chi.NewRouter()
 	router.Use(middleware.Recoverer)
 	router.Use(middleware.Logger)
