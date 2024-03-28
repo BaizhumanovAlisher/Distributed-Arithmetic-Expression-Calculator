@@ -17,6 +17,7 @@ services:
       - pgdata:/var/lib/postgresql/data
 
   redis:
+    restart: unless-stopped
     container_name: daec_redis
     image: redis:latest
     ports:
