@@ -1,7 +1,7 @@
 package agent
 
 import (
-	expression2 "distributed_calculator/internal/model/expression"
+	expression2 "api_server/internal/model/expression"
 	"sync"
 )
 

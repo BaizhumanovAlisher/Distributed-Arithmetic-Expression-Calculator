@@ -1,8 +1,8 @@
 package agent
 
 import (
-	"distributed_calculator/internal/model"
-	expression2 "distributed_calculator/internal/model/expression"
+	"api_server/internal/model"
+	expression2 "api_server/internal/model/expression"
 	"log"
 	"math"
 	"time"

@@ -1,9 +1,9 @@
 package storage
 
 import (
-	"distributed_calculator/internal/config"
-	model2 "distributed_calculator/internal/model"
-	"distributed_calculator/internal/model/expression"
+	"api_server/internal/config"
+	model2 "api_server/internal/model"
+	"api_server/internal/model/expression"
 )
 
 type Repository interface {

@@ -1,11 +1,11 @@
 package handlers
 
 import (
-	"distributed_calculator/expression_manager"
-	"distributed_calculator/expression_manager/agent"
-	mwLogger "distributed_calculator/http_server/logger"
-	"distributed_calculator/internal/storage"
-	"distributed_calculator/internal/storage/postgresql"
+	"api_server/expression_manager"
+	"api_server/expression_manager/agent"
+	mwLogger "api_server/http_server/logger"
+	"api_server/internal/storage"
+	"api_server/internal/storage/postgresql"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"log/slog"

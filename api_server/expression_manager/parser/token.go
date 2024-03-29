@@ -1,7 +1,7 @@
 package parser
 
 import (
-	"distributed_calculator/internal/model"
+	"api_server/internal/model"
 	"errors"
 	"strconv"
 )

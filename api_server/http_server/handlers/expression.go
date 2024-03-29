@@ -1,11 +1,11 @@
 package handlers
 
 import (
+	"api_server/expression_manager"
+	"api_server/http_server/validators"
+	model2 "api_server/internal/model"
+	"api_server/internal/model/expression"
 	"database/sql"
-	"distributed_calculator/expression_manager"
-	"distributed_calculator/http_server/validators"
-	model2 "distributed_calculator/internal/model"
-	"distributed_calculator/internal/model/expression"
 	"errors"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"

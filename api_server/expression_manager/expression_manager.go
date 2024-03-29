@@ -1,11 +1,11 @@
 package expression_manager
 
 import (
-	"distributed_calculator/expression_manager/agent"
-	parser2 "distributed_calculator/expression_manager/parser"
-	"distributed_calculator/internal/model"
-	expression2 "distributed_calculator/internal/model/expression"
-	"distributed_calculator/internal/storage/postgresql"
+	"api_server/expression_manager/agent"
+	parser2 "api_server/expression_manager/parser"
+	"api_server/internal/model"
+	expression2 "api_server/internal/model/expression"
+	"api_server/internal/storage/postgresql"
 	"log"
 	"strconv"
 	"time"

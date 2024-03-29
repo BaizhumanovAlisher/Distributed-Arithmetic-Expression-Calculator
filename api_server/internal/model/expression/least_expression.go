@@ -1,7 +1,7 @@
 package expression
 
 import (
-	"distributed_calculator/internal/model"
+	"api_server/internal/model"
 )
 
 type LeastExpression struct {

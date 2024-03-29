@@ -1,12 +1,12 @@
 package main
 
 import (
-	"distributed_calculator/expression_manager"
-	"distributed_calculator/expression_manager/agent"
-	"distributed_calculator/http_server/handlers"
-	"distributed_calculator/internal/config"
-	"distributed_calculator/internal/storage"
-	"distributed_calculator/internal/storage/postgresql"
+	"api_server/expression_manager"
+	"api_server/expression_manager/agent"
+	"api_server/http_server/handlers"
+	"api_server/internal/config"
+	"api_server/internal/storage"
+	"api_server/internal/storage/postgresql"
 	"log"
 	"log/slog"
 	"net/http"

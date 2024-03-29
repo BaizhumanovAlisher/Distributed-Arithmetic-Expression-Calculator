@@ -1,8 +1,8 @@
 package postgresql
 
 import (
+	"api_server/internal/model/expression"
 	"database/sql"
-	"distributed_calculator/internal/model/expression"
 	"errors"
 	"fmt"
 

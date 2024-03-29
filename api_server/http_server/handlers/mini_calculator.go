@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"distributed_calculator/internal/model/expression"
+	"api_server/internal/model/expression"
 	"github.com/go-chi/render"
 	"log/slog"
 	"net/http"

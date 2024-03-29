@@ -1,9 +1,9 @@
 package handlers
 
 import (
+	"api_server/http_server/validators"
+	model2 "api_server/internal/model"
 	"database/sql"
-	"distributed_calculator/http_server/validators"
-	model2 "distributed_calculator/internal/model"
 	"errors"
 	"github.com/go-chi/render"
 	"log/slog"
