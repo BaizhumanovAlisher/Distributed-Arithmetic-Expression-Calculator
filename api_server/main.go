@@ -5,17 +5,17 @@ import (
 	"api_server/expression_manager/agent"
 	"api_server/http_server/handlers"
 	"internal/config"
+	"internal/helpers"
 	"internal/storage"
 	"internal/storage/postgresql"
 	"log"
 	"log/slog"
 	"net/http"
-	"os"
 )
 
 func main() {
 	cfg := config.MustLoad()
-	logger := NewLogger()
+	logger := helpers.NewLogger()
 
 	repo, err := postgresql.Postgresql(cfg)
 	if err != nil {
@@ -46,11 +46,4 @@ func main() {
 	if err := srv.ListenAndServe(); err != nil {
 		log.Fatal(err)
 	}
-}
-
-func NewLogger() *slog.Logger {
-	return slog.New(
-		slog.NewTextHandler(
-			os.Stdout,
-			&slog.HandlerOptions{Level: slog.LevelDebug}))
 }
