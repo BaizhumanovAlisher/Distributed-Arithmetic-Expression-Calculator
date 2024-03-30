@@ -4,15 +4,15 @@ FROM golang:latest
 WORKDIR /app
 
 COPY ./go.work ./go.work
-COPY ./api_server/ ./api_server
+COPY ./auth_service/ ./auth_service
 COPY ./protos/ ./protos
 COPY ./internal/ ./internal
-COPY ./auth_service/ ./auth_service
+COPY ./api_server/ ./api_server
 
-WORKDIR api_server
+WORKDIR auth_service
 RUN go mod download
 RUN go build -o main .
 
-EXPOSE 8099
+EXPOSE 8102
 
 CMD ["./main"]

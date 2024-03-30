@@ -25,15 +25,25 @@ services:
     networks:
       - app_network
 
-  orchestrator:
+  api_server:
     restart: unless-stopped
-    container_name: daec_orchestrator
-    image: orchestrator:latest
+    container_name: daec_api_server
+    image: api_server:latest
     build:
       dockerfile: api_server/Dockerfile
     depends_on:
       - postgres
       - redis
+    network_mode: host
+
+  auth_service:
+    restart: unless-stopped
+    container_name: daec_auth_service
+    image: auth_service:latest
+    build:
+      dockerfile: auth_service/Dockerfile
+    depends_on:
+      - postgres
     network_mode: host
 
 

@@ -1,0 +1,4 @@
+env: "local"
+
+auth_service:
+  address: "localhost:8102"
