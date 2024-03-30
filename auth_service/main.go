@@ -1,7 +1,13 @@
 package main
 
-import "fmt"
+import (
+	"internal/helpers"
+)
 
 func main() {
-	fmt.Println("Hello, world. This is auth service!")
+	//cfg := config.MustLoad()
+
+	log := helpers.NewLogger()
+	log.Info("starting application")
+
 }

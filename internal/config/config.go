@@ -12,8 +12,10 @@ type Config struct {
 	HTTPServer         `yaml:"http_server"`
 	Storage            `yaml:"storage"`
 	Operation          `yaml:"operation"`
-	QuickAccessStorage ` yaml:"quick_access_storage"`
+	QuickAccessStorage `yaml:"quick_access_storage"`
 	Agent              `yaml:"agent"`
+	AuthService        `yaml:"auth_service"`
+	GRPCConfig         `yaml:"grpc"`
 }
 
 type HTTPServer struct {
@@ -48,6 +50,15 @@ type QuickAccessStorage struct {
 
 type Agent struct {
 	CountOperation int `yaml:"count_calculator"`
+}
+
+type AuthService struct {
+	Address  string        `yaml:"address" env-default:"localhost:8102"`
+	TokenTTL time.Duration `yaml:"token_ttl" env-default:"1h"`
+}
+
+type GRPCConfig struct {
+	Port int `yaml:"port" env-default:"8103"`
 }
 
 func MustLoad() *Config {

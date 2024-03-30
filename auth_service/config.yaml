@@ -2,3 +2,15 @@ env: "local"
 
 auth_service:
   address: "localhost:8102"
+  token_ttl: 1h
+
+storage:
+  user: "postgres"
+  dbname: "distributed_calculator"
+  password: "password"
+  host: "localhost"
+  post: "8100"
+  sslmode: "disable"
+
+grpc:
+  port: 8103
