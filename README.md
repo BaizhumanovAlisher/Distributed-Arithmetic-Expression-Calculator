@@ -102,3 +102,9 @@ You can use postman. [Postman file](docs/postman.json). [Postman download](https
 
 # Scheme
 ![image](docs/version_1/distributed_calculator_1.drawio.png)
+
+# Ports
+- api_server: http://localhost:8099
+- postgresql: http://localhost:8100
+- redis: http://localhost:8101
+- auth_service: http://localhost:8102
