@@ -104,7 +104,12 @@ func (em *ExpressionManager) SolveExpression(exp *expression2.Expression, expPos
 		stack = append(stack, leastExp.Result)
 	}
 
-	setResultsToExpression(exp, stack[0])
+	if len(stack) < 1 {
+		setInvalidStatus(exp)
+	} else {
+		setResultsToExpression(exp, stack[0])
+	}
+
 	err := em.UpdateExpression(exp)
 	if err != nil {
 		log.Println(err)
@@ -129,7 +134,7 @@ func (em *ExpressionManager) Init(readAllExpressionsWithStatus func(expression2.
 	}
 
 	for _, exp := range expressions {
-		go em.ParseExpressionAndSolve(exp)
+		em.StartSolveConcurrently(exp)
 	}
 
 	return nil
