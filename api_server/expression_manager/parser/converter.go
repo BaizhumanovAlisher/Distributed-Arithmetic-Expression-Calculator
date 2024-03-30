@@ -1,8 +1,8 @@
 package parser
 
 import (
-	"api_server/internal/model"
 	"errors"
+	"internal/model"
 )
 
 func InfixToPostfix(infix []*Token) ([]*Token, error) {

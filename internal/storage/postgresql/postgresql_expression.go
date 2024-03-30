@@ -1,10 +1,10 @@
 package postgresql
 
 import (
-	"api_server/internal/model/expression"
 	"database/sql"
 	"errors"
 	"fmt"
+	"internal/model/expression"
 
 	_ "github.com/lib/pq"
 )

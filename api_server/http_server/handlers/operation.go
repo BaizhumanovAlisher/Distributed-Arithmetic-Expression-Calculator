@@ -2,10 +2,10 @@ package handlers
 
 import (
 	"api_server/http_server/validators"
-	model2 "api_server/internal/model"
 	"database/sql"
 	"errors"
 	"github.com/go-chi/render"
+	model2 "internal/model"
 	"log/slog"
 	"net/http"
 )

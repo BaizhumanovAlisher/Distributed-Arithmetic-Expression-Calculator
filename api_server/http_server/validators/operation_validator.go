@@ -1,8 +1,8 @@
 package validators
 
 import (
-	"api_server/internal/model"
 	"errors"
+	"internal/model"
 )
 
 func ValidateOperation(operation model.OperationWithDuration) error {

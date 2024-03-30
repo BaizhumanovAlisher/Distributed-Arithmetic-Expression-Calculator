@@ -1,7 +1,7 @@
 package agent
 
 import (
-	expression2 "api_server/internal/model/expression"
+	expression2 "internal/model/expression"
 	"sync"
 )
 

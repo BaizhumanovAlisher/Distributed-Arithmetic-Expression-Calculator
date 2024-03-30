@@ -1,7 +1,7 @@
 package parser
 
 import (
-	"api_server/internal/model"
+	"internal/model"
 	"testing"
 )
 

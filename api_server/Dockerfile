@@ -1,14 +1,15 @@
+# running the file is required in the path../ to tighten dependencies in ../proto, ../internal and ../go.work
 FROM golang:latest
 
 WORKDIR /app
 
-COPY go.mod go.sum ./
+COPY ./go.work ./go.work
+COPY ./api_server/ ./api_server
+COPY ./protos/ ./protos
+COPY ./internal/ ./internal
 
+WORKDIR api_server
 RUN go mod download
-
-COPY . .
-COPY config.yaml ./config.yaml
-
 RUN go build -o main .
 
 EXPOSE 8099

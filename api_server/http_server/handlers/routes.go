@@ -4,10 +4,10 @@ import (
 	"api_server/expression_manager"
 	"api_server/expression_manager/agent"
 	mwLogger "api_server/http_server/logger"
-	"api_server/internal/storage"
-	"api_server/internal/storage/postgresql"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"internal/storage"
+	"internal/storage/postgresql"
 	"log/slog"
 )
 

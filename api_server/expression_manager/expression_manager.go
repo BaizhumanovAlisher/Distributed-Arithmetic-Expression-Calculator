@@ -3,9 +3,9 @@ package expression_manager
 import (
 	"api_server/expression_manager/agent"
 	parser2 "api_server/expression_manager/parser"
-	"api_server/internal/model"
-	expression2 "api_server/internal/model/expression"
-	"api_server/internal/storage/postgresql"
+	"internal/model"
+	expression2 "internal/model/expression"
+	"internal/storage/postgresql"
 	"log"
 	"strconv"
 	"time"

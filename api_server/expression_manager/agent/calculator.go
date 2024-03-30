@@ -1,8 +1,8 @@
 package agent
 
 import (
-	"api_server/internal/model"
-	expression2 "api_server/internal/model/expression"
+	"internal/model"
+	expression2 "internal/model/expression"
 	"log"
 	"math"
 	"time"

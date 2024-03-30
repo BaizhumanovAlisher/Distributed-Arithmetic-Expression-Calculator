@@ -1,11 +1,11 @@
 package storage
 
 import (
-	"api_server/internal/config"
-	"api_server/internal/model"
 	"encoding/json"
 	"errors"
 	"github.com/go-redis/redis"
+	"internal/config"
+	"internal/model"
 	"time"
 )
 

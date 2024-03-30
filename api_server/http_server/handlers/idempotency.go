@@ -1,11 +1,11 @@
 package handlers
 
 import (
-	"api_server/internal/model"
-	"api_server/internal/model/expression"
-	"api_server/internal/storage"
 	"context"
 	"github.com/go-chi/render"
+	"internal/model"
+	"internal/model/expression"
+	"internal/storage"
 	"log/slog"
 	"net/http"
 )

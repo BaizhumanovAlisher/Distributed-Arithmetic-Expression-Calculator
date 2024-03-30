@@ -1,9 +1,9 @@
 package storage
 
 import (
-	"api_server/internal/config"
-	model2 "api_server/internal/model"
-	"api_server/internal/model/expression"
+	"internal/config"
+	model2 "internal/model"
+	"internal/model/expression"
 )
 
 type Repository interface {

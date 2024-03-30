@@ -1,9 +1,9 @@
 package postgresql
 
 import (
-	"api_server/internal/config"
 	"database/sql"
 	"fmt"
+	"internal/config"
 )
 
 func Postgresql(cfg *config.Config) (*PostgresqlDB, error) {

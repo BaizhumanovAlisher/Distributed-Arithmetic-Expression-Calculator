@@ -1,8 +1,8 @@
 package handlers
 
 import (
-	"api_server/internal/model/expression"
 	"github.com/go-chi/render"
+	"internal/model/expression"
 	"log/slog"
 	"net/http"
 )

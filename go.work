@@ -1,6 +1,7 @@
 go 1.21.8
 
 use (
-	./api_server
-	./protos
+	api_server
+	protos
+	internal
 )

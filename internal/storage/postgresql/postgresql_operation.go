@@ -1,11 +1,11 @@
 package postgresql
 
 import (
-	"api_server/internal/config"
-	"api_server/internal/model"
 	"database/sql"
 	"errors"
 	"fmt"
+	"internal/config"
+	"internal/model"
 )
 
 func (s *PostgresqlDB) CreateOperation(operation *model.OperationWithDuration) error {
