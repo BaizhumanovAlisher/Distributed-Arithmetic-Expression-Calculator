@@ -1,10 +1,8 @@
-package main
+package app
 
 import (
+	"auth_service/grpc_server"
 	"internal/grpc"
-	"internal/grpc/auth"
-
-	// "internal/app/grpc_app"
 	"log/slog"
 	"time"
 )
@@ -14,7 +12,7 @@ type App struct {
 }
 
 func New(log *slog.Logger, grpcPort int, storagePath string, tokenTTL time.Duration) *App {
-	grpcApp := grpc.New(log, grpcPort, auth.Register)
+	grpcApp := grpc.New(log, grpcPort, grpc_server.Register)
 
 	return &App{
 		GRPCSvr: grpcApp,

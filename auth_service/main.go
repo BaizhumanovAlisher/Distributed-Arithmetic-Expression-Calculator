@@ -1,6 +1,7 @@
 package main
 
 import (
+	"auth_service/app"
 	"internal/helpers"
 )
 
@@ -10,7 +11,7 @@ func main() {
 	log := helpers.NewLogger()
 	log.Info("starting application")
 
-	application := New(log, cfg.GRPCConfig.Port, cfg.Storage.StoragePath, cfg.AuthService.TokenTTL)
+	application := app.New(log, cfg.GRPCConfig.Port, cfg.Storage.StoragePath, cfg.AuthService.TokenTTL)
 
 	application.GRPCSvr.MustRun()
 }
