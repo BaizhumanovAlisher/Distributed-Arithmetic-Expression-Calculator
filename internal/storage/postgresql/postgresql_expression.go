@@ -5,13 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"internal/model/expression"
-
-	_ "github.com/lib/pq"
 )
-
-type PostgresqlDB struct {
-	db *sql.DB
-}
 
 func (s *PostgresqlDB) ReadAllExpressionsWithStatus(status expression.Status) ([]*expression.Expression, error) {
 	rows, err := s.db.Query(`SELECT id, expression, answer, status, created_at, completed_at FROM expressions WHERE status = $1`, status)

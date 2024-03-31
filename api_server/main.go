@@ -13,10 +13,10 @@ import (
 )
 
 func main() {
-	cfg := helpers.MustLoad()
+	cfg := helpers.MustLoadConfig()
 	logger := helpers.NewLogger()
 
-	repo, err := postgresql.Postgresql(cfg)
+	repo, err := postgresql.NewPostgresql(cfg)
 	if err != nil {
 		log.Fatal(err)
 	}

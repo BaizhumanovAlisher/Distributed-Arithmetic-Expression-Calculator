@@ -4,12 +4,13 @@ http_server:
   address: "localhost:8099"
   timeout: 5s
   idle_timeout: 60s
+
 storage:
   user: "postgres"
   dbname: "distributed_calculator"
   password: "password"
   host: "localhost"
-  post: "8100"
+  port: "8100"
   sslmode: "disable"
 
 

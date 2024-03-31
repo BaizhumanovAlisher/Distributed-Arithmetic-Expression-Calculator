@@ -2,23 +2,17 @@ package postgresql
 
 import (
 	"database/sql"
-	"fmt"
 	"internal/helpers"
+
+	_ "github.com/lib/pq"
 )
 
-func Postgresql(cfg *helpers.Config) (*PostgresqlDB, error) {
-	storage := cfg.Storage
+type PostgresqlDB struct {
+	db *sql.DB
+}
 
-	dbURL := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=%s",
-		storage.User,
-		storage.Password,
-		storage.Host,
-		storage.Port,
-		storage.DBName,
-		storage.SSLMode,
-	)
-
-	db, err := sql.Open("postgres", dbURL)
+func NewPostgresql(cfg *helpers.Config) (*PostgresqlDB, error) {
+	db, err := sql.Open("postgres", cfg.Storage.StoragePath)
 
 	if err != nil {
 		return nil, err

@@ -9,7 +9,7 @@ storage:
   dbname: "distributed_calculator"
   password: "password"
   host: "localhost"
-  post: "8100"
+  port: "8100"
   sslmode: "disable"
 
 grpc:

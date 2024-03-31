@@ -1,6 +1,7 @@
 package helpers
 
 import (
+	"fmt"
 	"github.com/ilyakaznacheev/cleanenv"
 	"log"
 	"os"
@@ -25,12 +26,13 @@ type HTTPServer struct {
 }
 
 type Storage struct {
-	User     string `yaml:"user"`
-	DBName   string `yaml:"dbname"`
-	Password string `yaml:"password"`
-	Host     string `yaml:"host"`
-	Port     string `yaml:"post"`
-	SSLMode  string `yaml:"sslmode"`
+	User        string `yaml:"user"`
+	DBName      string `yaml:"dbname"`
+	Password    string `yaml:"password"`
+	Host        string `yaml:"host"`
+	Port        string `yaml:"port"`
+	SSLMode     string `yaml:"sslmode"`
+	StoragePath string
 }
 
 type Operation struct {
@@ -61,7 +63,7 @@ type GRPCConfig struct {
 	Port int `yaml:"port" env-default:"8103"`
 }
 
-func MustLoad() *Config {
+func MustLoadConfig() *Config {
 	configPath := "./config.yaml"
 
 	if _, err := os.Stat(configPath); os.IsNotExist(err) {
@@ -74,12 +76,13 @@ func MustLoad() *Config {
 		log.Fatalf("cannot read config: %s", err)
 	}
 
-	checkDuration(&cfg)
+	cfg.checkDuration()
+	cfg.compileStoragePath()
 
 	return &cfg
 }
 
-func checkDuration(cfg *Config) {
+func (cfg *Config) checkDuration() {
 	if cfg.DurationInSecondAddition < 0 {
 		log.Fatalf("duration of addition operation is lower than 0")
 	}
@@ -95,4 +98,15 @@ func checkDuration(cfg *Config) {
 	if cfg.DurationInSecondDivision < 0 {
 		log.Fatalf("duration of division operation is lower than 0")
 	}
+}
+
+func (cfg *Config) compileStoragePath() {
+	cfg.Storage.StoragePath = fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=%s",
+		cfg.Storage.User,
+		cfg.Storage.Password,
+		cfg.Storage.Host,
+		cfg.Storage.Port,
+		cfg.Storage.DBName,
+		cfg.Storage.SSLMode,
+	)
 }
