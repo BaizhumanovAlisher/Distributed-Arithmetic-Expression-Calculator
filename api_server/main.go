@@ -3,7 +3,7 @@ package main
 import (
 	"api_server/expression_manager"
 	"api_server/expression_manager/agent"
-	"api_server/http_server/handlers"
+	"api_server/handlers"
 	"internal/helpers"
 	"internal/storage"
 	"internal/storage/postgresql"

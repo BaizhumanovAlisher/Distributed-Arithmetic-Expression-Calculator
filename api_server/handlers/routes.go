@@ -3,9 +3,9 @@ package handlers
 import (
 	"api_server/expression_manager"
 	"api_server/expression_manager/agent"
-	mwLogger "api_server/http_server/logger"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	mwLogger "internal/helpers"
 	"internal/storage"
 	"internal/storage/postgresql"
 	"log/slog"
@@ -15,7 +15,7 @@ func Routes(logger *slog.Logger, repo *postgresql.PostgresqlDB, redis *storage.R
 	router := chi.NewRouter()
 	router.Use(middleware.Recoverer)
 	router.Use(middleware.Logger)
-	router.Use(mwLogger.New(logger))
+	router.Use(mwLogger.NewLoggerMiddleware(logger))
 	router.Use(middleware.URLFormat)
 
 	router.Post("/expressions", idempotencyExpressionPost(
