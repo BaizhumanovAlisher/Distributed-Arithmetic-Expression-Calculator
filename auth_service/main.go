@@ -5,9 +5,12 @@ import (
 )
 
 func main() {
-	//cfg := config.MustLoad()
+	cfg := helpers.MustLoadConfig()
 
 	log := helpers.NewLogger()
 	log.Info("starting application")
 
+	application := New(log, cfg.GRPCConfig.Port, cfg.Storage.StoragePath, cfg.AuthService.TokenTTL)
+
+	application.GRPCSvr.MustRun()
 }
