@@ -3,10 +3,10 @@ package postgresql
 import (
 	"database/sql"
 	"fmt"
-	"internal/config"
+	"internal/helpers"
 )
 
-func Postgresql(cfg *config.Config) (*PostgresqlDB, error) {
+func Postgresql(cfg *helpers.Config) (*PostgresqlDB, error) {
 	storage := cfg.Storage
 
 	dbURL := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=%s",
@@ -38,7 +38,7 @@ func Postgresql(cfg *config.Config) (*PostgresqlDB, error) {
 	return postgresql, nil
 }
 
-func (s *PostgresqlDB) Init(cfg *config.Config) error {
+func (s *PostgresqlDB) Init(cfg *helpers.Config) error {
 	q := `
 CREATE TABLE IF NOT EXISTS expressions (
     id SERIAL PRIMARY KEY,

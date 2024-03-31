@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"github.com/go-redis/redis"
-	"internal/config"
+	"internal/helpers"
 	"internal/model"
 	"time"
 )
@@ -14,7 +14,7 @@ type RedisDB struct {
 	ttl    time.Duration
 }
 
-func Redis(cfg *config.Config) (*RedisDB, error) {
+func Redis(cfg *helpers.Config) (*RedisDB, error) {
 	redisDB := &RedisDB{}
 	err := redisDB.Init(cfg)
 
@@ -25,7 +25,7 @@ func Redis(cfg *config.Config) (*RedisDB, error) {
 	return redisDB, nil
 }
 
-func (r *RedisDB) Init(cfg *config.Config) error {
+func (r *RedisDB) Init(cfg *helpers.Config) error {
 	r.ttl = cfg.QuickAccessStorage.TTL
 	r.client = redis.NewClient(&redis.Options{
 		Addr:     cfg.QuickAccessStorage.Address,

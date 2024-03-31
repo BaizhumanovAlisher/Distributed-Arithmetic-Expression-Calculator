@@ -4,7 +4,6 @@ import (
 	"api_server/expression_manager"
 	"api_server/expression_manager/agent"
 	"api_server/http_server/handlers"
-	"internal/config"
 	"internal/helpers"
 	"internal/storage"
 	"internal/storage/postgresql"
@@ -14,7 +13,7 @@ import (
 )
 
 func main() {
-	cfg := config.MustLoad()
+	cfg := helpers.MustLoad()
 	logger := helpers.NewLogger()
 
 	repo, err := postgresql.Postgresql(cfg)

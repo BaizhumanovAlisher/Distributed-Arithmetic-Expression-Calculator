@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"internal/config"
+	"internal/helpers"
 	"internal/model"
 )
 
@@ -62,7 +62,7 @@ func (s *PostgresqlDB) UpdateOperation(operation *model.OperationWithDuration) e
 	return nil
 }
 
-func (s *PostgresqlDB) SeedOperation(cfg *config.Config) error {
+func (s *PostgresqlDB) SeedOperation(cfg *helpers.Config) error {
 	operationsInDatabase, err := s.ReadOperations()
 
 	if err != nil {

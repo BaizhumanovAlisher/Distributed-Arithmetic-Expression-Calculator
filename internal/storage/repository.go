@@ -1,7 +1,7 @@
 package storage
 
 import (
-	"internal/config"
+	"internal/helpers"
 	model2 "internal/model"
 	"internal/model/expression"
 )
@@ -17,13 +17,13 @@ type Repository interface {
 	ReadOperations() ([]*model2.OperationWithDuration, error)
 	ReadOperation(operationType model2.OperationType) (*model2.OperationWithDuration, error)
 	UpdateOperation(*model2.OperationWithDuration) error
-	SeedOperation(config *config.Config) error
+	SeedOperation(config *helpers.Config) error
 
-	Init(config *config.Config) error
+	Init(config *helpers.Config) error
 }
 
 type RepositoryQuickAccess interface {
-	Init(config *config.Config) error
+	Init(config *helpers.Config) error
 	StoreIdempotencyToken(string, string, *model2.ResponseData) error
 	RetrieveIdempotencyToken(string, string) (*model2.ResponseData, error)
 }
