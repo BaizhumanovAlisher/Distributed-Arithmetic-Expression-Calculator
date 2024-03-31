@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package auth;
 
-option go_package = "distributed_calculator.sso.v1;ssov1";
+option go_package = "distributed_calculator.auth_service.v1;auth_service_v1";
 
 service Auth {
   rpc Register (RegisterRequest) returns (RegisterResponse);
