@@ -3,6 +3,9 @@ package main
 import (
 	"auth_service/app"
 	"internal/helpers"
+	"os"
+	"os/signal"
+	"syscall"
 )
 
 func main() {
@@ -13,5 +16,12 @@ func main() {
 
 	application := app.New(log, cfg.GRPCConfig.Port, cfg.Storage.StoragePath, cfg.AuthService.TokenTTL)
 
-	application.GRPCSvr.MustRun()
+	go application.GRPCSvr.MustRun()
+	stop := make(chan os.Signal, 1)
+	signal.Notify(stop, syscall.SIGTERM, syscall.SIGINT)
+
+	<-stop
+
+	application.GRPCSvr.Stop()
+	log.Info("application stopped")
 }
