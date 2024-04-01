@@ -9,17 +9,17 @@ type Expression struct {
 	Status      Status     `json:"status"`
 	CreatedAt   time.Time  `json:"createdAt"`
 	CompletedAt *time.Time `json:"completedAt,omitempty"`
+	UserId      int64      `json:"userId"`
 }
 
 type InputExpression struct {
 	Expression string `json:"expression" validate:"required,expression"`
 }
 
-func NewExpression(expression string) *Expression {
+func NewExpressionInProcess(expression string) *Expression {
 	return &Expression{
 		Expression: expression,
 		Status:     InProcess,
-		CreatedAt:  time.Now(),
 	}
 }
 

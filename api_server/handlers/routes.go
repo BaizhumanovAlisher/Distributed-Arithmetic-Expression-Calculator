@@ -12,6 +12,7 @@ import (
 )
 
 func Routes(logger *slog.Logger, repo *postgresql.PostgresqlDB, redis *storage.RedisDB, manager *expression_manager.ExpressionManager, newAgent *agent.Agent) *chi.Mux {
+	//todo: refactor by creating new struct
 	router := chi.NewRouter()
 	router.Use(middleware.Recoverer)
 	router.Use(middleware.Logger)
@@ -28,5 +29,6 @@ func Routes(logger *slog.Logger, repo *postgresql.PostgresqlDB, redis *storage.R
 	router.Put("/operations", putOperations(logger, repo.UpdateOperation))
 	router.Get("/mini-calculators", GetAllMiniCalculator(logger, newAgent.GetAllMiniCalculators))
 
+	//todo: add sing_in and login
 	return router
 }

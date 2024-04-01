@@ -7,8 +7,9 @@ import (
 	"internal/model/expression"
 )
 
+// ReadAllExpressionsWithStatus Only for expression_manager
 func (s *PostgresqlDB) ReadAllExpressionsWithStatus(status expression.Status) ([]*expression.Expression, error) {
-	rows, err := s.db.Query(`SELECT id, expression, answer, status, created_at, completed_at FROM expressions WHERE status = $1`, status)
+	rows, err := s.db.Query(`SELECT id, expression, answer, status, created_at, completed_at, user_id FROM expressions WHERE status = $1`, status)
 
 	if errors.Is(err, sql.ErrNoRows) {
 		return nil, nil
@@ -22,7 +23,7 @@ func (s *PostgresqlDB) ReadAllExpressionsWithStatus(status expression.Status) ([
 	var expressions []*expression.Expression
 	for rows.Next() {
 		expr := new(expression.Expression)
-		err := rows.Scan(&expr.Id, &expr.Expression, &expr.Answer, &expr.Status, &expr.CreatedAt, &expr.CompletedAt)
+		err := rows.Scan(&expr.Id, &expr.Expression, &expr.Answer, &expr.Status, &expr.CreatedAt, &expr.CompletedAt, &expr.UserId)
 		if err != nil {
 			return nil, fmt.Errorf("failed to scan row into expression: %w", err)
 		}
@@ -36,6 +37,7 @@ func (s *PostgresqlDB) ReadAllExpressionsWithStatus(status expression.Status) ([
 	return expressions, nil
 }
 
+// UpdateExpression Only for expression_manager
 func (s *PostgresqlDB) UpdateExpression(e *expression.Expression) error {
 	stmt, err := s.db.Prepare(`
 UPDATE expressions SET 
@@ -63,23 +65,31 @@ WHERE id = $4`)
 	return nil
 }
 
-func (s *PostgresqlDB) CreateExpression(expression *expression.Expression) error {
-	stmt, err := s.db.Prepare(`INSERT INTO expressions (expression, answer, status, created_at, completed_at) VALUES ($1, $2, $3, $4, $5) RETURNING id`)
+func (s *PostgresqlDB) CreateExpression(expr *expression.Expression) (int, error) {
+	stmt, err := s.db.Prepare(`
+INSERT INTO expressions (expression, status, created_at, user_id) 
+VALUES ($1, $2, now() AT TIME ZONE 'UTC', $4) RETURNING id
+`)
+
 	if err != nil {
-		return fmt.Errorf("failed to prepare statement: %w", err)
+		return 0, fmt.Errorf("failed to prepare statement: %w", err)
 	}
 	defer stmt.Close()
 
-	err = stmt.QueryRow(expression.Expression, expression.Answer, expression.Status, expression.CreatedAt, expression.CompletedAt).Scan(&expression.Id)
+	err = stmt.QueryRow(expr.Expression, expr.Status, expr.CreatedAt, expr.UserId).Scan(&expr.Id)
 	if err != nil {
-		return fmt.Errorf("failed to execute statement: %w", err)
+		return 0, fmt.Errorf("failed to execute statement: %w", err)
 	}
 
-	return nil
+	return expr.Id, nil
 }
 
-func (s *PostgresqlDB) ReadExpressions() ([]*expression.Expression, error) {
-	rows, err := s.db.Query(`SELECT id, expression, answer, status, created_at, completed_at FROM expressions`)
+func (s *PostgresqlDB) ReadExpressions(userId int64) ([]*expression.Expression, error) {
+	rows, err := s.db.Query(`
+SELECT id, expression, answer, status, created_at, completed_at 
+FROM expressions WHERE user_id = $1
+`, userId)
+
 	if err != nil {
 		return nil, fmt.Errorf("failed to query all expressions: %w", err)
 	}
@@ -88,6 +98,8 @@ func (s *PostgresqlDB) ReadExpressions() ([]*expression.Expression, error) {
 	var expressions []*expression.Expression
 	for rows.Next() {
 		expr := new(expression.Expression)
+		expr.UserId = userId
+
 		err := rows.Scan(&expr.Id, &expr.Expression, &expr.Answer, &expr.Status, &expr.CreatedAt, &expr.CompletedAt)
 		if err != nil {
 			return nil, fmt.Errorf("failed to scan row into expression: %w", err)
@@ -102,11 +114,18 @@ func (s *PostgresqlDB) ReadExpressions() ([]*expression.Expression, error) {
 	return expressions, nil
 }
 
-func (s *PostgresqlDB) ReadExpression(id int) (*expression.Expression, error) {
-	row := s.db.QueryRow(`SELECT id, expression, answer, status, created_at, completed_at FROM expressions WHERE id = $1`, id)
+func (s *PostgresqlDB) ReadExpression(id int, userId int64) (*expression.Expression, error) {
+	row := s.db.QueryRow(`
+SELECT expression, answer, status, created_at, completed_at 
+FROM expressions WHERE id = $1 AND user_id = $2
+`, id, userId)
 
 	expr := new(expression.Expression)
-	err := row.Scan(&expr.Id, &expr.Expression, &expr.Answer, &expr.Status, &expr.CreatedAt, &expr.CompletedAt)
+
+	expr.Id = id
+	expr.UserId = userId
+
+	err := row.Scan(&expr.Expression, &expr.Answer, &expr.Status, &expr.CreatedAt, &expr.CompletedAt)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, sql.ErrNoRows

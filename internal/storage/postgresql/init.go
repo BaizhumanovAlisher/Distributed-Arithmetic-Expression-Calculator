@@ -2,9 +2,8 @@ package postgresql
 
 import (
 	"database/sql"
-	"internal/helpers"
-
 	_ "github.com/lib/pq"
+	"internal/helpers"
 )
 
 type PostgresqlDB struct {
@@ -34,19 +33,27 @@ func NewPostgresql(cfg *helpers.Config) (*PostgresqlDB, error) {
 
 func (s *PostgresqlDB) Init(cfg *helpers.Config) error {
 	q := `
+CREATE TABLE IF NOT EXISTS users (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR NOT NULL,
+    hashed_password TEXT NOT NULL,
+    created_at timestamp NOT NULL
+);
+
 CREATE TABLE IF NOT EXISTS expressions (
     id SERIAL PRIMARY KEY,
-    expression TEXT,
-    answer VARCHAR,
+    expression TEXT NOT NULL,
+    answer VARCHAR NULL,
     status VARCHAR,
-    created_at timestamp,
-    completed_at timestamp NULL 
+    created_at timestamp NOT NULL,
+    completed_at timestamp NULL,
+    user_id BIGINT REFERENCES users NOT NULL 
 );
 
 CREATE TABLE IF NOT EXISTS operations (
     id SERIAL PRIMARY KEY,
-    operation_kind VARCHAR UNIQUE,
-    duration_in_sec INT
+    operation_kind VARCHAR UNIQUE NOT NULL ,
+    duration_in_sec INT NOT NULL 
 );
 `
 
