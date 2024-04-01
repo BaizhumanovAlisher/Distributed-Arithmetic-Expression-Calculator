@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"github.com/go-chi/render"
+	"internal/helpers"
 	model2 "internal/model"
 	"internal/validators"
 	"log/slog"
@@ -19,7 +20,7 @@ func getOperations(log *slog.Logger, operationReader func() ([]*model2.Operation
 		if errors.Is(err, sql.ErrNoRows) {
 			log.Error("error to get operations: %s", err)
 			render.Status(r, http.StatusInternalServerError)
-			render.JSON(w, r, model2.NewAPIError("no operations"))
+			render.JSON(w, r, helpers.NewAPIError("no operations"))
 			return
 		}
 
@@ -40,7 +41,7 @@ func putOperations(log *slog.Logger, operationUpdate func(operation *model2.Oper
 		if err != nil {
 			log.Error("incorrect JSON file: %s", err)
 			render.Status(r, http.StatusBadRequest)
-			render.JSON(w, r, model2.NewAPIError("incorrect JSON file"))
+			render.JSON(w, r, helpers.NewAPIError("incorrect JSON file"))
 			return
 		}
 
@@ -50,7 +51,7 @@ func putOperations(log *slog.Logger, operationUpdate func(operation *model2.Oper
 
 		if errValidating != nil {
 			render.Status(r, http.StatusInternalServerError)
-			render.JSON(w, r, model2.NewAPIError(errValidating.Error()))
+			render.JSON(w, r, helpers.NewAPIError(errValidating.Error()))
 			return
 		}
 
@@ -59,7 +60,7 @@ func putOperations(log *slog.Logger, operationUpdate func(operation *model2.Oper
 		if errDb != nil {
 			log.Error("could not update operation: %+v", operation)
 			render.Status(r, http.StatusInternalServerError)
-			render.JSON(w, r, model2.NewAPIError("could not update operation"))
+			render.JSON(w, r, helpers.NewAPIError("could not update operation"))
 		}
 
 		log.Info("successful to update operation")

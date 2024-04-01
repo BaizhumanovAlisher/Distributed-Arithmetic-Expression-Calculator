@@ -6,6 +6,7 @@ import (
 	"errors"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
+	"internal/helpers"
 	model2 "internal/model"
 	"internal/model/expression"
 	"internal/validators"
@@ -21,7 +22,7 @@ func createExpression(log *slog.Logger, manager *expression_manager.ExpressionMa
 
 		if err != nil {
 			log.Error("incorrect JSON file: ", err)
-			apiError := model2.NewAPIError("incorrect JSON file")
+			apiError := helpers.NewAPIError("incorrect JSON file")
 
 			rd := model2.NewResponseData(
 				http.StatusBadRequest,
@@ -38,7 +39,7 @@ func createExpression(log *slog.Logger, manager *expression_manager.ExpressionMa
 		err = validators.ValidateExpression(inputExp)
 		if err != nil {
 			log.Error("incorrect JSON file validating error: ", err)
-			apiError := model2.NewAPIError("incorrect JSON file, validating error")
+			apiError := helpers.NewAPIError("incorrect JSON file, validating error")
 
 			rd := model2.NewResponseData(
 				http.StatusBadRequest,
@@ -83,7 +84,7 @@ func getExpressions(log *slog.Logger, expressionReader func() ([]*expression.Exp
 		if errors.Is(err, sql.ErrNoRows) {
 			log.Error("error to get expression: %s", err)
 			render.Status(r, http.StatusNotFound)
-			render.JSON(w, r, model2.NewAPIError("no expressions"))
+			render.JSON(w, r, helpers.NewAPIError("no expressions"))
 			return
 		}
 
@@ -103,7 +104,7 @@ func getExpression(log *slog.Logger, expressionReader func(int) (*expression.Exp
 		if err != nil {
 			log.Error("id should be integer and bigger than 0")
 			render.Status(r, http.StatusBadRequest)
-			render.JSON(w, r, model2.NewAPIError("id should be integer"))
+			render.JSON(w, r, helpers.NewAPIError("id should be integer"))
 			return
 		}
 
@@ -112,7 +113,7 @@ func getExpression(log *slog.Logger, expressionReader func(int) (*expression.Exp
 		if errors.Is(err, sql.ErrNoRows) {
 			log.Error("error to get expression: %s", err)
 			render.Status(r, http.StatusNotFound)
-			render.JSON(w, r, model2.NewAPIError("no expression with this id"))
+			render.JSON(w, r, helpers.NewAPIError("no expression with this id"))
 			return
 		}
 
