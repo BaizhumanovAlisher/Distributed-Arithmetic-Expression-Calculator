@@ -1,7 +1,7 @@
 env: "local"
 
 auth_service:
-  grpc_port: 8103
+  grpc_port: 8102
   token_ttl: 1h
 
 storage:
