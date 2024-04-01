@@ -16,7 +16,6 @@ type Config struct {
 	QuickAccessStorage `yaml:"quick_access_storage"`
 	Agent              `yaml:"agent"`
 	AuthService        `yaml:"auth_service"`
-	GRPCConfig         `yaml:"grpc"`
 }
 
 type HTTPServer struct {
@@ -55,12 +54,8 @@ type Agent struct {
 }
 
 type AuthService struct {
-	Address  string        `yaml:"address" env-default:"localhost:8102"`
+	GrpcPort int           `yaml:"port" env-default:"8103"`
 	TokenTTL time.Duration `yaml:"token_ttl" env-default:"1h"`
-}
-
-type GRPCConfig struct {
-	Port int `yaml:"port" env-default:"8103"`
 }
 
 func MustLoadConfig() *Config {

@@ -1,7 +1,7 @@
 env: "local"
 
 auth_service:
-  address: "localhost:8102"
+  grpc_port: 8103
   token_ttl: 1h
 
 storage:
@@ -11,6 +11,3 @@ storage:
   host: "localhost"
   port: "8100"
   sslmode: "disable"
-
-grpc:
-  port: 8103
