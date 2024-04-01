@@ -13,10 +13,17 @@ type Auth interface {
 }
 
 type JWTAuth struct {
+	log      *slog.Logger
+	tokenTTL time.Duration
+	repo     *postgresql.PostgresqlDB
 }
 
-func NewJWTAuth(*slog.Logger, time.Duration, *postgresql.PostgresqlDB) *JWTAuth {
-	return &JWTAuth{}
+func NewJWTAuth(log *slog.Logger, tokenTTL time.Duration, repo *postgresql.PostgresqlDB) *JWTAuth {
+	return &JWTAuth{
+		log:      log,
+		tokenTTL: tokenTTL,
+		repo:     repo,
+	}
 }
 
 func (J *JWTAuth) Login(ctx context.Context, user string, password string) (string, error) {
