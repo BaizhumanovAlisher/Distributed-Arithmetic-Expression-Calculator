@@ -2,7 +2,10 @@ package helpers
 
 import "fmt"
 
-var InvalidCredentials = fmt.Errorf("invalid credentials")
+var (
+	InvalidCredentialsErr = fmt.Errorf("invalid credentials")
+	UsernameExistErr      = fmt.Errorf("user name exist already")
+)
 
 type APIError struct {
 	ApiErr string `json:"apiError"`
