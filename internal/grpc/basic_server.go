@@ -7,31 +7,27 @@ import (
 	"net"
 )
 
-type App struct {
-	log        *slog.Logger
-	gRPCServer *grpc.Server
-	port       int
+type BasicGRPCServer struct {
+	log                  *slog.Logger
+	registeredGRPCServer *grpc.Server
+	port                 int
 }
 
-func New(log *slog.Logger, port int, register func(gRPC *grpc.Server)) *App {
-	gRPCServer := grpc.NewServer()
-
-	register(gRPCServer)
-
-	return &App{
-		log:        log,
-		gRPCServer: gRPCServer,
-		port:       port,
+func New(log *slog.Logger, port int, registeredGRPCServer *grpc.Server) *BasicGRPCServer {
+	return &BasicGRPCServer{
+		log:                  log,
+		registeredGRPCServer: registeredGRPCServer,
+		port:                 port,
 	}
 }
 
-func (a *App) MustRun() {
+func (a *BasicGRPCServer) MustRun() {
 	if err := a.Run(); err != nil {
 		panic(err)
 	}
 }
 
-func (a *App) Run() error {
+func (a *BasicGRPCServer) Run() error {
 	const op = "grpc_app.Run"
 
 	log := a.log.With(
@@ -46,17 +42,17 @@ func (a *App) Run() error {
 
 	log.Info("starting gRPC server", slog.String("addr", l.Addr().String()))
 
-	if err := a.gRPCServer.Serve(l); err != nil {
+	if err := a.registeredGRPCServer.Serve(l); err != nil {
 		return fmt.Errorf("%s : %w", op, err)
 	}
 
 	return nil
 }
 
-func (a *App) Stop() {
+func (a *BasicGRPCServer) Stop() {
 	const op = "grpc_app.Stop"
 
 	a.log.With(slog.String("op", op)).Info("stopping gRPC server", slog.Int("port", a.port))
 
-	a.gRPCServer.GracefulStop()
+	a.registeredGRPCServer.GracefulStop()
 }

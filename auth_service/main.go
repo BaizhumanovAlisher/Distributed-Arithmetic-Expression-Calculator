@@ -2,10 +2,14 @@ package main
 
 import (
 	"auth_service/app"
+	"auth_service/auth"
+	"google.golang.org/grpc"
+	grpc2 "internal/grpc"
 	"internal/helpers"
-	"os"
-	"os/signal"
-	"syscall"
+	"internal/storage/postgresql"
+	logStandard "log"
+	"log/slog"
+	authservicev1 "protos/gen/go"
 )
 
 func main() {
@@ -14,14 +18,27 @@ func main() {
 	log := helpers.NewLogger()
 	log.Info("starting application")
 
-	application := app.New(log, cfg.GRPCConfig.Port, cfg.Storage.StoragePath, cfg.AuthService.TokenTTL)
+	repository, err := postgresql.NewPostgresql(cfg)
+	if err != nil {
+		logStandard.Fatal(err)
+	}
 
-	go application.GRPCSvr.MustRun()
-	stop := make(chan os.Signal, 1)
-	signal.Notify(stop, syscall.SIGTERM, syscall.SIGINT)
+	authService := auth.NewJWTAuth(log, cfg.AuthService.TokenTTL, repository)
 
-	<-stop
+	grpcServer := NewAuthGRPCServer(log, cfg.AuthService.GrpcPort, authService)
 
-	application.GRPCSvr.Stop()
+	go grpcServer.MustRun()
+	_ = helpers.WaitSignal()
+
+	grpcServer.Stop()
 	log.Info("application stopped")
+}
+
+func NewAuthGRPCServer(log *slog.Logger, port int, authService *auth.JWTAuth) *grpc2.BasicGRPCServer {
+	gRPCServer := grpc.NewServer()
+
+	authservicev1.RegisterAuthServer(gRPCServer, app.NewGRPCController(authService))
+	grpcApp := grpc2.New(log, port, gRPCServer)
+
+	return grpcApp
 }
