@@ -111,8 +111,8 @@ func (app *Application) getExpression() http.HandlerFunc {
 		// todo: check user_id to validate access
 		exp, err := app.repo.ReadExpression(id)
 
-		if errors.Is(err, sql.ErrNoRows) {
-			app.log.Error("error to get expression: %s", err)
+		if errors.Is(err, helpers.NoRowsErr) {
+			app.log.Error("error to get expression: %s", helpers.NoRowsErr)
 			render.Status(r, http.StatusNotFound)
 			render.JSON(w, r, helpers.NewAPIError("no expression with this id"))
 			return

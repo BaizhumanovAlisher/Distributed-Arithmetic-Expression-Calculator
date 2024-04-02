@@ -5,6 +5,7 @@ import "fmt"
 var (
 	InvalidCredentialsErr = fmt.Errorf("invalid credentials")
 	UsernameExistErr      = fmt.Errorf("user name exist already")
+	NoRowsErr             = fmt.Errorf("not found")
 )
 
 type APIError struct {

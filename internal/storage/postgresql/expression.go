@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"internal/helpers"
 	"internal/model/expression"
 )
 
@@ -127,7 +128,7 @@ FROM expressions WHERE id = $1
 	err := row.Scan(&expr.Expression, &expr.Answer, &expr.Status, &expr.CreatedAt, &expr.CompletedAt, &expr.UserId)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return nil, sql.ErrNoRows
+			return nil, helpers.NoRowsErr
 		}
 		return nil, fmt.Errorf("failed to scan row into expression: %w", err)
 	}
