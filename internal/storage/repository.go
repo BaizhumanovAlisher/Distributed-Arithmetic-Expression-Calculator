@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"context"
 	"internal/helpers"
 	model2 "internal/model"
 	"internal/model/expression"
@@ -19,8 +20,8 @@ type Repository interface {
 	UpdateOperation(*model2.OperationWithDuration) error
 	SeedOperation(config *helpers.Config) error
 
-	CreateUser(*model2.User) (int64, error)
-	ReadUserByName(name string) (user *model2.User, err error)
+	CreateUser(ctx context.Context, user *model2.User) (int64, error)
+	ReadUserByName(ctx context.Context, name string) (user *model2.User, err error)
 
 	Init(config *helpers.Config) error
 }

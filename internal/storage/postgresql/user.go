@@ -1,6 +1,7 @@
 package postgresql
 
 import (
+	"context"
 	"database/sql"
 	"errors"
 	"fmt"
@@ -9,7 +10,7 @@ import (
 	"internal/model"
 )
 
-func (s *PostgresqlDB) CreateUser(user *model.User) (int64, error) {
+func (s *PostgresqlDB) CreateUser(ctx context.Context, user *model.User) (int64, error) {
 	stmt, err := s.db.Prepare(`
 INSERT INTO users (name, hashed_password, created_at) 
 VALUES ($1, $2, now() AT TIME ZONE 'UTC') RETURNING id
@@ -20,7 +21,7 @@ VALUES ($1, $2, now() AT TIME ZONE 'UTC') RETURNING id
 	}
 	defer stmt.Close()
 
-	err = stmt.QueryRow(user.Name, user.HashedPassword).Scan(&user.Id)
+	err = stmt.QueryRowContext(ctx, user.Name, user.HashedPassword).Scan(&user.Id)
 	if err != nil {
 		var repoErr *pq.Error
 		ok := errors.As(err, &repoErr)
@@ -36,8 +37,8 @@ VALUES ($1, $2, now() AT TIME ZONE 'UTC') RETURNING id
 	return user.Id, nil
 }
 
-func (s *PostgresqlDB) ReadUserByName(name string) (*model.User, error) {
-	row := s.db.QueryRow(`
+func (s *PostgresqlDB) ReadUserByName(ctx context.Context, name string) (*model.User, error) {
+	row := s.db.QueryRowContext(ctx, `
 SELECT id, hashed_password, created_at
 FROM users WHERE name = $1
 `, name)

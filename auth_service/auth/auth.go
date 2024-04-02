@@ -16,6 +16,7 @@ type JWTAuth struct {
 	log      *slog.Logger
 	tokenTTL time.Duration
 	repo     *postgresql.PostgresqlDB
+	secret   string
 }
 
 func NewJWTAuth(log *slog.Logger, tokenTTL time.Duration, repo *postgresql.PostgresqlDB) *JWTAuth {
