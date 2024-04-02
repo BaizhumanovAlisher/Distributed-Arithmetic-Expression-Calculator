@@ -35,7 +35,7 @@ func (s *PostgresqlDB) Init(cfg *helpers.Config) error {
 	q := `
 CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
-    name VARCHAR NOT NULL,
+    name VARCHAR UNIQUE NOT NULL,
     hashed_password TEXT NOT NULL,
     created_at timestamp NOT NULL
 );

@@ -114,18 +114,17 @@ FROM expressions WHERE user_id = $1
 	return expressions, nil
 }
 
-func (s *PostgresqlDB) ReadExpression(id int, userId int64) (*expression.Expression, error) {
+func (s *PostgresqlDB) ReadExpression(id int) (*expression.Expression, error) {
 	row := s.db.QueryRow(`
-SELECT expression, answer, status, created_at, completed_at 
-FROM expressions WHERE id = $1 AND user_id = $2
-`, id, userId)
+SELECT expression, answer, status, created_at, completed_at, user_id 
+FROM expressions WHERE id = $1
+`, id)
 
 	expr := new(expression.Expression)
 
 	expr.Id = id
-	expr.UserId = userId
 
-	err := row.Scan(&expr.Expression, &expr.Answer, &expr.Status, &expr.CreatedAt, &expr.CompletedAt)
+	err := row.Scan(&expr.Expression, &expr.Answer, &expr.Status, &expr.CreatedAt, &expr.CompletedAt, &expr.UserId)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, sql.ErrNoRows

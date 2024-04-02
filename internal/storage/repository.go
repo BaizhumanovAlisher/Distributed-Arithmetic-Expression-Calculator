@@ -11,7 +11,7 @@ type Repository interface {
 	UpdateExpression(*expression.Expression) error
 	ReadExpressions(userId int64) ([]*expression.Expression, error)
 	ReadAllExpressionsWithStatus(expression.Status) ([]*expression.Expression, error)
-	ReadExpression(id int, userId int64) (*expression.Expression, error)
+	ReadExpression(id int) (*expression.Expression, error)
 
 	CreateOperation(*model2.OperationWithDuration) error
 	ReadOperations() ([]*model2.OperationWithDuration, error)

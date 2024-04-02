@@ -96,7 +96,7 @@ func getExpressions(log *slog.Logger, expressionReader func(userId int64) ([]*ex
 	}
 }
 
-func getExpression(log *slog.Logger, expressionReader func(id int, userId int64) (*expression.Expression, error)) http.HandlerFunc {
+func getExpression(log *slog.Logger, expressionReader func(id int) (*expression.Expression, error)) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		log.Info("start get expression")
 		idStr := chi.URLParam(r, "id")
@@ -110,9 +110,8 @@ func getExpression(log *slog.Logger, expressionReader func(id int, userId int64)
 			return
 		}
 
-		// todo: add reading from context user_id
-		var userId int64
-		exp, err := expressionReader(id, userId)
+		// todo: check user_id
+		exp, err := expressionReader(id)
 
 		if errors.Is(err, sql.ErrNoRows) {
 			log.Error("error to get expression: %s", err)
