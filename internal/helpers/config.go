@@ -55,8 +55,11 @@ type Agent struct {
 }
 
 type AuthService struct {
-	GrpcPort int           `yaml:"grpc_port" env-default:"8102"`
-	TokenTTL time.Duration `yaml:"token_ttl" env-default:"1h"`
+	GrpcPort    int           `yaml:"grpc_port" env-default:"8102"`
+	TokenTTL    time.Duration `yaml:"token_ttl" env-default:"1h"`
+	Secret      string        `yaml:"secret"`
+	CheckSecret bool          `yaml:"check_required_secret" env-default:"false"`
+	Cost        int           `yaml:"cost"`
 }
 
 func MustLoadConfig() *Config {
@@ -74,6 +77,7 @@ func MustLoadConfig() *Config {
 
 	cfg.checkDuration()
 	cfg.compileStoragePath()
+	cfg.checkRequiredSecret()
 
 	return &cfg
 }
@@ -105,4 +109,12 @@ func (cfg *Config) compileStoragePath() {
 		cfg.Storage.DBName,
 		cfg.Storage.SSLMode,
 	)
+}
+
+func (cfg *Config) checkRequiredSecret() {
+	if cfg.AuthService.CheckSecret {
+		if len(cfg.AuthService.Secret) == 0 {
+			log.Fatalf("secret is required")
+		}
+	}
 }

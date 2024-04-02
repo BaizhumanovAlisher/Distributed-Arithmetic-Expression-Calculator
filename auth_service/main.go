@@ -2,7 +2,6 @@ package main
 
 import (
 	"auth_service/app"
-	"auth_service/auth"
 	"google.golang.org/grpc"
 	grpc2 "internal/grpc"
 	"internal/helpers"
@@ -23,7 +22,7 @@ func main() {
 		logStandard.Fatal(err)
 	}
 
-	authService := auth.NewJWTAuth(log, cfg.AuthService.TokenTTL, repository)
+	authService := app.NewJWTAuth(log, cfg.AuthService.TokenTTL, repository, app.NewPassHasher(cfg.AuthService.Cost), cfg.AuthService.Secret)
 
 	grpcServer := NewAuthGRPCServer(log, cfg.AuthService.GrpcPort, authService)
 
@@ -34,7 +33,7 @@ func main() {
 	log.Info("application stopped")
 }
 
-func NewAuthGRPCServer(log *slog.Logger, port int, authService *auth.JWTAuth) *grpc2.BasicGRPCServer {
+func NewAuthGRPCServer(log *slog.Logger, port int, authService *app.JWTAuth) *grpc2.BasicGRPCServer {
 	gRPCServer := grpc.NewServer()
 
 	authservicev1.RegisterAuthServer(gRPCServer, app.NewGRPCController(authService))
