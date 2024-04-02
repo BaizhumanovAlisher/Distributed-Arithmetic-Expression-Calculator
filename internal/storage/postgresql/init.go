@@ -61,9 +61,12 @@ CREATE TABLE IF NOT EXISTS operations (
 		return err
 	}
 
-	err := s.SeedOperation(cfg)
-	if err != nil {
-		return err
+	if cfg.Operation.PermissionToSeed {
+		err := s.SeedOperation(cfg)
+		if err != nil {
+			return err
+		}
 	}
-	return err
+
+	return nil
 }

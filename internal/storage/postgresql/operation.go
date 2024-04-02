@@ -80,11 +80,16 @@ func (s *PostgresqlDB) SeedOperation(cfg *helpers.Config) error {
 		{OperationKind: model.Division, DurationInSecond: cfg.DurationInSecondDivision},
 	}
 
+	errorsSql := make([]error, 0)
 	for _, operation := range operations {
 		err := s.CreateOperation(operation)
 		if err != nil {
-			return fmt.Errorf("failed to create operation: %w", err)
+			errorsSql = append(errorsSql, err)
 		}
+	}
+
+	if len(errorsSql) < cfg.Operation.CountOperation && len(errorsSql) > 0 {
+		return errorsSql[0]
 	}
 
 	return nil

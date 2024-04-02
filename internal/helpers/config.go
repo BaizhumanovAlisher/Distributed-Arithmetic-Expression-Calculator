@@ -35,11 +35,12 @@ type Storage struct {
 }
 
 type Operation struct {
-	DurationInSecondAddition       int `yaml:"addition" env-default:"0"`
-	DurationInSecondSubtraction    int `yaml:"subtraction" env-default:"0"`
-	DurationInSecondMultiplication int `yaml:"multiplication" env-default:"0"`
-	DurationInSecondDivision       int `yaml:"division" env-default:"0"`
-	CountOperation                 int `yaml:"count_operation"`
+	DurationInSecondAddition       int  `yaml:"addition" env-default:"0"`
+	DurationInSecondSubtraction    int  `yaml:"subtraction" env-default:"0"`
+	DurationInSecondMultiplication int  `yaml:"multiplication" env-default:"0"`
+	DurationInSecondDivision       int  `yaml:"division" env-default:"0"`
+	CountOperation                 int  `yaml:"count_operation" env-default:"4"`
+	PermissionToSeed               bool `yaml:"permission_to_seed" env-default:"false"`
 }
 
 type QuickAccessStorage struct {
@@ -54,7 +55,7 @@ type Agent struct {
 }
 
 type AuthService struct {
-	GrpcPort int           `yaml:"port" env-default:"8103"`
+	GrpcPort int           `yaml:"grpc_port" env-default:"8102"`
 	TokenTTL time.Duration `yaml:"token_ttl" env-default:"1h"`
 }
 
