@@ -5,7 +5,6 @@ import (
 	"api_server/expression_manager/agent"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-	mwLogger "internal/helpers"
 	"internal/storage"
 	"internal/storage/postgresql"
 	"log/slog"
@@ -33,7 +32,7 @@ func (app *Application) Routes() *chi.Mux {
 	router := chi.NewRouter()
 	router.Use(middleware.Recoverer)
 	router.Use(middleware.Logger)
-	router.Use(mwLogger.NewLoggerMiddleware(app.log))
+	router.Use(NewLoggerMiddleware(app.log))
 	router.Use(middleware.URLFormat)
 
 	router.Post("/expressions", app.idempotencyExpressionPost(app.createExpression()))
