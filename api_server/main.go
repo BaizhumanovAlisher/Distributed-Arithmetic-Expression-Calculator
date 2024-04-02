@@ -1,9 +1,9 @@
 package main
 
 import (
+	"api_server/app"
 	"api_server/expression_manager"
 	"api_server/expression_manager/agent"
-	"api_server/handlers"
 	"internal/helpers"
 	"internal/storage"
 	"internal/storage/postgresql"
@@ -33,7 +33,8 @@ func main() {
 		log.Fatal(err)
 	}
 
-	router := handlers.Routes(logger, repo, redis, expressionManager, newAgent)
+	application := app.NewApplication(logger, repo, redis, expressionManager, newAgent)
+	router := application.Routes()
 
 	logger.Info("start server", slog.String("address", cfg.HTTPServer.Address))
 

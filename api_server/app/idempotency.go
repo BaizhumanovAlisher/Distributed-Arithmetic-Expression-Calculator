@@ -1,16 +1,14 @@
-package handlers
+package app
 
 import (
 	"context"
 	"github.com/go-chi/render"
 	"internal/model"
 	"internal/model/expression"
-	"internal/storage"
-	"log/slog"
 	"net/http"
 )
 
-func idempotencyExpressionPost(next http.HandlerFunc, logger *slog.Logger, redis *storage.RedisDB) http.HandlerFunc {
+func (app *Application) idempotencyExpressionPost(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 
@@ -19,30 +17,30 @@ func idempotencyExpressionPost(next http.HandlerFunc, logger *slog.Logger, redis
 		var inputExpression expression.InputExpression
 		err := render.DecodeJSON(r.Body, &inputExpression)
 
-		updateContext(r, "expression", inputExpression.Expression)
-		updateContext(r, "error", err)
+		app.updateContext(r, "expression", inputExpression.Expression)
+		app.updateContext(r, "error", err)
 
 		if idempotencyToken == "" {
 			next.ServeHTTP(w, r)
 			return
 		}
-		logger.Debug("idempotency token: ", idempotencyToken)
+		app.log.Debug("idempotency token: ", idempotencyToken)
 
 		if err != nil {
 			next.ServeHTTP(w, r)
 			return
 		}
 
-		rd, err := redis.RetrieveIdempotencyToken(idempotencyToken, inputExpression.Expression)
+		rd, err := app.redis.RetrieveIdempotencyToken(idempotencyToken, inputExpression.Expression)
 
 		if err != nil {
-			logger.Error("problem with redis: ", err)
+			app.log.Error("problem with redis: ", err)
 			next.ServeHTTP(w, r)
 			return
 		}
 
 		if rd != nil {
-			logger.Info("send cashed respond")
+			app.log.Info("send cashed respond")
 
 			w.WriteHeader(rd.StatusCode)
 			render.JSON(w, r, rd.Body)
@@ -51,15 +49,15 @@ func idempotencyExpressionPost(next http.HandlerFunc, logger *slog.Logger, redis
 
 			rd, ok := r.Context().Value("response data").(*model.ResponseData)
 			if !ok {
-				logger.Error("No saved response data")
+				app.log.Error("No saved response data")
 				return
 			}
 
 			exp, ok := r.Context().Value("expression").(string)
 
-			err := redis.StoreIdempotencyToken(idempotencyToken, exp, rd)
+			err := app.redis.StoreIdempotencyToken(idempotencyToken, exp, rd)
 			if err != nil {
-				logger.Error("problem with redis: ", err)
+				app.log.Error("problem with redis: ", err)
 			}
 		}
 
@@ -67,7 +65,7 @@ func idempotencyExpressionPost(next http.HandlerFunc, logger *slog.Logger, redis
 	}
 }
 
-func updateContext(r *http.Request, key string, value any) {
+func (app *Application) updateContext(r *http.Request, key string, value any) {
 	ctx := r.Context()
 	req := r.WithContext(context.WithValue(ctx, key, value))
 	*r = *req

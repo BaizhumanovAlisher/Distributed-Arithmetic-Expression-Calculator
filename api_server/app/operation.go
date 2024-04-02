@@ -1,4 +1,4 @@
-package handlers
+package app
 
 import (
 	"database/sql"
@@ -7,45 +7,44 @@ import (
 	"internal/helpers"
 	model2 "internal/model"
 	"internal/validators"
-	"log/slog"
 	"net/http"
 )
 
-func getOperations(log *slog.Logger, operationReader func() ([]*model2.OperationWithDuration, error)) http.HandlerFunc {
+func (app *Application) getOperations() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		log.Info("start get all operations")
+		app.log.Info("start get all operations")
 
-		operations, err := operationReader()
+		operations, err := app.repo.ReadOperations()
 
 		if errors.Is(err, sql.ErrNoRows) {
-			log.Error("error to get operations: %s", err)
+			app.log.Error("error to get operations: %s", err)
 			render.Status(r, http.StatusInternalServerError)
 			render.JSON(w, r, helpers.NewAPIError("no operations"))
 			return
 		}
 
-		log.Info("successful to get all operations")
+		app.log.Info("successful to get all operations")
 		render.Status(r, http.StatusOK)
 		render.JSON(w, r, operations)
 	}
 }
 
-func putOperations(log *slog.Logger, operationUpdate func(operation *model2.OperationWithDuration) error) http.HandlerFunc {
+func (app *Application) putOperations() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		log.Info("start put operations")
+		app.log.Info("start put operations")
 
 		var operation model2.OperationWithDuration
 
 		err := render.DecodeJSON(r.Body, &operation)
 
 		if err != nil {
-			log.Error("incorrect JSON file: %s", err)
+			app.log.Error("incorrect JSON file: %s", err)
 			render.Status(r, http.StatusBadRequest)
 			render.JSON(w, r, helpers.NewAPIError("incorrect JSON file"))
 			return
 		}
 
-		log.Info("request body decoded")
+		app.log.Info("request body decoded")
 
 		errValidating := validators.ValidateOperation(operation)
 
@@ -55,15 +54,15 @@ func putOperations(log *slog.Logger, operationUpdate func(operation *model2.Oper
 			return
 		}
 
-		errDb := operationUpdate(&operation)
+		errDb := app.repo.UpdateOperation(&operation)
 
 		if errDb != nil {
-			log.Error("could not update operation: %+v", operation)
+			app.log.Error("could not update operation: %+v", operation)
 			render.Status(r, http.StatusInternalServerError)
 			render.JSON(w, r, helpers.NewAPIError("could not update operation"))
 		}
 
-		log.Info("successful to update operation")
+		app.log.Info("successful to update operation")
 		w.WriteHeader(http.StatusOK)
 	}
 }
