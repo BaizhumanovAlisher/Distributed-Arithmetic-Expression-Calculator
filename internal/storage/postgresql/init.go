@@ -34,7 +34,7 @@ func NewPostgresql(cfg *helpers.Config) (*PostgresqlDB, error) {
 func (s *PostgresqlDB) Init(cfg *helpers.Config) error {
 	q := `
 CREATE TABLE IF NOT EXISTS users (
-    id SERIAL PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     name VARCHAR UNIQUE NOT NULL,
     hashed_password TEXT NOT NULL,
     created_at timestamp NOT NULL
