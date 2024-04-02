@@ -20,7 +20,7 @@ type Repository interface {
 	SeedOperation(config *helpers.Config) error
 
 	CreateUser(*model2.User) (int64, error)
-	ReadCredential(name string) (hashedPassword string, err error)
+	ReadUserByName(name string) (user *model2.User, err error)
 
 	Init(config *helpers.Config) error
 }
