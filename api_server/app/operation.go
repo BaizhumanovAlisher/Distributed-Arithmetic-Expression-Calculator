@@ -4,8 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"github.com/go-chi/render"
-	"internal/helpers"
-	model2 "internal/model"
+	"internal/model"
 	"internal/validators"
 	"net/http"
 )
@@ -19,7 +18,7 @@ func (app *Application) getOperations() http.HandlerFunc {
 		if errors.Is(err, sql.ErrNoRows) {
 			app.log.Error("error to get operations: %s", err)
 			render.Status(r, http.StatusInternalServerError)
-			render.JSON(w, r, helpers.NewAPIError("no operations"))
+			render.JSON(w, r, model.NewAPIError("no operations"))
 			return
 		}
 
@@ -33,14 +32,14 @@ func (app *Application) putOperations() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		app.log.Info("start put operations")
 
-		var operation model2.OperationWithDuration
+		var operation model.OperationWithDuration
 
 		err := render.DecodeJSON(r.Body, &operation)
 
 		if err != nil {
 			app.log.Error("incorrect JSON file: %s", err)
 			render.Status(r, http.StatusBadRequest)
-			render.JSON(w, r, helpers.NewAPIError("incorrect JSON file"))
+			render.JSON(w, r, model.NewAPIError("incorrect JSON file"))
 			return
 		}
 
@@ -50,7 +49,7 @@ func (app *Application) putOperations() http.HandlerFunc {
 
 		if errValidating != nil {
 			render.Status(r, http.StatusInternalServerError)
-			render.JSON(w, r, helpers.NewAPIError(errValidating.Error()))
+			render.JSON(w, r, model.NewAPIError(errValidating.Error()))
 			return
 		}
 
@@ -59,7 +58,7 @@ func (app *Application) putOperations() http.HandlerFunc {
 		if errDb != nil {
 			app.log.Error("could not update operation: %+v", operation)
 			render.Status(r, http.StatusInternalServerError)
-			render.JSON(w, r, helpers.NewAPIError("could not update operation"))
+			render.JSON(w, r, model.NewAPIError("could not update operation"))
 		}
 
 		app.log.Info("successful to update operation")

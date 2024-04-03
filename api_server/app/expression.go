@@ -6,7 +6,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
 	"internal/helpers"
-	model2 "internal/model"
+	"internal/model"
 	"internal/model/expression"
 	"internal/validators"
 	"net/http"
@@ -20,9 +20,9 @@ func (app *Application) createExpression() http.HandlerFunc {
 
 		if err != nil {
 			app.log.Error("incorrect JSON file: ", err)
-			apiError := helpers.NewAPIError("incorrect JSON file")
+			apiError := model.NewAPIError("incorrect JSON file")
 
-			rd := model2.NewResponseData(
+			rd := model.NewResponseData(
 				http.StatusBadRequest,
 				apiError,
 			)
@@ -37,9 +37,9 @@ func (app *Application) createExpression() http.HandlerFunc {
 		err = validators.ValidateExpression(inputExp)
 		if err != nil {
 			app.log.Error("incorrect JSON file validating error: ", err)
-			apiError := helpers.NewAPIError("incorrect JSON file, validating error")
+			apiError := model.NewAPIError("incorrect JSON file, validating error")
 
-			rd := model2.NewResponseData(
+			rd := model.NewResponseData(
 				http.StatusBadRequest,
 				apiError,
 			)
@@ -60,7 +60,7 @@ func (app *Application) createExpression() http.HandlerFunc {
 
 		app.manager.StartSolveConcurrently(expressionFull)
 
-		rd := model2.NewResponseData(
+		rd := model.NewResponseData(
 			http.StatusOK,
 			expressionFull,
 		)
@@ -84,7 +84,7 @@ func (app *Application) getExpressions() http.HandlerFunc {
 		if errors.Is(err, sql.ErrNoRows) {
 			app.log.Error("error to get expression: %s", err)
 			render.Status(r, http.StatusNotFound)
-			render.JSON(w, r, helpers.NewAPIError("no expressions"))
+			render.JSON(w, r, model.NewAPIError("no expressions"))
 			return
 		}
 
@@ -104,7 +104,7 @@ func (app *Application) getExpression() http.HandlerFunc {
 		if err != nil {
 			app.log.Error("id should be integer and bigger than 0")
 			render.Status(r, http.StatusBadRequest)
-			render.JSON(w, r, helpers.NewAPIError("id should be integer"))
+			render.JSON(w, r, model.NewAPIError("id should be integer"))
 			return
 		}
 
@@ -114,7 +114,7 @@ func (app *Application) getExpression() http.HandlerFunc {
 		if errors.Is(err, helpers.NoRowsErr) {
 			app.log.Error("error to get expression: %s", helpers.NoRowsErr)
 			render.Status(r, http.StatusNotFound)
-			render.JSON(w, r, helpers.NewAPIError("no expression with this id"))
+			render.JSON(w, r, model.NewAPIError("no expression with this id"))
 			return
 		}
 

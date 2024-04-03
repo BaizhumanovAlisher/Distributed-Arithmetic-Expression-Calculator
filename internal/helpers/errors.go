@@ -1,6 +1,8 @@
 package helpers
 
-import "fmt"
+import (
+	"fmt"
+)
 
 var (
 	InvalidCredentialsErr   = fmt.Errorf("invalid credentials")
@@ -10,12 +12,3 @@ var (
 	InvalidArgumentUserName = fmt.Errorf("length of name should be longer than 7")
 	InvalidArgumentPassword = fmt.Errorf("length of name should be longer than 7")
 )
-
-type APIError struct {
-	ApiErr string `json:"apiError"`
-	Id     *int   `json:"id,omitempty"`
-}
-
-func NewAPIError(s string) *APIError {
-	return &APIError{ApiErr: s}
-}
