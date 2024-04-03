@@ -8,7 +8,7 @@ type Expression struct {
 	Answer      string     `json:"answer"`
 	Status      Status     `json:"status"`
 	CreatedAt   time.Time  `json:"createdAt"`
-	CompletedAt *time.Time `json:"completedAt,omitempty"`
+	CompletedAt *time.Time `json:"completedAt"`
 	UserId      int64      `json:"userId"`
 }
 

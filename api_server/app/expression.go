@@ -9,10 +9,12 @@ import (
 	"internal/model"
 	"internal/model/expression"
 	"internal/validators"
+	"log/slog"
 	"net/http"
 	"strconv"
 )
 
+// createExpression data was reading in idempotencyExpressionPost and written to r.Context
 func (app *Application) createExpression() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		inputExp, _ := r.Context().Value("expression").(string)
@@ -52,7 +54,7 @@ func (app *Application) createExpression() http.HandlerFunc {
 		}
 
 		expressionFull := expression.NewExpressionInProcess(inputExp)
-		_, err = app.repo.CreateExpression(expressionFull)
+		id, err := app.repo.CreateExpression(expressionFull)
 		if err != nil {
 			render.Status(r, http.StatusInternalServerError)
 			return
@@ -60,15 +62,16 @@ func (app *Application) createExpression() http.HandlerFunc {
 
 		app.manager.StartSolveConcurrently(expressionFull)
 
+		idRespond := model.NewIdRespond(id)
 		rd := model.NewResponseData(
 			http.StatusOK,
-			expressionFull,
+			idRespond,
 		)
 
 		app.updateContext(r, "response data", rd)
 
 		w.WriteHeader(http.StatusOK)
-		render.JSON(w, r, expressionFull)
+		render.JSON(w, r, idRespond)
 		return
 	}
 }
@@ -81,16 +84,23 @@ func (app *Application) getExpressions() http.HandlerFunc {
 		var userId int64
 		expressions, err := app.repo.ReadExpressions(userId)
 
-		if errors.Is(err, sql.ErrNoRows) {
-			app.log.Error("error to get expression: %s", err)
-			render.Status(r, http.StatusNotFound)
-			render.JSON(w, r, model.NewAPIError("no expressions"))
+		if err != nil {
+			if errors.Is(err, sql.ErrNoRows) {
+				app.log.Error("no expression", slog.Int64("userId", userId))
+				w.WriteHeader(http.StatusNotFound)
+				return
+			}
+
+			app.log.Error("internal server error", slog.String("err", err.Error()))
+			render.Status(r, http.StatusInternalServerError)
+			render.JSON(w, r, model.NewAPIError(err.Error()))
 			return
 		}
 
 		app.log.Info("successful to get all expressions")
 		render.Status(r, http.StatusOK)
 		render.JSON(w, r, expressions)
+		return
 	}
 }
 
@@ -101,25 +111,31 @@ func (app *Application) getExpression() http.HandlerFunc {
 
 		id, err := strconv.Atoi(idStr)
 
-		if err != nil {
-			app.log.Error("id should be integer and bigger than 0")
+		if err != nil || id < 1 {
+			app.log.Info("id should be integer and bigger than 0")
 			render.Status(r, http.StatusBadRequest)
 			render.JSON(w, r, model.NewAPIError("id should be integer"))
 			return
 		}
 
-		// todo: check user_id to validate access
+		// todo: check user_id to validate access. permission may be denied
 		exp, err := app.repo.ReadExpression(id)
 
-		if errors.Is(err, helpers.NoRowsErr) {
-			app.log.Error("error to get expression: %s", helpers.NoRowsErr)
-			render.Status(r, http.StatusNotFound)
-			render.JSON(w, r, model.NewAPIError("no expression with this id"))
+		if err != nil {
+			if errors.Is(err, helpers.NoRowsErr) {
+				app.log.Warn("no expression", slog.String("err", helpers.NoRowsErr.Error()))
+				w.WriteHeader(http.StatusNotFound)
+				return
+			}
+
+			app.log.Error("internal server error", slog.String("err", err.Error()))
+			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
 
 		app.log.Info("successful to get expressions")
 		render.Status(r, http.StatusOK)
 		render.JSON(w, r, exp)
+		return
 	}
 }

@@ -47,8 +47,8 @@ func (app *Application) Routes() *chi.Mux {
 	router.Get("/expressions", app.getExpressions())
 	router.Get("/expressions/{id}", app.getExpression())
 	router.Get("/operations", app.getOperations())
-	router.Put("/operations", app.putOperations())
-	router.Get("/mini-calculators", app.GetAllMiniCalculator())
+	router.Put("/operations", app.putOperation())
+	router.Get("/mini_calculators", app.GetAllMiniCalculator())
 
 	//todo: add sing_in and login
 	return router

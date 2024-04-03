@@ -5,8 +5,62 @@ info:
 servers:
   - url: http://localhost:8099
 paths:
+  /sign_up:
+    post:
+      operationId: sign_up
+      description: Sign up
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCredentials'
+      responses:
+        200:
+          description: Success
+        401:
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+
+  /login:
+    post:
+      operationId: login
+      description: Login to get JWT
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCredentials'
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JWTToken'
+        403:
+          description: Invalid credentials
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+
   /expressions:
     post:
+      security:
+        - bearerAuth: []
       parameters:
         - in: header
           name: X-Idempotency-Token
@@ -26,20 +80,24 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Expression'
+                $ref: '#/components/schemas/IdRespond'
         400:
           description: Invalid expression
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: '#/components/schemas/APIError'
+        401:
+          description: Unauthorized
         500:
           description: Internal server error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Expression'
+                $ref: '#/components/schemas/APIError'
     get:
+      security:
+        - bearerAuth: []
       summary: Get expressions
       responses:
         200:
@@ -50,14 +108,21 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Expression'
+        401:
+          description: Unauthorized
         404:
           description: No expressions
+        500:
+          description: Internal server error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: '#/components/schemas/APIError'
+
   /expressions/{id}:
     get:
+      security:
+        - bearerAuth: []
       summary: Get expression
       operationId: getExpression
       parameters:
@@ -73,20 +138,30 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Expression'
-        404:
-          description: Expression not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
+
         400:
           description: Invalid id
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: '#/components/schemas/APIError'
+        401:
+          description: Unauthorized
+        403:
+          description: Permission denied
+        404:
+          description: Expression not found
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+
   /operations:
     get:
+      security:
+        - bearerAuth: []
       summary: List operations
       operationId: listOperations
       responses:
@@ -98,8 +173,24 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Operation'
+        400:
+          description: Invalid operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        401:
+          description: Unauthorized
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
 
     put:
+      security:
+        - bearerAuth: []
       summary: Update operation execution time
       operationId: updateOperationTime
       parameters:
@@ -116,14 +207,32 @@ paths:
         required: true
       responses:
         200:
-          description: Operation execution time updated
+          description: Update duration (in seconds) of operation
+          content:
+            application/json:
+              schema:
+                type: object
+                items:
+                  $ref: '#/components/schemas/Operation'
         400:
-          description: Invalid input
-        404:
-          description: Operation not found
+          description: Invalid operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        401:
+          description: Unauthorized
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
 
-  /mini-calculators:
+  /mini_calculators:
     get:
+      security:
+        - bearerAuth: []
       summary: List computational capabilities
       operationId: listComputationalCapabilities
       responses:
@@ -135,6 +244,9 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/MiniCalculator'
+        401:
+          description: Unauthorized
+
 components:
   schemas:
     Expression:
@@ -155,12 +267,19 @@ components:
         completedAt:
           type: string
           format: date-time
+          nullable: true
+        userId:
+          type: integer
+          format: int64
       required:
         - id
         - expression
         - answer
         - status
         - createdAt
+        - completedAt
+        - userId
+
     InputExpression:
       type: object
       properties:
@@ -168,6 +287,7 @@ components:
           type: string
       required:
         - expression
+
     Operation:
       type: object
       properties:
@@ -190,6 +310,7 @@ components:
       required:
         - resourceId
         - leastExpression
+
     LeastExpression:
       type: object
       properties:
@@ -207,12 +328,46 @@ components:
         - number2
         - operation
         - idExpression
-    Error:
+
+    APIError:
       type: object
       properties:
         description:
           type: string
-        id:
-          type: number
       required:
         - description
+
+    IdRespond:
+      type: object
+      properties:
+        id:
+          type: integer
+      required:
+        - id
+
+    UserCredentials:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+      required:
+        - username
+        - password
+
+    JWTToken:
+      type: object
+      properties:
+        token:
+          type: string
+      required:
+        - token
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+security:
+  - bearerAuth: []

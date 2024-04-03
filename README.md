@@ -31,11 +31,7 @@ POST `http://localhost:8099/expression`
 
 ```json
 {
-  "id": 32,
-  "expression": "((2*(3+4))/5)+(6-7)",
-  "answer": "",
-  "status": "in process",
-  "createdAt": "2024-02-17T19:13:20.214214974+06:00"
+  "id": 32
 }
 ```
 
@@ -78,8 +74,8 @@ Example:
 ```
 
 ## Tech specification:
-- [specifications](docs/version_1/tech_specification_RU_1.md)
-- [criteria](docs/version_1/evaluation_criteria.md) !!PLEASE ATTEND!!
+- [specifications 1](docs/version_1/tech_specification_RU_1.md) and [specifications 2](docs/version_2/tech_specification_RU_2.md)
+- [criteria](docs/version_1/evaluation_criteria.md) 
 
 ## No Front-end
 
@@ -100,6 +96,11 @@ You can use postman. [Postman file](docs/postman.json). [Postman download](https
 - **If header is null, token will not be used**
 - No caching in `500` http code
 
+# Authorization
+- Header: `Authorization: Bearer` [link](https://apidog.com/articles/what-is-bearer-token/)
+- All handlers require authorization except `/sign_up` and `/login`
+- Length of `name` and `password` should be longer than 7
+
 # Scheme
 ![image](docs/version_1/distributed_calculator_1.drawio.png)
 
@@ -108,3 +109,4 @@ You can use postman. [Postman file](docs/postman.json). [Postman download](https
 - postgresql: http://localhost:8100
 - redis: http://localhost:8101
 - auth_service: http://localhost:8102
+- 

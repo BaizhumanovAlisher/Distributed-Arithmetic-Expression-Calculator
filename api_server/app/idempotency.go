@@ -10,6 +10,7 @@ import (
 
 func (app *Application) idempotencyExpressionPost(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		//todo add user id
 		w.Header().Set("Content-Type", "application/json")
 
 		idempotencyToken := r.Header.Get("X-Idempotency-Token")

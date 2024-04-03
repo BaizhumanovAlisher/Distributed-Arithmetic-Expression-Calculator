@@ -1,11 +1,10 @@
 package app
 
 import (
-	"database/sql"
-	"errors"
 	"github.com/go-chi/render"
 	"internal/model"
 	"internal/validators"
+	"log/slog"
 	"net/http"
 )
 
@@ -15,10 +14,9 @@ func (app *Application) getOperations() http.HandlerFunc {
 
 		operations, err := app.repo.ReadOperations()
 
-		if errors.Is(err, sql.ErrNoRows) {
-			app.log.Error("error to get operations: %s", err)
-			render.Status(r, http.StatusInternalServerError)
-			render.JSON(w, r, model.NewAPIError("no operations"))
+		if err != nil {
+			app.log.Error("error to get operations", slog.String("err", err.Error()))
+			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
 
@@ -28,16 +26,16 @@ func (app *Application) getOperations() http.HandlerFunc {
 	}
 }
 
-func (app *Application) putOperations() http.HandlerFunc {
+func (app *Application) putOperation() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		app.log.Info("start put operations")
+		app.log.Info("start put operation")
 
 		var operation model.OperationWithDuration
 
 		err := render.DecodeJSON(r.Body, &operation)
 
 		if err != nil {
-			app.log.Error("incorrect JSON file: %s", err)
+			app.log.Error("incorrect JSON file", slog.String("err", err.Error()))
 			render.Status(r, http.StatusBadRequest)
 			render.JSON(w, r, model.NewAPIError("incorrect JSON file"))
 			return
@@ -48,7 +46,8 @@ func (app *Application) putOperations() http.HandlerFunc {
 		errValidating := validators.ValidateOperation(operation)
 
 		if errValidating != nil {
-			render.Status(r, http.StatusInternalServerError)
+			app.log.Error("err validating operation", slog.String("err", errValidating.Error()))
+			render.Status(r, http.StatusBadRequest)
 			render.JSON(w, r, model.NewAPIError(errValidating.Error()))
 			return
 		}
@@ -56,9 +55,9 @@ func (app *Application) putOperations() http.HandlerFunc {
 		errDb := app.repo.UpdateOperation(&operation)
 
 		if errDb != nil {
-			app.log.Error("could not update operation: %+v", operation)
+			app.log.Error("could not update operation", slog.String("operation", string(operation.OperationKind)))
 			render.Status(r, http.StatusInternalServerError)
-			render.JSON(w, r, model.NewAPIError("could not update operation"))
+			return
 		}
 
 		app.log.Info("successful to update operation")
