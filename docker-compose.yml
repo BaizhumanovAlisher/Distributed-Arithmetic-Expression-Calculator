@@ -34,6 +34,7 @@ services:
     depends_on:
       - postgres
       - redis
+      - auth_service
     network_mode: host
 
   auth_service:
