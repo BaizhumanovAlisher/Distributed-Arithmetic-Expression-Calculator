@@ -1,7 +1,6 @@
 package app
 
 import (
-	"auth_service/auth"
 	"context"
 	"errors"
 	"google.golang.org/grpc/codes"
@@ -14,10 +13,10 @@ import (
 type GrpcController struct {
 	// todo: implement
 	authservicev1.UnimplementedAuthServer
-	Auth *auth.JWTAuth
+	Auth *JWTAuth
 }
 
-func NewGRPCController(auth *auth.JWTAuth) *GrpcController {
+func NewGRPCController(auth *JWTAuth) *GrpcController {
 	return &GrpcController{Auth: auth}
 }
 
@@ -31,6 +30,10 @@ func (g *GrpcController) Login(ctx context.Context, req *authservicev1.LoginRequ
 	if err != nil {
 		if errors.Is(err, helpers.InvalidCredentialsErr) {
 			return nil, status.Error(codes.Unauthenticated, helpers.InvalidCredentialsErr.Error())
+		}
+
+		if errors.Is(err, helpers.NoRowsErr) {
+			return nil, status.Error(codes.NotFound, helpers.NoRowsErr.Error())
 		}
 
 		return nil, status.Error(codes.Internal, "internal error")
