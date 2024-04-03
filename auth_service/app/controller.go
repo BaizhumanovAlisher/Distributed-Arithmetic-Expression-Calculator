@@ -36,7 +36,7 @@ func (g *GrpcController) Login(ctx context.Context, req *authservicev1.LoginRequ
 			return nil, status.Error(codes.NotFound, helpers.NoRowsErr.Error())
 		}
 
-		return nil, status.Error(codes.Internal, "internal error")
+		return nil, status.Error(codes.Internal, helpers.InternalErr.Error())
 	}
 
 	return &authservicev1.LoginResponse{
@@ -57,7 +57,7 @@ func (g *GrpcController) Register(ctx context.Context, req *authservicev1.Regist
 			return nil, status.Error(codes.AlreadyExists, helpers.UsernameExistErr.Error())
 		}
 
-		return nil, status.Error(codes.Internal, "internal error")
+		return nil, status.Error(codes.Internal, helpers.InternalErr.Error())
 	}
 
 	return &authservicev1.RegisterResponse{

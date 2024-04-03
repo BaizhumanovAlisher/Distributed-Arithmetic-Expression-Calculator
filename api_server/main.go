@@ -4,6 +4,7 @@ import (
 	"api_server/app"
 	"api_server/expression_manager"
 	"api_server/expression_manager/agent"
+	"api_server/grpc_client"
 	"internal/helpers"
 	"internal/storage"
 	"internal/storage/postgresql"
@@ -28,12 +29,13 @@ func main() {
 
 	newAgent := agent.NewAgent(cfg.Agent.CountOperation)
 	expressionManager, err := expression_manager.NewExpressionManager(newAgent, repo)
-
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	application := app.NewApplication(logger, repo, redis, expressionManager, newAgent)
+	authService, err := grpc_client.NewAuthService(cfg.Path)
+
+	application := app.NewApplication(logger, repo, redis, expressionManager, newAgent, authService)
 	router := application.Routes()
 
 	logger.Info("start server", slog.String("address", cfg.HTTPServer.Address))

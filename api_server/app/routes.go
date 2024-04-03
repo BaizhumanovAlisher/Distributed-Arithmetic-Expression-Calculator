@@ -3,6 +3,7 @@ package app
 import (
 	"api_server/expression_manager"
 	"api_server/expression_manager/agent"
+	"api_server/grpc_client"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"internal/storage"
@@ -11,20 +12,26 @@ import (
 )
 
 type Application struct {
-	log      *slog.Logger
-	repo     *postgresql.PostgresqlDB
-	redis    *storage.RedisDB
-	manager  *expression_manager.ExpressionManager
-	newAgent *agent.Agent
+	log         *slog.Logger
+	repo        *postgresql.PostgresqlDB
+	redis       *storage.RedisDB
+	manager     *expression_manager.ExpressionManager
+	newAgent    *agent.Agent
+	authService *grpc_client.AuthService
 }
 
-func NewApplication(log *slog.Logger, repo *postgresql.PostgresqlDB, redis *storage.RedisDB, manager *expression_manager.ExpressionManager, newAgent *agent.Agent) *Application {
+func NewApplication(
+	log *slog.Logger, repo *postgresql.PostgresqlDB, redis *storage.RedisDB,
+	manager *expression_manager.ExpressionManager, newAgent *agent.Agent,
+	authService *grpc_client.AuthService) *Application {
+
 	return &Application{
-		log:      log,
-		repo:     repo,
-		redis:    redis,
-		manager:  manager,
-		newAgent: newAgent,
+		log:         log,
+		repo:        repo,
+		redis:       redis,
+		manager:     manager,
+		newAgent:    newAgent,
+		authService: authService,
 	}
 }
 

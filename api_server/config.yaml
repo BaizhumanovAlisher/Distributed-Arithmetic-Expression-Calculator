@@ -29,3 +29,6 @@ quick_access_storage:
 
 agent:
   count_calculator: 3
+
+auth_service:
+  path: "localhost:8102"

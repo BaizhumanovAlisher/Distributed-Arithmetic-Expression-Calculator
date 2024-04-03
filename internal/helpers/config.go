@@ -60,6 +60,7 @@ type AuthService struct {
 	Secret      string        `yaml:"secret"`
 	CheckSecret bool          `yaml:"check_required_secret" env-default:"false"`
 	Cost        int           `yaml:"cost"`
+	Path        string        `yaml:"path"`
 }
 
 func MustLoadConfig() *Config {
