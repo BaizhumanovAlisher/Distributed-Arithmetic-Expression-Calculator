@@ -1,20 +1,20 @@
 package validators
 
 import (
-	"errors"
+	"internal/helpers"
 )
 
 func ValidateUsername(username string) error {
-	if len(username) == 0 {
-		return errors.New("empty username")
+	if len([]rune(username)) < 8 {
+		return helpers.InvalidArgumentUserName
 	}
 
 	return nil
 }
 
 func ValidatePassword(password string) error {
-	if len(password) == 0 {
-		return errors.New("empty password")
+	if len([]rune(password)) < 8 {
+		return helpers.InvalidArgumentPassword
 	}
 
 	return nil
