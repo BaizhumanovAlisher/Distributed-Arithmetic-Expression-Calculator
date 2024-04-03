@@ -28,7 +28,7 @@ func (a *BasicGRPCServer) MustRun() {
 }
 
 func (a *BasicGRPCServer) Run() error {
-	const op = "grpc_app.Run"
+	const op = "basic_server.Run"
 
 	log := a.log.With(
 		slog.String("op", op),
@@ -50,7 +50,7 @@ func (a *BasicGRPCServer) Run() error {
 }
 
 func (a *BasicGRPCServer) Stop() {
-	const op = "grpc_app.Stop"
+	const op = "basic_server.Stop"
 
 	a.log.With(slog.String("op", op)).Info("stopping gRPC server", slog.Int("port", a.port))
 
