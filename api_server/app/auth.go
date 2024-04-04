@@ -88,7 +88,7 @@ func (app *Application) middlewareAuth(next http.Handler) http.Handler {
 		tokenString, err := bearerExtractor.ExtractToken(r)
 
 		if err != nil || len(tokenString) == 0 {
-			slog.Warn("Error extracting token", slog.String("err", err.Error()))
+			app.log.Warn("Error extracting token", slog.String("err", err.Error()))
 			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}
@@ -96,32 +96,38 @@ func (app *Application) middlewareAuth(next http.Handler) http.Handler {
 		app.log.Info("successfully getting token", slog.String("token", tokenString))
 
 		token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-			return app.authService.Secret, nil
+			return []byte(app.authService.Secret), nil
 		})
 
 		if err != nil {
-			slog.Warn("Error extracting token", slog.String("err", err.Error()))
+			app.log.Warn("Error extracting token", slog.String("err", err.Error()))
 			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}
 
 		if !token.Valid {
-			slog.Warn("Invalid token", slog.String("err", err.Error()))
+			app.log.Warn("Invalid token")
 			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}
 
-		values := token.Header
-		timeExpiry, ok := values["exp"].(time.Time)
-		if !ok || timeExpiry.After(time.Now()) {
-			slog.Warn("Expired token or does not have \"exp\"", slog.String("err", err.Error()))
+		values := token.Claims.(jwt.MapClaims)
+		timeExpiryND, err := values.GetExpirationTime()
+		if err != nil {
+			app.log.Warn("Error extracting token", slog.String("err", err.Error()))
 			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}
 
-		userId, ok := values["userId"].(int64)
-		if !ok || userId == 0 {
-			slog.Error("do not have user id", slog.String("err", err.Error()))
+		if timeExpiryND.Before(time.Now()) {
+			app.log.Warn("Expired token or does not have \"exp\"")
+			w.WriteHeader(http.StatusUnauthorized)
+			return
+		}
+
+		userId, ok := values["userId"]
+		if !ok {
+			app.log.Error("No user id in jwt")
 			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}

@@ -16,10 +16,11 @@ type InputExpression struct {
 	Expression string `json:"expression" validate:"required,expression"`
 }
 
-func NewExpressionInProcess(expression string) *Expression {
+func NewExpressionInProcess(expression string, userId int64) *Expression {
 	return &Expression{
 		Expression: expression,
 		Status:     InProcess,
+		UserId:     userId,
 	}
 }
 

@@ -47,16 +47,17 @@ func (app *Application) createExpression() http.HandlerFunc {
 			)
 
 			app.updateContext(r, "response data", rd)
-			w.WriteHeader(http.StatusBadRequest)
-			render.JSON(w, r, apiError)
 
+			render.JSON(w, r, apiError)
+			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
 
-		expressionFull := expression.NewExpressionInProcess(inputExp)
+		userId := int64(r.Context().Value("userId").(float64))
+		expressionFull := expression.NewExpressionInProcess(inputExp, userId)
 		id, err := app.repo.CreateExpression(expressionFull)
 		if err != nil {
-			render.Status(r, http.StatusInternalServerError)
+			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
 
@@ -70,8 +71,8 @@ func (app *Application) createExpression() http.HandlerFunc {
 
 		app.updateContext(r, "response data", rd)
 
-		w.WriteHeader(http.StatusOK)
 		render.JSON(w, r, idRespond)
+		w.WriteHeader(http.StatusOK)
 		return
 	}
 }

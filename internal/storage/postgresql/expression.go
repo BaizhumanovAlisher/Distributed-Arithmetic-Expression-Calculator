@@ -69,7 +69,7 @@ WHERE id = $4`)
 func (s *PostgresqlDB) CreateExpression(expr *expression.Expression) (int, error) {
 	stmt, err := s.db.Prepare(`
 INSERT INTO expressions (expression, status, created_at, user_id) 
-VALUES ($1, $2, now() AT TIME ZONE 'UTC', $4) RETURNING id
+VALUES ($1, $2, now() AT TIME ZONE 'UTC', $3) RETURNING id
 `)
 
 	if err != nil {
@@ -77,7 +77,7 @@ VALUES ($1, $2, now() AT TIME ZONE 'UTC', $4) RETURNING id
 	}
 	defer stmt.Close()
 
-	err = stmt.QueryRow(expr.Expression, expr.Status, expr.CreatedAt, expr.UserId).Scan(&expr.Id)
+	err = stmt.QueryRow(expr.Expression, expr.Status, expr.UserId).Scan(&expr.Id)
 	if err != nil {
 		return 0, fmt.Errorf("failed to execute statement: %w", err)
 	}
