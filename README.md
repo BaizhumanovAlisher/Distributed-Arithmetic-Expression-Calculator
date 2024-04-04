@@ -18,8 +18,9 @@ Full description: [link](docs/version_1/tech_specification_RU_1.md)
 Start point: http://localhost:8099/
 ## Run project: 
 1) install [docker engine](https://docs.docker.com/engine/install/) and [docker compose](https://docs.docker.com/compose/install/)
-2) `cd <"path/to/project/directory">`
-3) `docker compose -f docker-compose.yml -p distributedarithmeticexpressioncalculator up -d`
+2) `git clone https://github.com/BaizhumanovAlisher/Distributed-Arithmetic-Expression-Calculator.git`
+3) `cd Distributed-Arithmetic-Expression-Calculator`
+4) `docker compose -f docker-compose.yml -p distributed_calculator up -d`
 
 # Example:
 POST `http://localhost:8099/expression`

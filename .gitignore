@@ -18,5 +18,5 @@
 # vendor/
 .idea/
 
-# Go workspace file
-go.work
+# src
+src/
