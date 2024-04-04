@@ -101,12 +101,14 @@ You can use postman. [Postman file](docs/postman.json). [Postman download](https
 - All handlers require authorization except `/sign_up` and `/login`
 - Length of `name` and `password` should be longer than 7
 
-# Scheme
-![image](docs/version_1/distributed_calculator_1.drawio.png)
-
 # Ports
 - api_server: http://localhost:8099
 - postgresql: http://localhost:8100
 - redis: http://localhost:8101
 - auth_service: http://localhost:8102
-- 
+
+# Database diagram
+![image](docs/distributed_calculator.png)
+
+# Scheme
+![image](docs/version_1/distributed_calculator_1.drawio.png)
