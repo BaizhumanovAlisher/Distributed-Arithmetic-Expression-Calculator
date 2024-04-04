@@ -303,22 +303,22 @@
 			]
 		},
 		{
-			"name": "mini-calculators",
+			"name": "mini_calculators",
 			"item": [
 				{
-					"name": "mini-calculators",
+					"name": "mini_calculators",
 					"request": {
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8099/mini-calculators",
+							"raw": "http://localhost:8099/mini_calculators",
 							"protocol": "http",
 							"host": [
 								"localhost"
 							],
 							"port": "8099",
 							"path": [
-								"mini-calculators"
+								"mini_calculators"
 							]
 						}
 					},

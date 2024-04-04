@@ -6,7 +6,7 @@ import (
 
 func ValidateUsername(username string) error {
 	if len([]rune(username)) < 8 {
-		return helpers.InvalidArgumentUserName
+		return helpers.InvalidArgumentUserNameErr
 	}
 
 	return nil
@@ -14,7 +14,7 @@ func ValidateUsername(username string) error {
 
 func ValidatePassword(password string) error {
 	if len([]rune(password)) < 8 {
-		return helpers.InvalidArgumentPassword
+		return helpers.InvalidArgumentPasswordErr
 	}
 
 	return nil

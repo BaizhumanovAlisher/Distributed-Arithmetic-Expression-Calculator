@@ -38,12 +38,12 @@ func (a AuthService) Register(ctx context.Context, name, password string) (int64
 			case codes.Internal:
 				return 0, helpers.InternalErr
 			case codes.InvalidArgument:
-				if st.Message() == helpers.InvalidArgumentUserName.Error() {
-					return 0, helpers.InvalidArgumentUserName
+				if st.Message() == helpers.InvalidArgumentUserNameErr.Error() {
+					return 0, helpers.InvalidArgumentUserNameErr
 				}
 
-				if st.Message() == helpers.InvalidArgumentPassword.Error() {
-					return 0, helpers.InvalidArgumentPassword
+				if st.Message() == helpers.InvalidArgumentPasswordErr.Error() {
+					return 0, helpers.InvalidArgumentPasswordErr
 				}
 
 				return 0, fmt.Errorf(st.Message())
@@ -73,12 +73,12 @@ func (a AuthService) Login(ctx context.Context, name, password string) (string, 
 			case codes.NotFound:
 				return "", helpers.InvalidCredentialsErr
 			case codes.InvalidArgument:
-				if st.Message() == helpers.InvalidArgumentUserName.Error() {
-					return "", helpers.InvalidArgumentUserName
+				if st.Message() == helpers.InvalidArgumentUserNameErr.Error() {
+					return "", helpers.InvalidArgumentUserNameErr
 				}
 
-				if st.Message() == helpers.InvalidArgumentPassword.Error() {
-					return "", helpers.InvalidArgumentPassword
+				if st.Message() == helpers.InvalidArgumentPasswordErr.Error() {
+					return "", helpers.InvalidArgumentPasswordErr
 				}
 
 				return "", fmt.Errorf(st.Message())

@@ -9,9 +9,17 @@ func NewAPIError(s string) *APIError {
 }
 
 type IdRespond struct {
-	Id int `json:"id"`
+	Id int64 `json:"id"`
 }
 
-func NewIdRespond(id int) *IdRespond {
+func NewIdRespond(id int64) *IdRespond {
 	return &IdRespond{Id: id}
+}
+
+type TokenRespond struct {
+	Token string `json:"token"`
+}
+
+func NewTokenRespond(token string) *TokenRespond {
+	return &TokenRespond{Token: token}
 }

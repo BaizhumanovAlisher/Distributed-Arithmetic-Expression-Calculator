@@ -12,3 +12,8 @@ type User struct {
 func NewUser(name string, hashedPassword string) *User {
 	return &User{Name: name, HashedPassword: hashedPassword}
 }
+
+type UserCredentials struct {
+	Name     string `json:"name" validate:"required"`
+	Password string `json:"password" validate:"required"`
+}
