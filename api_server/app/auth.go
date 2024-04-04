@@ -24,9 +24,15 @@ func (app *Application) registerUser() http.HandlerFunc {
 
 		id, err := app.authService.Register(r.Context(), user.Name, user.Password)
 		if err != nil {
-			if errors.Is(err, helpers.UsernameExistErr) || errors.Is(err, helpers.InvalidArgumentUserNameErr) || errors.Is(err, helpers.InvalidArgumentUserNameErr) {
+			if errors.Is(err, helpers.UsernameExistErr) {
 				render.Status(r, http.StatusBadRequest)
-				render.JSON(w, r, model.NewAPIError(helpers.InternalErr.Error()))
+				render.JSON(w, r, model.NewAPIError(helpers.UsernameExistErr.Error()))
+				return
+			}
+
+			if errors.Is(err, helpers.InvalidArgumentUserNameErr) || errors.Is(err, helpers.InvalidArgumentPasswordErr) {
+				render.Status(r, http.StatusBadRequest)
+				render.JSON(w, r, model.NewAPIError(err.Error()))
 				return
 			}
 
@@ -55,13 +61,13 @@ func (app *Application) generateJWT() http.HandlerFunc {
 		if err != nil {
 			if errors.Is(err, helpers.InvalidCredentialsErr) {
 				render.Status(r, http.StatusForbidden)
-				render.JSON(w, r, model.NewAPIError(helpers.InternalErr.Error()))
+				render.JSON(w, r, model.NewAPIError(helpers.InvalidCredentialsErr.Error()))
 				return
 			}
 
-			if errors.Is(err, helpers.InvalidArgumentUserNameErr) || errors.Is(err, helpers.InvalidArgumentUserNameErr) {
+			if errors.Is(err, helpers.InvalidArgumentUserNameErr) || errors.Is(err, helpers.InvalidArgumentPasswordErr) {
 				render.Status(r, http.StatusBadRequest)
-				render.JSON(w, r, model.NewAPIError(helpers.InternalErr.Error()))
+				render.JSON(w, r, model.NewAPIError(err.Error()))
 				return
 			}
 
