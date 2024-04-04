@@ -10,7 +10,6 @@ COPY ./internal/ ./internal
 COPY ./auth_service/ ./auth_service
 
 WORKDIR api_server
-RUN go mod download
 RUN go build -o main .
 
 EXPOSE 8099
