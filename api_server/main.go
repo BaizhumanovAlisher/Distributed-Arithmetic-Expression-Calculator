@@ -33,7 +33,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	authService, err := grpc_client.NewAuthService(cfg.Path)
+	authService, err := grpc_client.NewAuthService(cfg.AuthService.Path, cfg.AuthService.Secret)
 
 	application := app.NewApplication(logger, repo, redis, expressionManager, newAgent, authService)
 	router := application.Routes()

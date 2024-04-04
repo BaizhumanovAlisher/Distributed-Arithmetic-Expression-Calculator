@@ -62,7 +62,7 @@ func (app *Application) createExpression() http.HandlerFunc {
 
 		app.manager.StartSolveConcurrently(expressionFull)
 
-		idRespond := model.NewIdRespond(id)
+		idRespond := model.NewIdRespond(int64(id))
 		rd := model.NewResponseData(
 			http.StatusOK,
 			idRespond,

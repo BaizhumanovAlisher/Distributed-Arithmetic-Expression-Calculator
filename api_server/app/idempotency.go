@@ -8,9 +8,8 @@ import (
 	"net/http"
 )
 
-func (app *Application) idempotencyExpressionPost(next http.HandlerFunc) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		//todo add user id
+func (app *Application) idempotencyExpressionPost(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 
 		idempotencyToken := r.Header.Get("X-Idempotency-Token")
@@ -63,7 +62,7 @@ func (app *Application) idempotencyExpressionPost(next http.HandlerFunc) http.Ha
 		}
 
 		return
-	}
+	})
 }
 
 func (app *Application) updateContext(r *http.Request, key string, value any) {

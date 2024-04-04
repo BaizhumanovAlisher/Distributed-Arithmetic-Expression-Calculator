@@ -6,9 +6,11 @@ import (
 	"api_server/grpc_client"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/justinas/alice"
 	"internal/storage"
 	"internal/storage/postgresql"
 	"log/slog"
+	"net/http"
 )
 
 type Application struct {
@@ -42,14 +44,17 @@ func (app *Application) Routes() *chi.Mux {
 	router.Use(NewLoggerMiddleware(app.log))
 	router.Use(middleware.URLFormat)
 
-	router.Post("/expressions", app.idempotencyExpressionPost(app.createExpression()))
+	router.Post("/sign_up", app.registerUser())
+	router.Post("/login", app.generateJWT())
 
-	router.Get("/expressions", app.getExpressions())
-	router.Get("/expressions/{id}", app.getExpression())
-	router.Get("/operations", app.getOperations())
-	router.Put("/operations", app.putOperation())
-	router.Get("/mini_calculators", app.GetAllMiniCalculator())
+	protected := alice.New(app.middlewareAuth)
 
-	//todo: add sing_in and login
+	router.Method(http.MethodPost, "/expressions", protected.Then(alice.New(app.idempotencyExpressionPost).ThenFunc(app.createExpression())))
+	router.Method(http.MethodGet, "/expressions", protected.Then(app.getExpressions()))
+	router.Method(http.MethodGet, "/expressions/{id}", protected.Then(app.getExpression()))
+	router.Method(http.MethodGet, "/operations", protected.Then(app.getOperations()))
+	router.Method(http.MethodPut, "/operations", protected.Then(app.putOperation()))
+	router.Method(http.MethodGet, "/mini_calculators", protected.Then(app.GetAllMiniCalculator()))
+
 	return router
 }

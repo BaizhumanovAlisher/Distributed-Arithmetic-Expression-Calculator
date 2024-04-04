@@ -2,6 +2,7 @@ package grpc_client
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -12,9 +13,14 @@ import (
 
 type AuthService struct {
 	client authclient.AuthClient
+	Secret string
 }
 
-func NewAuthService(path string) (*AuthService, error) {
+func NewAuthService(path string, secret string) (*AuthService, error) {
+	if secret == "" {
+		return nil, errors.New("secret cannot be empty")
+	}
+
 	conn, err := grpc.Dial(path, grpc.EmptyDialOption{})
 	if err != nil {
 		return nil, err
@@ -22,7 +28,7 @@ func NewAuthService(path string) (*AuthService, error) {
 
 	client := authclient.NewAuthClient(conn)
 
-	return &AuthService{client: client}, nil
+	return &AuthService{client: client, Secret: secret}, nil
 }
 
 func (a AuthService) Register(ctx context.Context, name, password string) (int64, error) {

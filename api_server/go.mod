@@ -10,7 +10,9 @@ require (
 require (
 	github.com/BurntSushi/toml v1.3.2 // indirect
 	github.com/ajg/form v1.5.1 // indirect
+	github.com/golang-jwt/jwt/v5 v5.2.1 // indirect
 	github.com/joho/godotenv v1.5.1 // indirect
+	github.com/justinas/alice v1.2.0 // indirect
 	github.com/onsi/ginkgo v1.16.5 // indirect
 	github.com/onsi/gomega v1.32.0 // indirect
 	golang.org/x/net v0.22.0 // indirect

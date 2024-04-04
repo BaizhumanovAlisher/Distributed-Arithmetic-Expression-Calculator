@@ -32,3 +32,4 @@ agent:
 
 auth_service:
   path: "localhost:8102"
+  secret: "bdd60f0540254782d896196e129b2610c2b574d1055a6517712ed0b9073e46f1"
