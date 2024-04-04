@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/status"
 	"internal/helpers"
 	authclient "protos/gen/go"
@@ -21,7 +22,7 @@ func NewAuthService(path string, secret string) (*AuthService, error) {
 		return nil, errors.New("secret cannot be empty")
 	}
 
-	conn, err := grpc.Dial(path, grpc.EmptyDialOption{})
+	conn, err := grpc.Dial(path, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		return nil, err
 	}
