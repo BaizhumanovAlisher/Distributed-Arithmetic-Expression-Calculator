@@ -7,6 +7,7 @@ import (
 	"internal/model/expression"
 )
 
+// Repository todo: divide interfaces
 type Repository interface {
 	CreateExpression(*expression.Expression) (int, error)
 	UpdateExpression(*expression.Expression) error

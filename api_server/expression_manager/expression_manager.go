@@ -37,22 +37,20 @@ func NewExpressionManager(agent *agent.Agent, repo *postgresql.PostgresqlDB) (*E
 }
 
 func (em *ExpressionManager) ParseExpressionAndSolve(exp *expression2.Expression) {
-	if exp == nil {
-		log.Println("exp is nil")
-	}
-
 	expInfix, err := parser2.TokenizeExpression(exp.Expression)
 
 	if err != nil {
 		setInvalidStatus(exp)
-		em.UpdateExpression(exp)
+		_ = em.UpdateExpression(exp)
+		return
 	}
 
 	expPostfix, err := parser2.InfixToPostfix(expInfix)
 
 	if err != nil {
 		setInvalidStatus(exp)
-		em.UpdateExpression(exp)
+		_ = em.UpdateExpression(exp)
+		return
 	}
 
 	em.SolveExpression(exp, expPostfix)

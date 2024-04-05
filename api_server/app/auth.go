@@ -125,6 +125,7 @@ func (app *Application) middlewareAuth(next http.Handler) http.Handler {
 			return
 		}
 
+		//todo: add const
 		userId, ok := values["userId"]
 		if !ok {
 			app.log.Error("No user id in jwt")
