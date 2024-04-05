@@ -1,0 +1,38 @@
+syntax = "proto3";
+
+package expression_solver;
+
+option go_package = "distributed_calculator.expression_solver.v1;expression_solver_v1";
+
+service ExpressionSolver {
+  rpc SolveExpression (ExpressionRequest) returns (ExpressionResponse);
+  rpc GetCalculatorsStatus (Empty) returns (CalculatorList);
+}
+
+message ExpressionRequest {
+  string expression = 1;
+  int64 userId = 2;
+}
+
+message ExpressionResponse {
+  string expressionId = 1;
+}
+
+message Empty {}
+
+message CalculatorList {
+  repeated Calculator calculators = 1;
+}
+
+message Calculator {
+  string resourceId = 1;
+  leastExpression leastExpression = 2;
+}
+
+message leastExpression {
+  double number1 = 1;
+  double number2 = 2;
+  string operator = 3;
+  int32 idExpression = 4;
+  int32 durationInSecond = 5;
+}
