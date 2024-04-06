@@ -5,10 +5,10 @@ import (
 	"google.golang.org/grpc"
 	grpc2 "internal/grpc"
 	"internal/helpers"
+	authservicev1 "internal/protos/gen/go/auth_service_v1"
 	"internal/storage/postgresql"
 	logStandard "log"
 	"log/slog"
-	authservicev1 "protos/gen/go/auth_service_v1"
 )
 
 func main() {

@@ -9,7 +9,7 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/status"
 	"internal/helpers"
-	authclient "protos/gen/go/auth_service_v1"
+	authclient "internal/protos/gen/go/auth_service_v1"
 )
 
 type AuthService struct {

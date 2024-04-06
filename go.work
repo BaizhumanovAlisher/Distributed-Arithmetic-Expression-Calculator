@@ -2,8 +2,7 @@ go 1.21.8
 
 use (
 	api_server
-	protos
-	internal
 	auth_service
 	expression_solver
+	internal
 )

@@ -6,8 +6,8 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"internal/helpers"
+	authservicev1 "internal/protos/gen/go/auth_service_v1"
 	"internal/validators"
-	authservicev1 "protos/gen/go/auth_service_v1"
 )
 
 type GrpcController struct {
