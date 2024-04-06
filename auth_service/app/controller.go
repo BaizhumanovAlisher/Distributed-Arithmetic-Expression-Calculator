@@ -7,7 +7,7 @@ import (
 	"google.golang.org/grpc/status"
 	"internal/helpers"
 	"internal/validators"
-	authservicev1 "protos/gen/go"
+	authservicev1 "protos/gen/go/auth_service_v1"
 )
 
 type GrpcController struct {
