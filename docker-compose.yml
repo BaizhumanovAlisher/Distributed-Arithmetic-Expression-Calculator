@@ -35,6 +35,7 @@ services:
       - postgres
       - redis
       - auth_service
+      - expression_solver
     network_mode: host
 
   auth_service:
@@ -43,6 +44,16 @@ services:
     image: auth_service:latest
     build:
       dockerfile: auth_service/Dockerfile
+    depends_on:
+      - postgres
+    network_mode: host
+
+  expression_solver:
+    restart: unless-stopped
+    container_name: daec_expression_solver
+    image: expression_solver:latest
+    build:
+      dockerfile: expression_solver/Dockerfile
     depends_on:
       - postgres
     network_mode: host

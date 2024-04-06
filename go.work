@@ -5,4 +5,5 @@ use (
 	protos
 	internal
 	auth_service
+	expression_solver
 )

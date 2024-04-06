@@ -8,6 +8,7 @@ COPY ./api_server/ ./api_server
 COPY ./protos/ ./protos
 COPY ./internal/ ./internal
 COPY ./auth_service/ ./auth_service
+COPY ./expression_solver/ ./expression_solver
 
 WORKDIR api_server
 RUN go build -o main .

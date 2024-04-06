@@ -38,6 +38,8 @@ func (r *RedisDB) Init(cfg *helpers.Config) error {
 	return err
 }
 
+//todo: add user id
+
 func (r *RedisDB) StoreIdempotencyToken(idempotencyToken string, expression string, responseData *model.ResponseData) error {
 	token := generateToken(idempotencyToken, expression)
 

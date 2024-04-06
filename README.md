@@ -107,6 +107,7 @@ You can use postman. [Postman file](docs/postman.json). [Postman download](https
 - postgresql: http://localhost:8100
 - redis: http://localhost:8101
 - auth_service: http://localhost:8102
+- expression_solver: http://localhost:8103
 
 # Database diagram
 ![image](docs/distributed_calculator.png)

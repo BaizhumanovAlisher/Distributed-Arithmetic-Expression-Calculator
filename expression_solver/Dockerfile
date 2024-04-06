@@ -10,9 +10,9 @@ COPY ./internal/ ./internal
 COPY ./auth_service/ ./auth_service
 COPY ./expression_solver/ ./expression_solver
 
-WORKDIR auth_service
+WORKDIR expression_solver
 RUN go build -o main .
 
-EXPOSE 8102
+EXPOSE 8103
 
 CMD ["./main"]

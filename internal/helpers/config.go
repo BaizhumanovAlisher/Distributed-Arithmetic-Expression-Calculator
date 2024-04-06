@@ -16,6 +16,7 @@ type Config struct {
 	QuickAccessStorage `yaml:"quick_access_storage"`
 	Agent              `yaml:"agent"`
 	AuthService        `yaml:"auth_service"`
+	ExpressionSolver   `yaml:"expression_solver"`
 }
 
 type HTTPServer struct {
@@ -61,6 +62,11 @@ type AuthService struct {
 	CheckSecret bool          `yaml:"check_required_secret" env-default:"false"`
 	Cost        int           `yaml:"cost"`
 	Path        string        `yaml:"path"`
+}
+
+type ExpressionSolver struct {
+	GrpcPort int    `yaml:"grpc_port" env-default:"8102"`
+	Path     string `yaml:"path"`
 }
 
 func MustLoadConfig() *Config {
