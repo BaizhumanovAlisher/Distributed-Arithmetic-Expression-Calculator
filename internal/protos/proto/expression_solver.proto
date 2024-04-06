@@ -15,7 +15,7 @@ message ExpressionRequest {
 }
 
 message ExpressionResponse {
-  string expressionId = 1;
+  int32 expressionId = 1;
 }
 
 message Empty {}
@@ -25,7 +25,7 @@ message CalculatorList {
 }
 
 message Calculator {
-  string resourceId = 1;
+  int32 resourceId = 1;
   leastExpression leastExpression = 2;
 }
 
