@@ -7,7 +7,6 @@ import (
 	"github.com/go-chi/render"
 	"internal/helpers"
 	"internal/model"
-	"internal/model/expression"
 	"internal/validators"
 	"log/slog"
 	"net/http"
@@ -54,14 +53,11 @@ func (app *Application) createExpression() http.HandlerFunc {
 		}
 
 		userId := int64(r.Context().Value("userId").(float64))
-		expressionFull := expression.NewExpressionInProcess(inputExp, userId)
-		id, err := app.repo.CreateExpression(expressionFull)
+		id, err := app.expressionSolver.CreateExpressionAndStartSolve(r.Context(), inputExp, userId)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
-
-		app.manager.StartSolveConcurrently(expressionFull)
 
 		idRespond := model.NewIdRespond(int64(id))
 		rd := model.NewResponseData(

@@ -14,26 +14,25 @@ import (
 )
 
 type Application struct {
-	log         *slog.Logger
-	repo        *postgresql.PostgresqlDB
-	redis       *storage.RedisDB
-	manager     *expression_manager.ExpressionManager
-	newAgent    *agent.Agent
-	authService *grpc_client.AuthService
+	log              *slog.Logger
+	repo             *postgresql.PostgresqlDB
+	redis            *storage.RedisDB
+	manager          *expression_manager.ExpressionManager
+	newAgent         *agent.Agent
+	authService      *grpc_client.AuthService
+	expressionSolver *grpc_client.ExpressionSolver
 }
 
-func NewApplication(
-	log *slog.Logger, repo *postgresql.PostgresqlDB, redis *storage.RedisDB,
-	manager *expression_manager.ExpressionManager, newAgent *agent.Agent,
-	authService *grpc_client.AuthService) *Application {
+func NewApplication(log *slog.Logger, repo *postgresql.PostgresqlDB, redis *storage.RedisDB, manager *expression_manager.ExpressionManager, newAgent *agent.Agent, authService *grpc_client.AuthService, solver *grpc_client.ExpressionSolver) *Application {
 
 	return &Application{
-		log:         log,
-		repo:        repo,
-		redis:       redis,
-		manager:     manager,
-		newAgent:    newAgent,
-		authService: authService,
+		log:              log,
+		repo:             repo,
+		redis:            redis,
+		manager:          manager,
+		newAgent:         newAgent,
+		authService:      authService,
+		expressionSolver: solver,
 	}
 }
 

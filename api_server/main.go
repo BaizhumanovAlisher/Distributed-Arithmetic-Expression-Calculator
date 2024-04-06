@@ -38,7 +38,12 @@ func main() {
 		log.Fatal(err)
 	}
 
-	application := app.NewApplication(logger, repo, redis, expressionManager, newAgent, authService)
+	expressionSolver, err := grpc_client.NewExpressionSolver(cfg.ExpressionSolver.Path)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	application := app.NewApplication(logger, repo, redis, expressionManager, newAgent, authService, expressionSolver)
 	router := application.Routes()
 
 	logger.Info("start server", slog.String("address", cfg.HTTPServer.Address))

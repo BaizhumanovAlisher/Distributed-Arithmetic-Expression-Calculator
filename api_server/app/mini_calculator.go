@@ -9,7 +9,12 @@ func (app *Application) GetAllMiniCalculator() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		app.log.Info("start get all operations")
 
-		miniCalculators := app.newAgent.GetAllMiniCalculators()
+		miniCalculators, err := app.expressionSolver.GetCalculatorsStatus(r.Context())
+		if err != nil {
+			app.log.Warn("error getting calculators")
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
 
 		app.log.Info("successful to get all operations")
 
