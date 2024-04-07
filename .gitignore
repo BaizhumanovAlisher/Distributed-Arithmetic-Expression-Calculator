@@ -18,6 +18,4 @@
 # vendor/
 .idea/
 
-# src
-*/vendor/*
-/internal/vendor/
+src/

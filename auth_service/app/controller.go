@@ -11,7 +11,6 @@ import (
 )
 
 type GrpcController struct {
-	// todo: implement
 	authservicev1.UnimplementedAuthServer
 	Auth *JWTAuth
 }

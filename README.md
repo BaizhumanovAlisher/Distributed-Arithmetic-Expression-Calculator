@@ -20,7 +20,8 @@ Start point: http://localhost:8099/
 1) install [docker engine](https://docs.docker.com/engine/install/) and [docker compose](https://docs.docker.com/compose/install/)
 2) `git clone https://github.com/BaizhumanovAlisher/Distributed-Arithmetic-Expression-Calculator.git`
 3) `cd Distributed-Arithmetic-Expression-Calculator`
-4) `docker compose -f docker-compose.yml -p distributed_calculator up -d`
+4) `chmod +x create_src.sh && ./create_src.sh`
+5) `docker compose -f docker-compose.yml -p distributed_calculator up -d`
 
 # Example:
 POST `http://localhost:8099/expression`
