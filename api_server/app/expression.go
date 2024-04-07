@@ -84,8 +84,7 @@ func (app *Application) getExpressions() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		app.log.Info("start get all expression")
 
-		// todo: add reading from context user_id
-		var userId int64
+		userId := int64(r.Context().Value(grpc_client.UserId).(float64))
 		expressions, err := app.expressionReader.ReadExpressions(userId)
 
 		if err != nil {
@@ -122,7 +121,6 @@ func (app *Application) getExpression() http.HandlerFunc {
 			return
 		}
 
-		// todo: check user_id to validate access. permission may be denied
 		exp, err := app.expressionReader.ReadExpression(id)
 
 		if err != nil {
@@ -134,6 +132,13 @@ func (app *Application) getExpression() http.HandlerFunc {
 
 			app.log.Error("internal server error", slog.String("err", err.Error()))
 			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		userId := int64(r.Context().Value(grpc_client.UserId).(float64))
+		if exp.UserId != userId {
+			app.log.Warn("incorrect user id", slog.Int64("userId", userId), slog.Int64("expUserId", exp.UserId))
+			w.WriteHeader(http.StatusForbidden)
 			return
 		}
 
