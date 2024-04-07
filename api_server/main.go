@@ -2,8 +2,6 @@ package main
 
 import (
 	"api_server/app"
-	"api_server/expression_manager"
-	"api_server/expression_manager/agent"
 	"api_server/grpc_client"
 	"internal/helpers"
 	"internal/storage"
@@ -27,12 +25,6 @@ func main() {
 		log.Fatal(err)
 	}
 
-	newAgent := agent.NewAgent(cfg.Agent.CountOperation)
-	expressionManager, err := expression_manager.NewExpressionManager(newAgent, repo)
-	if err != nil {
-		log.Fatal(err)
-	}
-
 	authService, err := grpc_client.NewAuthService(cfg.AuthService.Path, cfg.AuthService.Secret)
 	if err != nil {
 		log.Fatal(err)
@@ -43,7 +35,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	application := app.NewApplication(logger, repo, redis, expressionManager, newAgent, authService, expressionSolver)
+	application := app.NewApplication(logger, repo, redis, authService, expressionSolver)
 	router := application.Routes()
 
 	logger.Info("start server", slog.String("address", cfg.HTTPServer.Address))

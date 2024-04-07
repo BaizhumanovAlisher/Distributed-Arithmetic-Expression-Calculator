@@ -13,22 +13,11 @@ storage:
   port: "8100"
   sslmode: "disable"
 
-operation:
-  count_operation: 4
-  addition: 0
-  subtraction: 0
-  multiplication: 0
-  division: 0
-  permission_to_seed: true
-
 quick_access_storage:
   addr: "localhost:8101"
   ttl: 600s
   password: ""
   db: 0
-
-agent:
-  count_calculator: 3
 
 auth_service:
   path: "localhost:8102"

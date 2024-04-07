@@ -65,7 +65,7 @@ type AuthService struct {
 }
 
 type ExpressionSolver struct {
-	GrpcPort int    `yaml:"grpc_port" env-default:"8102"`
+	GrpcPort int    `yaml:"grpc_port" env-default:"8103"`
 	Path     string `yaml:"path"`
 }
 
