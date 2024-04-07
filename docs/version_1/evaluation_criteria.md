@@ -25,6 +25,6 @@
 Проверяющий в этом пункте честно отвечает на вопрос: "Смогу я сделать pull-request в проект без нервного срыва"
     - depends on reviewer
 9. У системы есть документация со схемами, которая наглядно отвечает на вопрос: "Как это все работает" - 10 баллов
-    - ![image](distributed_calculator_1.drawio.png)
+    - ![image](distributed_calculator_old.png)
 10. Выражение должно иметь возможность выполняться разными агентами - 10 баллов
      - it works, because all `LeastExpression` is sent to `Agent's Queue` and later will distribute between `Calculators`

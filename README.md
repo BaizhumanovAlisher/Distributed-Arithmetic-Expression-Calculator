@@ -110,8 +110,8 @@ You can use postman. [Postman file](docs/postman.json). [Postman download](https
 - auth_service: http://localhost:8102
 - expression_solver: http://localhost:8103
 
-# Database diagram
-![image](docs/distributed_calculator.png)
+# Database scheme
+![image](docs/distributed_calculator_database_scheme.png)
 
-# Scheme
-![image](docs/version_1/distributed_calculator_1.drawio.png)
+# Diagram
+![image](docs/version_2/distributed_calculator.png)
