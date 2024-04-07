@@ -38,6 +38,18 @@ func NewExpressionManager(agent *agent_components.Agent, expressionDB Expression
 	return expressionManager, nil
 }
 
+func (em *ExpressionManager) SaveExpressionAndStartSolve(expressionString string, userId int64) (int, error) {
+	exp := expression.NewExpressionInProcess(expressionString, userId)
+	id, err := em.expressionDB.CreateExpression(exp)
+
+	if err != nil {
+		return 0, err
+	}
+
+	go em.ParseExpressionAndSolve(exp)
+	return id, nil
+}
+
 func (em *ExpressionManager) ParseExpressionAndSolve(exp *expression.Expression) {
 	expInfix, err := parser2.TokenizeExpression(exp.Expression)
 
