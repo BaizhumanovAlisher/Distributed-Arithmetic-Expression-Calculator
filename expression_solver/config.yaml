@@ -17,7 +17,7 @@ operation:
   permission_to_seed: true
 
 agent:
-  count_calculator: 3
+  count_calculator: 4
 
 expression_solver:
-  path: "localhost:8103"
+  grpc_port: 8103
