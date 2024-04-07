@@ -2,8 +2,6 @@ package app
 
 import (
 	"api_server/grpc_client"
-	"expression_solver/app"
-	"expression_solver/app/agent"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/justinas/alice"
@@ -17,8 +15,6 @@ type Application struct {
 	log              *slog.Logger
 	repo             *postgresql.PostgresqlDB
 	redis            *storage.RedisDB
-	manager          *app.ExpressionManager
-	newAgent         *agent.Agent
 	authService      *grpc_client.AuthService
 	expressionSolver *grpc_client.ExpressionSolver
 }

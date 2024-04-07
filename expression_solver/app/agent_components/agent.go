@@ -1,4 +1,4 @@
-package agent
+package agent_components
 
 import (
 	expression2 "internal/model/expression"

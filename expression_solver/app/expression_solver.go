@@ -1,7 +1,7 @@
 package app
 
 import (
-	"expression_solver/app/agent"
+	"expression_solver/app/agent_components"
 	parser2 "expression_solver/app/parser"
 	"internal/model"
 	"internal/model/expression"
@@ -18,11 +18,11 @@ type ExpressionDB interface {
 }
 
 type ExpressionManager struct {
-	agent        *agent.Agent
+	agent        *agent_components.Agent
 	expressionDB ExpressionDB
 }
 
-func NewExpressionManager(agent *agent.Agent, expressionDB ExpressionDB) (*ExpressionManager, error) {
+func NewExpressionManager(agent *agent_components.Agent, expressionDB ExpressionDB) (*ExpressionManager, error) {
 	expressionManager := &ExpressionManager{
 		agent:        agent,
 		expressionDB: expressionDB,
