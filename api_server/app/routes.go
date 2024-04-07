@@ -16,9 +16,14 @@ type Application struct {
 	idempotencyTokenRepo IdempotencyTokenRepo
 	authService          *grpc_client.AuthService
 	expressionSolver     *grpc_client.ExpressionSolver
+	expressionReader     ExpressionReader
+	operationRW          OperationRW
 }
 
-func NewApplication(log *slog.Logger, repo *postgresql.PostgresqlDB, idempotencyTokenRepo IdempotencyTokenRepo, authService *grpc_client.AuthService, solver *grpc_client.ExpressionSolver) *Application {
+func NewApplication(
+	log *slog.Logger, repo *postgresql.PostgresqlDB, idempotencyTokenRepo IdempotencyTokenRepo,
+	authService *grpc_client.AuthService, solver *grpc_client.ExpressionSolver,
+	expressionReader ExpressionReader, operationRW OperationRW) *Application {
 
 	return &Application{
 		log:                  log,
@@ -26,6 +31,8 @@ func NewApplication(log *slog.Logger, repo *postgresql.PostgresqlDB, idempotency
 		idempotencyTokenRepo: idempotencyTokenRepo,
 		authService:          authService,
 		expressionSolver:     solver,
+		expressionReader:     expressionReader,
+		operationRW:          operationRW,
 	}
 }
 

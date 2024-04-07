@@ -6,25 +6,25 @@ import (
 	"fmt"
 	"internal/helpers"
 	"internal/model"
-	"internal/storage/postgresql"
 	"log/slog"
 	"time"
 )
 
-type Auth interface {
-	Login(ctx context.Context, name string, password string) (string, error)
-	Register(ctx context.Context, name string, password string) (int64, error)
+// UserRW is user reader and writer
+type UserRW interface {
+	CreateUser(ctx context.Context, user *model.User) (int64, error)
+	ReadUserByName(ctx context.Context, name string) (user *model.User, err error)
 }
 
 type JWTAuth struct {
 	log        *slog.Logger
 	tokenTTL   time.Duration
-	repo       *postgresql.PostgresqlDB
+	repo       UserRW
 	passHasher *PassHasher
 	secret     string
 }
 
-func NewJWTAuth(log *slog.Logger, tokenTTL time.Duration, repo *postgresql.PostgresqlDB, hasher *PassHasher, secret string) *JWTAuth {
+func NewJWTAuth(log *slog.Logger, tokenTTL time.Duration, repo UserRW, hasher *PassHasher, secret string) *JWTAuth {
 	return &JWTAuth{
 		log:        log,
 		tokenTTL:   tokenTTL,

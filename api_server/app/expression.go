@@ -8,11 +8,17 @@ import (
 	"github.com/go-chi/render"
 	"internal/helpers"
 	"internal/model"
+	"internal/model/expression"
 	"internal/validators"
 	"log/slog"
 	"net/http"
 	"strconv"
 )
+
+type ExpressionReader interface {
+	ReadExpressions(userId int64) ([]*expression.Expression, error)
+	ReadExpression(id int) (*expression.Expression, error)
+}
 
 // createExpression data was reading in idempotencyExpressionPost and written to r.Context
 func (app *Application) createExpression() http.HandlerFunc {
@@ -80,7 +86,7 @@ func (app *Application) getExpressions() http.HandlerFunc {
 
 		// todo: add reading from context user_id
 		var userId int64
-		expressions, err := app.repo.ReadExpressions(userId)
+		expressions, err := app.expressionReader.ReadExpressions(userId)
 
 		if err != nil {
 			if errors.Is(err, sql.ErrNoRows) {
@@ -117,7 +123,7 @@ func (app *Application) getExpression() http.HandlerFunc {
 		}
 
 		// todo: check user_id to validate access. permission may be denied
-		exp, err := app.repo.ReadExpression(id)
+		exp, err := app.expressionReader.ReadExpression(id)
 
 		if err != nil {
 			if errors.Is(err, helpers.NoRowsErr) {

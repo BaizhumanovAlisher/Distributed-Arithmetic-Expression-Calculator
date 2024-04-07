@@ -41,7 +41,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	application := app.NewApplication(logger, repo, redis, authService, expressionSolver)
+	application := app.NewApplication(logger, repo, redis, authService, expressionSolver, repo, repo)
 	router := application.Routes()
 
 	logger.Info("start server", slog.String("address", cfg.HTTPServer.Address))

@@ -10,13 +10,18 @@ import (
 	"internal/validators"
 )
 
-type GrpcController struct {
-	authservicev1.UnimplementedAuthServer
-	Auth *JWTAuth
+type Auth interface {
+	Login(ctx context.Context, name string, password string) (string, error)
+	Register(ctx context.Context, name string, password string) (int64, error)
 }
 
-func NewGRPCController(auth *JWTAuth) *GrpcController {
-	return &GrpcController{Auth: auth}
+type GrpcController struct {
+	authservicev1.UnimplementedAuthServer
+	auth Auth
+}
+
+func NewGRPCController(auth Auth) *GrpcController {
+	return &GrpcController{auth: auth}
 }
 
 func (g *GrpcController) Login(ctx context.Context, req *authservicev1.LoginRequest) (*authservicev1.LoginResponse, error) {
@@ -25,7 +30,7 @@ func (g *GrpcController) Login(ctx context.Context, req *authservicev1.LoginRequ
 		return nil, err
 	}
 
-	token, err := g.Auth.Login(ctx, req.GetUsername(), req.GetPassword())
+	token, err := g.auth.Login(ctx, req.GetUsername(), req.GetPassword())
 	if err != nil {
 		if errors.Is(err, helpers.InvalidCredentialsErr) {
 			return nil, status.Error(codes.Unauthenticated, helpers.InvalidCredentialsErr.Error())
@@ -49,7 +54,7 @@ func (g *GrpcController) Register(ctx context.Context, req *authservicev1.Regist
 		return nil, err
 	}
 
-	id, err := g.Auth.Register(ctx, req.GetUsername(), req.GetPassword())
+	id, err := g.auth.Register(ctx, req.GetUsername(), req.GetPassword())
 
 	if err != nil {
 		if errors.Is(err, helpers.UsernameExistErr) {

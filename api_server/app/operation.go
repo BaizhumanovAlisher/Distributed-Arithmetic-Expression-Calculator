@@ -8,11 +8,18 @@ import (
 	"net/http"
 )
 
+// OperationRW full name OperationReaderAndWriter
+type OperationRW interface {
+	ReadOperations() ([]*model.OperationWithDuration, error)
+	ReadOperation(operationType model.OperationType) (*model.OperationWithDuration, error)
+	UpdateOperation(*model.OperationWithDuration) error
+}
+
 func (app *Application) getOperations() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		app.log.Info("start get all operations")
 
-		operations, err := app.repo.ReadOperations()
+		operations, err := app.operationRW.ReadOperations()
 
 		if err != nil {
 			app.log.Error("error to get operations", slog.String("err", err.Error()))
@@ -52,7 +59,7 @@ func (app *Application) putOperation() http.HandlerFunc {
 			return
 		}
 
-		errDb := app.repo.UpdateOperation(&operation)
+		errDb := app.operationRW.UpdateOperation(&operation)
 
 		if errDb != nil {
 			app.log.Error("could not update operation", slog.String("operation", string(operation.OperationKind)))

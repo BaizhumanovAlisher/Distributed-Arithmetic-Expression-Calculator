@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-type ExpressionDB interface {
+type ExpressionCreator interface {
 	ReadOperation(operationType model.OperationType) (*model.OperationWithDuration, error)
 	UpdateExpression(e *expression.Expression) error
 	ReadAllExpressionsWithStatus(status expression.Status) ([]*expression.Expression, error)
@@ -19,10 +19,10 @@ type ExpressionDB interface {
 
 type ExpressionManager struct {
 	agent        *agent_components.Agent
-	expressionDB ExpressionDB
+	expressionDB ExpressionCreator
 }
 
-func NewExpressionManager(agent *agent_components.Agent, expressionDB ExpressionDB) (*ExpressionManager, error) {
+func NewExpressionManager(agent *agent_components.Agent, expressionDB ExpressionCreator) (*ExpressionManager, error) {
 	expressionManager := &ExpressionManager{
 		agent:        agent,
 		expressionDB: expressionDB,
