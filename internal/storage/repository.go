@@ -26,9 +26,3 @@ type Repository interface {
 
 	Init(config *helpers.Config) error
 }
-
-type RepositoryQuickAccess interface {
-	Init(config *helpers.Config) error
-	StoreIdempotencyToken(string, string, *model2.ResponseData) error
-	RetrieveIdempotencyToken(string, string) (*model2.ResponseData, error)
-}

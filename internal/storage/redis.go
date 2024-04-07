@@ -3,8 +3,8 @@ package storage
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/go-redis/redis"
-	"internal/helpers"
 	"internal/model"
 	"time"
 )
@@ -14,53 +14,39 @@ type RedisDB struct {
 	ttl    time.Duration
 }
 
-func Redis(cfg *helpers.Config) (*RedisDB, error) {
-	redisDB := &RedisDB{}
-	err := redisDB.Init(cfg)
+func NewRedisDB(address, password string, db int, ttl time.Duration) (*RedisDB, error) {
+	client := redis.NewClient(&redis.Options{
+		Addr:     address,
+		Password: password,
+		DB:       db,
+	})
+
+	_, err := client.Ping().Result()
 
 	if err != nil {
 		return nil, err
 	}
 
-	return redisDB, nil
+	return &RedisDB{client: client, ttl: ttl}, nil
 }
 
-func (r *RedisDB) Init(cfg *helpers.Config) error {
-	r.ttl = cfg.QuickAccessStorage.TTL
-	r.client = redis.NewClient(&redis.Options{
-		Addr:     cfg.QuickAccessStorage.Address,
-		Password: cfg.QuickAccessStorage.Password,
-		DB:       cfg.QuickAccessStorage.DB,
-	})
-
-	_, err := r.client.Ping().Result()
-
-	return err
-}
-
-//todo: add user id
-
-func (r *RedisDB) StoreIdempotencyToken(idempotencyToken string, expression string, responseData *model.ResponseData) error {
-	token := generateToken(idempotencyToken, expression)
-
-	jsonData, err := json.Marshal(responseData)
+func (r *RedisDB) StoreIdempotencyToken(generatedKey string, rd *model.ResponseData) error {
+	jsonData, err := json.Marshal(rd)
 	if err != nil {
 		return err
 	}
 
-	err = r.client.Set(token, jsonData, r.ttl).Err()
+	err = r.client.Set(generatedKey, jsonData, r.ttl).Err()
 	if err != nil {
 		return err
 	}
 
-	err = r.client.Expire(token, r.ttl).Err()
+	err = r.client.Expire(generatedKey, r.ttl).Err()
 	return err
 }
 
-func (r *RedisDB) RetrieveIdempotencyToken(idempotencyToken string, expression string) (*model.ResponseData, error) {
-	token := generateToken(idempotencyToken, expression)
-
-	jsonData, err := r.client.Get(token).Result()
+func (r *RedisDB) RetrieveIdempotencyToken(generatedKey string) (*model.ResponseData, error) {
+	jsonData, err := r.client.Get(generatedKey).Result()
 	if errors.Is(err, redis.Nil) {
 		return nil, nil
 	} else if err != nil {
@@ -76,6 +62,6 @@ func (r *RedisDB) RetrieveIdempotencyToken(idempotencyToken string, expression s
 	return &response, nil
 }
 
-func generateToken(idempotencyToken string, expression string) string {
-	return idempotencyToken + "__" + expression
+func (r *RedisDB) GenerateTokenKey(idempotencyToken string, expression string, userId int64) string {
+	return fmt.Sprintf("%s__%s__%d", idempotencyToken, expression, userId)
 }

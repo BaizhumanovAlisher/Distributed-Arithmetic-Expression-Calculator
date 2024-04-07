@@ -20,7 +20,13 @@ func main() {
 		log.Fatal(err)
 	}
 
-	redis, err := storage.Redis(cfg)
+	redis, err := storage.NewRedisDB(
+		cfg.QuickAccessStorage.Address,
+		cfg.QuickAccessStorage.Password,
+		cfg.QuickAccessStorage.DB,
+		cfg.QuickAccessStorage.TTL,
+	)
+
 	if err != nil {
 		log.Fatal(err)
 	}

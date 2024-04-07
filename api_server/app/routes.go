@@ -5,28 +5,27 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/justinas/alice"
-	"internal/storage"
 	"internal/storage/postgresql"
 	"log/slog"
 	"net/http"
 )
 
 type Application struct {
-	log              *slog.Logger
-	repo             *postgresql.PostgresqlDB
-	redis            *storage.RedisDB
-	authService      *grpc_client.AuthService
-	expressionSolver *grpc_client.ExpressionSolver
+	log                  *slog.Logger
+	repo                 *postgresql.PostgresqlDB
+	idempotencyTokenRepo IdempotencyTokenRepo
+	authService          *grpc_client.AuthService
+	expressionSolver     *grpc_client.ExpressionSolver
 }
 
-func NewApplication(log *slog.Logger, repo *postgresql.PostgresqlDB, redis *storage.RedisDB, authService *grpc_client.AuthService, solver *grpc_client.ExpressionSolver) *Application {
+func NewApplication(log *slog.Logger, repo *postgresql.PostgresqlDB, idempotencyTokenRepo IdempotencyTokenRepo, authService *grpc_client.AuthService, solver *grpc_client.ExpressionSolver) *Application {
 
 	return &Application{
-		log:              log,
-		repo:             repo,
-		redis:            redis,
-		authService:      authService,
-		expressionSolver: solver,
+		log:                  log,
+		repo:                 repo,
+		idempotencyTokenRepo: idempotencyTokenRepo,
+		authService:          authService,
+		expressionSolver:     solver,
 	}
 }
 

@@ -1,12 +1,19 @@
 package app
 
 import (
+	"api_server/grpc_client"
 	"context"
 	"github.com/go-chi/render"
 	"internal/model"
 	"internal/model/expression"
 	"net/http"
 )
+
+type IdempotencyTokenRepo interface {
+	StoreIdempotencyToken(generatedKey string, rd *model.ResponseData) error
+	RetrieveIdempotencyToken(generatedKey string) (*model.ResponseData, error)
+	GenerateTokenKey(idempotencyToken string, expression string, userId int64) string
+}
 
 func (app *Application) idempotencyExpressionPost(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -31,7 +38,10 @@ func (app *Application) idempotencyExpressionPost(next http.Handler) http.Handle
 			return
 		}
 
-		rd, err := app.redis.RetrieveIdempotencyToken(idempotencyToken, inputExpression.Expression)
+		userId := int64(r.Context().Value(grpc_client.UserId).(float64))
+		generatedKey := app.idempotencyTokenRepo.GenerateTokenKey(idempotencyToken, inputExpression.Expression, userId)
+
+		rd, err := app.idempotencyTokenRepo.RetrieveIdempotencyToken(generatedKey)
 
 		if err != nil {
 			app.log.Error("problem with redis: ", err)
@@ -53,9 +63,10 @@ func (app *Application) idempotencyExpressionPost(next http.Handler) http.Handle
 				return
 			}
 
-			exp, ok := r.Context().Value("expression").(string)
+			userId := int64(r.Context().Value(grpc_client.UserId).(float64))
+			generatedKey := app.idempotencyTokenRepo.GenerateTokenKey(idempotencyToken, inputExpression.Expression, userId)
 
-			err := app.redis.StoreIdempotencyToken(idempotencyToken, exp, rd)
+			err := app.idempotencyTokenRepo.StoreIdempotencyToken(generatedKey, rd)
 			if err != nil {
 				app.log.Error("problem with redis: ", err)
 			}
