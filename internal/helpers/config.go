@@ -85,7 +85,6 @@ func MustLoadConfig() *Config {
 	cfg.checkDuration()
 	cfg.compileStoragePath()
 	cfg.checkRequiredSecret()
-	cfg.printGoPath()
 
 	return &cfg
 }
@@ -125,8 +124,4 @@ func (cfg *Config) checkRequiredSecret() {
 			log.Fatalf("secret is required")
 		}
 	}
-}
-
-func (cfg *Config) printGoPath() {
-	fmt.Printf("GOPATH = \"%s\"\n", os.Getenv("GOPATH"))
 }
