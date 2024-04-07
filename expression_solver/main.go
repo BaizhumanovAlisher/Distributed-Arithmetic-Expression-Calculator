@@ -30,7 +30,7 @@ func main() {
 	}
 
 	controller := app.NewGrpcController(agent, expressionManager)
-	grpcServer := NewExpressionSolverGRPCServer(log, cfg.AuthService.GrpcPort, controller)
+	grpcServer := NewExpressionSolverGRPCServer(log, cfg.ExpressionSolver.GrpcPort, controller)
 
 	go grpcServer.MustRun()
 	_ = helpers.WaitSignal()

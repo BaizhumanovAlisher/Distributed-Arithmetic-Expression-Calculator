@@ -3,11 +3,8 @@ FROM golang:latest
 
 WORKDIR /app
 
-COPY ./go.work ./go.work
-COPY ./api_server/ ./api_server
 COPY ./auth_service/ ./auth_service
 COPY ./internal/ ./internal
-COPY ./expression_solver/ ./expression_solver
 COPY ./src/ ./src
 
 ENV GOPATH=/app/src
