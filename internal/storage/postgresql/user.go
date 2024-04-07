@@ -26,7 +26,6 @@ VALUES ($1, $2, now() AT TIME ZONE 'UTC') RETURNING id
 		var repoErr *pq.Error
 		ok := errors.As(err, &repoErr)
 
-		//todo: test
 		if ok && repoErr.Code == "23505" {
 			return 0, helpers.UsernameExistErr
 		}
