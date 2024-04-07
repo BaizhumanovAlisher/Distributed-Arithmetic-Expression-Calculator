@@ -1,6 +1,7 @@
 package app
 
 import (
+	"api_server/grpc_client"
 	"errors"
 	"github.com/go-chi/render"
 	"github.com/golang-jwt/jwt/v5"
@@ -125,15 +126,14 @@ func (app *Application) middlewareAuth(next http.Handler) http.Handler {
 			return
 		}
 
-		//todo: add const
-		userId, ok := values["userId"]
+		userId, ok := values[grpc_client.UserId]
 		if !ok {
 			app.log.Error("No user id in jwt")
 			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}
 
-		app.updateContext(r, "userId", userId)
+		app.updateContext(r, grpc_client.UserId, userId)
 		next.ServeHTTP(w, r)
 		return
 	})

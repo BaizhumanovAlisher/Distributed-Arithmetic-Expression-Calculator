@@ -1,6 +1,7 @@
 package app
 
 import (
+	"api_server/grpc_client"
 	"database/sql"
 	"errors"
 	"github.com/go-chi/chi/v5"
@@ -52,7 +53,7 @@ func (app *Application) createExpression() http.HandlerFunc {
 			return
 		}
 
-		userId := int64(r.Context().Value("userId").(float64))
+		userId := int64(r.Context().Value(grpc_client.UserId).(float64))
 		id, err := app.expressionSolver.CreateExpressionAndStartSolve(r.Context(), inputExp, userId)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)

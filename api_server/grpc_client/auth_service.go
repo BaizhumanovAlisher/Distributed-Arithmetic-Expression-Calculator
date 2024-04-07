@@ -12,6 +12,8 @@ import (
 	authclient "internal/protos/gen/go/auth_service_v1"
 )
 
+const UserId = "userId"
+
 type AuthService struct {
 	client authclient.AuthClient
 	Secret string
