@@ -20,7 +20,7 @@ type AuthService struct {
 }
 
 func NewAuthService(path string, secret string) (*AuthService, error) {
-	if secret == "" {
+	if len(secret) == 0 {
 		return nil, errors.New("secret cannot be empty")
 	}
 
