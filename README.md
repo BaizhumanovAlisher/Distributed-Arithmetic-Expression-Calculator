@@ -25,7 +25,7 @@ Start point: http://localhost:8099/
 6) `docker compose -f docker-compose.yml -p distributed_calculator up -d`
 
 # Example:
-POST `http://localhost:8099/expression`
+POST `http://localhost:8099/expressions`
 ```json
 {
     "expression": "((2*(3+4))/5)+(6-7)"
@@ -38,7 +38,7 @@ POST `http://localhost:8099/expression`
 }
 ```
 
-GET `http://localhost:8099/expression/32`
+GET `http://localhost:8099/expressions/32`
 ```json
 {
     "id": 32,
